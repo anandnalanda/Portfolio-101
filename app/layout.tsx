@@ -9,9 +9,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Matt Sellers — Software Designer",
+  title: "Anand Nalanda — Design Engineer",
   description:
-    "Software designer and interface alchemist. Building robust design systems, quality user interfaces, and custom iconography.",
+    "Design engineer who designs in Figma and ships in Next.js. Building product UI at the intersection of design and code.",
 };
 
 export default function RootLayout({

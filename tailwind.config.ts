@@ -10,7 +10,7 @@ const config: Config = {
       colors: {
         surface: {
           DEFAULT: "#ffffff",
-          muted: "#fafafa",
+          muted: "#f8f8f9",
           border: "rgba(0, 0, 0, 0.06)",
         },
         txt: {
@@ -19,15 +19,13 @@ const config: Config = {
           secondary: "rgba(37, 36, 41, 0.4)",
         },
         accent: {
-          teal: "#0d9488",
-          coral: "#e8553d",
-          orange: "#d97c1f",
-          blue: "#3b82f6",
-          purple: "#8b5cf6",
+          DEFAULT: "#6366f1",
+          light: "#818cf8",
+          subtle: "rgba(99, 102, 241, 0.08)",
         },
       },
       borderRadius: {
-        card: "24px",
+        card: "20px",
       },
       gridTemplateColumns: {
         bento: "repeat(4, 258px)",

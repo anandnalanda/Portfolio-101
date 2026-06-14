@@ -2,129 +2,69 @@
 
 import { motion } from "framer-motion";
 
-const paragraph = {
-  hidden: { opacity: 0, y: 12 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: 0.3 + i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
-  }),
-};
-
 export default function BioCard() {
   return (
-    <div className="col-span-2 row-span-2 card-base p-9 flex flex-col justify-between group">
-      <motion.h1
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="text-[22px] leading-[1.4] text-txt-secondary mb-6"
-      >
-        <strong className="text-txt-heading font-bold">Matt Sellers</strong> —
-        Software designer and interface alchemist at{" "}
-        <motion.strong
-          className="text-txt-heading font-bold inline-block"
-          whileHover={{ scale: 1.05, color: "#8b5cf6" }}
-          transition={{ type: "spring", stiffness: 400, damping: 17 }}
-        >
-          Lovable
-        </motion.strong>
-      </motion.h1>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="col-span-2 row-span-2 card-base p-9 flex flex-col justify-between"
+    >
+      <div>
+        <h1 className="text-[22px] leading-[1.4] text-txt-secondary mb-7">
+          <strong className="text-txt-heading font-bold">Anand Nalanda</strong>{" "}
+          — Design engineer. I design in Figma and ship in Next.js.
+        </h1>
 
-      <div className="flex flex-col gap-4">
-        <motion.p
-          custom={0}
-          variants={paragraph}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="text-[15px] leading-[1.65] text-txt-primary"
-        >
-          <strong className="font-bold">LFSGD</strong> is my creative alias on
-          the internet, born out of the golden age of interface design (aka the
-          Photoshop era).
-        </motion.p>
+        <div className="flex flex-col gap-4">
+          <p className="text-[15px] leading-[1.65] text-txt-primary">
+            With three years across early-stage startups, I&apos;ve learned that
+            the fastest path from idea to shipped product is one person who owns
+            both the design and the code. That&apos;s the role I play.
+          </p>
 
-        <motion.p
-          custom={1}
-          variants={paragraph}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="text-[15px] leading-[1.65] text-txt-primary"
-        >
-          With over twenty years of experience spent at ~12800% zoom, I&apos;ve
-          collaborated with some of the world&apos;s top{" "}
-          <a
-            href="#"
-            className="text-accent-teal font-semibold hover:underline transition-colors"
-          >
-            studios
-          </a>
-          , innovative{" "}
-          <a
-            href="#"
-            className="text-accent-coral font-semibold hover:underline transition-colors"
-          >
-            startups
-          </a>
-          , and leading{" "}
-          <a
-            href="#"
-            className="text-accent-orange font-semibold hover:underline transition-colors"
-          >
-            companies
-          </a>
-          , offering a blend of craftsmanship and expertise.
-        </motion.p>
+          <p className="text-[15px] leading-[1.65] text-txt-primary">
+            I work end-to-end — product thinking in Figma, then production UI in{" "}
+            <span className="text-accent font-semibold">Next.js</span> and{" "}
+            <span className="text-accent font-semibold">React</span>. Design
+            systems, component libraries, and pixel-level polish are my comfort
+            zone.
+          </p>
 
-        <motion.p
-          custom={2}
-          variants={paragraph}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="text-[15px] leading-[1.65] text-txt-primary"
-        >
-          At my core is a deep{" "}
-          <s className="text-txt-secondary">passion</s> obsession for
-          simplicity, meticulous pixel perfection, and human-centric design.
-        </motion.p>
-
-        <motion.p
-          custom={3}
-          variants={paragraph}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="text-[15px] leading-[1.65] text-txt-primary"
-        >
-          I specialize in building robust design systems, quality user
-          interfaces, and custom iconography.
-        </motion.p>
-
-        <motion.p
-          custom={4}
-          variants={paragraph}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="text-[15px] leading-[1.65] text-txt-primary"
-        >
-          Life is good. Let&apos;s create something beautiful together.
-        </motion.p>
+          <p className="text-[15px] leading-[1.65] text-txt-primary">
+            My obsession is shipping velocity without sacrificing craft — every
+            detail considered, every interaction intentional, every deploy on
+            time.
+          </p>
+        </div>
       </div>
 
-      <motion.span
-        initial={{ opacity: 0, scale: 0 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.8, type: "spring", stiffness: 300, damping: 15 }}
-        className="text-2xl mt-2"
-      >
-        🌞
-      </motion.span>
-    </div>
+      <div className="flex items-center gap-4 mt-6">
+        <motion.a
+          href="https://x.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          whileHover={{ scale: 1.02, backgroundColor: "rgba(0,0,0,0.03)" }}
+          whileTap={{ scale: 0.98 }}
+          className="flex items-center gap-2 px-4 py-2.5 border border-black/10 rounded-full text-[13px] font-semibold text-txt-heading transition-colors"
+        >
+          Follow on X
+          <svg
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-3.5 h-3.5"
+          >
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+          </svg>
+        </motion.a>
+
+        <a
+          href="mailto:anand97nalanda@gmail.com"
+          className="text-[13px] text-txt-secondary hover:text-accent transition-colors"
+        >
+          anand97nalanda@gmail.com
+        </a>
+      </div>
+    </motion.div>
   );
 }

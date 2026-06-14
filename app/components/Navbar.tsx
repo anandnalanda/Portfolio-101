@@ -4,11 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
 const projects = [
-  { name: "Bentley", href: "#", comingSoon: true },
-  { name: "Docufai", href: "#" },
-  { name: "Ripcord", href: "#" },
-  { name: "Karhoo", href: "#" },
-  { name: "Reuters", href: "#" },
+  { name: "Staple Chat", href: "#" },
+  { name: "Staple Tables", href: "#" },
+  { name: "OFM Jobs", href: "#" },
 ];
 
 export default function Navbar() {
@@ -19,30 +17,16 @@ export default function Navbar() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="sticky top-0 z-50 px-12 pt-6 bg-white/95 backdrop-blur-xl"
+      className="sticky top-0 z-50 px-12 pt-6 bg-white/95 backdrop-blur-xl max-md:px-5 max-md:pt-4"
     >
       <div className="flex items-center justify-between h-10 max-w-[1104px] mx-auto">
-        {/* Logo */}
+        {/* Logo mark */}
         <motion.div
-          whileHover={{ scale: 1.05, rotate: 90 }}
+          whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 400, damping: 17 }}
           className="w-10 h-10 rounded-full bg-black/[0.03] flex items-center justify-center cursor-pointer hover:bg-black/[0.06] transition-colors"
         >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="rgba(37,36,41,0.4)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          >
-            <line x1="12" y1="2" x2="12" y2="22" />
-            <line x1="2" y1="12" x2="22" y2="12" />
-            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
-            <line x1="19.07" y1="4.93" x2="4.93" y2="19.07" />
-          </svg>
+          <span className="text-[15px] font-bold text-txt-heading">AN</span>
         </motion.div>
 
         {/* Selected Work */}
@@ -87,11 +71,6 @@ export default function Navbar() {
                     transition={{ delay: i * 0.05 }}
                     className="block px-3 py-2 rounded-[10px] text-sm font-semibold text-txt-primary hover:bg-black/[0.04] transition-colors"
                   >
-                    {project.comingSoon && (
-                      <span className="block text-xs font-normal text-txt-secondary mb-0.5">
-                        Coming soon
-                      </span>
-                    )}
                     {project.name}
                   </motion.a>
                 ))}
@@ -102,12 +81,11 @@ export default function Navbar() {
 
         {/* Mail */}
         <motion.a
-          href="mailto:m@lfs.gd"
+          href="mailto:anand97nalanda@gmail.com"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 400, damping: 17 }}
           className="w-10 h-10 rounded-full bg-black/[0.03] flex items-center justify-center hover:bg-black/[0.06] transition-colors"
-          title="Let's chat"
+          title="Get in touch"
         >
           <svg
             width="18"
