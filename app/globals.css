@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(139, 92, 246, 0.15);
+  color: rgb(37, 36, 41);
+}
+
+@layer utilities {
+  .card-base {
+    @apply bg-white rounded-card border border-surface-border overflow-hidden relative;
+  }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.5; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes rotate-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes typing-cursor {
+  0%, 100% { border-color: transparent; }
+  50% { border-color: rgba(37, 36, 41, 0.4); }
+}
+
+@keyframes wave {
+  0%, 100% { d: path("M30 170 C50 100, 80 60, 110 90 C140 120, 150 50, 170 40"); }
+  50% { d: path("M30 160 C55 110, 75 70, 115 85 C145 110, 155 55, 170 45"); }
+}
