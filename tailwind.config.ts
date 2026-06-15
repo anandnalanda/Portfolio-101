@@ -5,12 +5,12 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
       },
       colors: {
         surface: {
           DEFAULT: "#ffffff",
-          muted: "#f8f8f9",
+          muted: "#fafafa",
           border: "rgba(0, 0, 0, 0.06)",
         },
         txt: {
@@ -21,11 +21,10 @@ const config: Config = {
         accent: {
           DEFAULT: "#6366f1",
           light: "#818cf8",
-          subtle: "rgba(99, 102, 241, 0.08)",
         },
       },
       borderRadius: {
-        card: "20px",
+        card: "24px",
       },
       gridTemplateColumns: {
         bento: "repeat(4, 258px)",

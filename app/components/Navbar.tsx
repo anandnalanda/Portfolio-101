@@ -17,29 +17,32 @@ export default function Navbar() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="sticky top-0 z-50 px-12 pt-6 bg-white/95 backdrop-blur-xl max-md:px-5 max-md:pt-4"
+      className="sticky top-0 z-50 px-12 pt-6 bg-white/96 backdrop-blur-xl max-md:px-4 max-md:pt-4"
     >
       <div className="flex items-center justify-between h-10 max-w-[1104px] mx-auto">
-        {/* Logo mark */}
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="w-10 h-10 rounded-full bg-black/[0.03] flex items-center justify-center cursor-pointer hover:bg-black/[0.06] transition-colors"
-        >
-          <span className="text-[15px] font-bold text-txt-heading">AN</span>
-        </motion.div>
+        <div className="w-10 h-10 rounded-full bg-black/[0.03] flex items-center justify-center cursor-pointer hover:bg-black/[0.06] transition-colors">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="rgba(37,36,41,0.4)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          >
+            <line x1="12" y1="2" x2="12" y2="22" />
+            <line x1="2" y1="12" x2="22" y2="12" />
+            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+            <line x1="19.07" y1="4.93" x2="4.93" y2="19.07" />
+          </svg>
+        </div>
 
-        {/* Selected Work */}
         <div
           className="relative"
           onMouseEnter={() => setDropdownOpen(true)}
           onMouseLeave={() => setDropdownOpen(false)}
         >
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="flex items-center gap-2 px-5 py-2 rounded-full bg-black/[0.04] cursor-pointer hover:bg-black/[0.07] transition-colors"
-          >
+          <div className="flex items-center gap-2 px-5 py-2 rounded-full bg-black/[0.04] cursor-pointer hover:bg-black/[0.07] transition-colors">
             <div className="grid grid-cols-3 gap-[2px]">
               {Array.from({ length: 9 }).map((_, i) => (
                 <span
@@ -51,7 +54,7 @@ export default function Navbar() {
             <span className="text-sm font-semibold text-txt-secondary">
               Selected work
             </span>
-          </motion.div>
+          </div>
 
           <AnimatePresence>
             {dropdownOpen && (
@@ -79,11 +82,8 @@ export default function Navbar() {
           </AnimatePresence>
         </div>
 
-        {/* Mail */}
-        <motion.a
+        <a
           href="mailto:anand97nalanda@gmail.com"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
           className="w-10 h-10 rounded-full bg-black/[0.03] flex items-center justify-center hover:bg-black/[0.06] transition-colors"
           title="Get in touch"
         >
@@ -100,7 +100,7 @@ export default function Navbar() {
             <rect x="2" y="4" width="20" height="16" rx="2" />
             <path d="M22 7l-10 7L2 7" />
           </svg>
-        </motion.a>
+        </a>
       </div>
     </motion.nav>
   );

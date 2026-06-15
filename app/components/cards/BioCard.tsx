@@ -8,62 +8,54 @@ export default function BioCard() {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="col-span-2 row-span-2 card-base p-9 flex flex-col justify-between"
+      className="col-span-2 row-span-2 bg-white rounded-card border border-surface-border overflow-hidden p-6 flex flex-col justify-between"
     >
       <div>
-        <h1 className="text-[22px] leading-[1.4] text-txt-secondary mb-7">
+        <h1 className="text-[22px] leading-[1.4] text-txt-secondary mb-4">
           <strong className="text-txt-heading font-bold">Anand Nalanda</strong>{" "}
-          — Design engineer. I design in Figma and ship in Next.js.
+          — Design engineer and product builder at{" "}
+          <strong className="text-txt-heading font-bold">Staple</strong>
         </h1>
 
-        <div className="flex flex-col gap-4">
-          <p className="text-[15px] leading-[1.65] text-txt-primary">
-            With three years across early-stage startups, I&apos;ve learned that
-            the fastest path from idea to shipped product is one person who owns
-            both the design and the code. That&apos;s the role I play.
+        <div className="flex flex-col gap-3">
+          <p className="text-[18px] leading-[1.65] text-txt-primary font-normal">
+            <strong className="text-txt-heading font-bold">Design + code</strong>{" "}
+            is my creative edge on the internet, born out of the golden age of
+            interface craft (aka the Figma era).
           </p>
 
-          <p className="text-[15px] leading-[1.65] text-txt-primary">
-            I work end-to-end — product thinking in Figma, then production UI in{" "}
-            <span className="text-accent font-semibold">Next.js</span> and{" "}
-            <span className="text-accent font-semibold">React</span>. Design
-            systems, component libraries, and pixel-level polish are my comfort
-            zone.
+          <p className="text-[18px] leading-[1.65] text-txt-primary font-normal">
+            With three years of experience spent at ~12800% zoom,
+            I&apos;ve collaborated with innovative{" "}
+            <span className="text-[#2aa198] font-semibold">startups</span>,
+            fast-moving{" "}
+            <span className="text-[#e6994a] font-semibold">teams</span>, and
+            ambitious{" "}
+            <span className="text-[#d95b5b] font-semibold">founders</span>,
+            offering a blend of craftsmanship and speed.
           </p>
 
-          <p className="text-[15px] leading-[1.65] text-txt-primary">
-            My obsession is shipping velocity without sacrificing craft — every
-            detail considered, every interaction intentional, every deploy on
-            time.
+          <p className="text-[18px] leading-[1.65] text-txt-primary font-normal">
+            At my core is a deep{" "}
+            <span className="line-through">passion</span> obsession for
+            simplicity, meticulous pixel perfection, and human-centric design.
+          </p>
+
+          <p className="text-[18px] leading-[1.65] text-txt-primary font-normal">
+            I specialize in building robust design systems, quality user
+            interfaces, and shipping products end-to-end.
+          </p>
+
+          <p className="text-[18px] leading-[1.65] text-txt-primary font-normal">
+            Life is good. Let&apos;s create something beautiful together.
           </p>
         </div>
       </div>
 
-      <div className="flex items-center gap-4 mt-6">
-        <motion.a
-          href="https://x.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={{ scale: 1.02, backgroundColor: "rgba(0,0,0,0.03)" }}
-          whileTap={{ scale: 0.98 }}
-          className="flex items-center gap-2 px-4 py-2.5 border border-black/10 rounded-full text-[13px] font-semibold text-txt-heading transition-colors"
-        >
-          Follow on X
-          <svg
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="w-3.5 h-3.5"
-          >
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-          </svg>
-        </motion.a>
-
-        <a
-          href="mailto:anand97nalanda@gmail.com"
-          className="text-[13px] text-txt-secondary hover:text-accent transition-colors"
-        >
-          anand97nalanda@gmail.com
-        </a>
+      <div className="mt-2">
+        <span className="text-[28px]" role="img" aria-label="sun">
+          🌞
+        </span>
       </div>
     </motion.div>
   );

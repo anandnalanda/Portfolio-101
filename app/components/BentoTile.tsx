@@ -31,25 +31,22 @@ export default function BentoTile({
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{
-        y: -3,
+        y: -2,
         boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
-        borderColor: "rgba(99, 102, 241, 0.2)",
       }}
-      className={`card-base flex flex-col cursor-pointer ${variantClasses[variant]}`}
+      className={`bg-white rounded-card border border-surface-border overflow-hidden relative flex items-center justify-center cursor-pointer ${variantClasses[variant]}`}
     >
-      {/* Artifact placeholder */}
-      <div className="flex-1 bg-surface-muted flex items-center justify-center p-6 min-h-0">
-        <span className="text-[11px] font-mono tracking-[0.15em] text-txt-secondary/50 uppercase select-none">
-          {artifactLabel}
-        </span>
-      </div>
+      {/* Artifact placeholder label */}
+      <span className="text-[48px] font-bold text-black/20 select-none">
+        {artifactLabel}
+      </span>
 
-      {/* Title + descriptor */}
-      <div className="px-5 py-4 border-t border-surface-border">
+      {/* Title + descriptor overlaid at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 px-5 pb-4 pt-10 bg-gradient-to-t from-white/90 to-transparent">
         <h3 className="text-[14px] font-semibold text-txt-heading leading-tight">
           {title}
         </h3>
-        <p className="text-[12px] text-txt-secondary mt-1 leading-snug">
+        <p className="text-[12px] text-txt-secondary mt-0.5 leading-snug">
           {descriptor}
         </p>
       </div>
