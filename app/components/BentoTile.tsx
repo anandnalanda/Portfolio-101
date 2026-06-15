@@ -37,7 +37,7 @@ export default function BentoTile({
       className={`bg-white rounded-card border border-surface-border overflow-hidden relative flex items-center justify-center cursor-pointer ${variantClasses[variant]}`}
     >
       {/* Artifact placeholder label */}
-      <span className="text-[48px] font-bold text-black/20 select-none">
+      <span className="text-[11px] font-mono tracking-[0.12em] text-black/[0.15] uppercase select-none">
         {artifactLabel}
       </span>
 

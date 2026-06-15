@@ -13,45 +13,45 @@ export default function BentoGrid() {
   return (
     <main className="px-12 pt-6 max-w-[1200px] mx-auto max-md:px-4">
       <div className="grid grid-cols-bento auto-rows-bento gap-6 justify-center max-lg:grid-cols-[repeat(2,1fr)] max-lg:auto-rows-[258px] max-md:grid-cols-[1fr] max-md:auto-rows-[280px]">
-        <BioCard /> {/* #1 */}
+        <BioCard />
 
-        <SwooshCard /> {/* #2 */}
+        <SwooshCard />
 
-        <SettingsCard /> {/* #3 */}
+        <SettingsCard />
 
         <BentoTile
           variant="tall"
           title="Experiments with AI"
           descriptor="Products built with AI — from concept to shipped."
-          artifactLabel="#4"
+          artifactLabel=""
         />
 
-        <StickerCard /> {/* #5 - Resume */}
+        <StickerCard />
 
         <BentoTile
           variant="wide"
           title="Kanban and AI"
           descriptor="Hiring pipeline with AI-ranked candidates."
-          artifactLabel="#6"
+          artifactLabel=""
         />
 
         <BentoTile
           title="OFM Jobs Tests"
           descriptor="Assessment system with AI-powered hiring."
-          artifactLabel="#7"
+          artifactLabel=""
         />
 
-        <SocialCard /> {/* #8 */}
+        <SocialCard />
 
         <BentoTile
           title="Visual Direction"
           descriptor="OFM Jobs & Jobsly — UI design and visual systems."
-          artifactLabel="#9"
+          artifactLabel=""
         />
 
-        <LaptopCard /> {/* #10 */}
+        <LaptopCard />
 
-        <StapleTablesCard /> {/* #11 - moved below social/chat */}
+        <StapleTablesCard />
       </div>
     </main>
   );
