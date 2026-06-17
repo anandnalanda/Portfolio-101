@@ -1,20 +1,22 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function SwooshCard() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{
-        y: -2,
-        boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
-      }}
-      className="bg-white rounded-card border border-surface-border overflow-hidden relative flex items-center justify-center cursor-pointer"
-    >
+    <Link href="/staple-chat">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        whileHover={{
+          y: -2,
+          boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
+        }}
+        className="bg-white rounded-card border border-surface-border overflow-hidden relative flex items-center justify-center cursor-pointer h-full"
+      >
       <svg
         viewBox="0 0 258 258"
         fill="none"
@@ -41,6 +43,7 @@ export default function SwooshCard() {
           Conversational AI for document analysis.
         </p>
       </div>
-    </motion.div>
+      </motion.div>
+    </Link>
   );
 }

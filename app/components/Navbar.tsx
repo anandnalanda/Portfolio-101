@@ -4,9 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
 const projects = [
-  { name: "Staple Chat", href: "#" },
-  { name: "Staple Tables", href: "#" },
-  { name: "OFM Jobs", href: "#" },
+  { name: "Staple Chat", href: "/staple-chat" },
+  { name: "Staple Tables", href: "/staple-tables" },
+  { name: "OFM Jobs", href: "/ofm-jobs-tests" },
 ];
 
 export default function Navbar() {

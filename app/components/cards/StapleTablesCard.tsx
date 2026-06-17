@@ -1,12 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 const columns = ["First name", "Last name", "Location", "Description"];
 const rows = 4;
 
 export default function StapleTablesCard() {
   return (
+    <Link href="/staple-tables" className="col-span-2">
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -16,7 +18,7 @@ export default function StapleTablesCard() {
         y: -2,
         boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
       }}
-      className="col-span-2 bg-white rounded-card border border-surface-border overflow-hidden relative cursor-pointer p-6 flex flex-col justify-end"
+      className="bg-white rounded-card border border-surface-border overflow-hidden relative cursor-pointer p-6 flex flex-col justify-end h-full"
     >
       <div className="border border-black/[0.06] rounded-xl overflow-hidden">
         <table className="w-full text-left text-[13px]">
@@ -52,5 +54,6 @@ export default function StapleTablesCard() {
         </table>
       </div>
     </motion.div>
+    </Link>
   );
 }

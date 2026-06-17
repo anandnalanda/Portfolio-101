@@ -33,12 +33,14 @@ export default function BentoGrid() {
           title="Kanban and AI"
           descriptor="Hiring pipeline with AI-ranked candidates."
           artifactLabel=""
+          href="/kanban-and-ai"
         />
 
         <BentoTile
           title="OFM Jobs Tests"
           descriptor="Assessment system with AI-powered hiring."
           artifactLabel=""
+          href="/ofm-jobs-tests"
         />
 
         <SocialCard />
