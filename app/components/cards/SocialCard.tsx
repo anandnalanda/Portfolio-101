@@ -13,7 +13,7 @@ export default function SocialCard() {
         y: -2,
         boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
       }}
-      className="bg-white rounded-card border border-surface-border overflow-hidden relative cursor-pointer p-6 flex flex-col justify-between"
+      className="bg-white rounded-card border-2 border-surface-border overflow-hidden relative cursor-pointer p-6 flex flex-col justify-between"
     >
       <div>
         <div className="flex items-center gap-3 mb-4">

@@ -18,7 +18,7 @@ export default function StapleTablesCard() {
         y: -2,
         boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
       }}
-      className="bg-white rounded-card border border-surface-border overflow-hidden relative cursor-pointer p-6 flex flex-col justify-end h-full"
+      className="bg-white rounded-card border-2 border-surface-border overflow-hidden relative cursor-pointer p-6 flex flex-col justify-end h-full"
     >
       <div className="border border-black/[0.06] rounded-xl overflow-hidden">
         <table className="w-full text-left text-[13px]">

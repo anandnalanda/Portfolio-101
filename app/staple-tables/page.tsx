@@ -15,7 +15,7 @@ const spectral = Spectral({
 /*  Section data                                                       */
 /* ------------------------------------------------------------------ */
 
-type SectionType = "intro" | "critique" | "refinement" | "summary";
+type SectionType = "intro" | "critique" | "refinement" | "summary" | "story" | "product" | "closing";
 
 interface Section {
   id: string;
@@ -34,97 +34,97 @@ const sections: Section[] = [
   {
     id: "intro",
     type: "intro",
-    title: "Refining Staple Tables",
+    title: "Staple Tables",
     content:
-      "A design critique and refinement of the Staple Tables interface — the structured data extraction view for documents. This walkthrough covers how the table layout, filtering controls, and export actions evolved from a dense prototype to a cleaner, more scannable product.",
+      "From manual data correction chaos to AI-powered interactive mapping workflows.",
     highlight: null,
   },
   {
-    id: "table-header-density",
-    type: "critique",
-    title: "Table Header Density",
+    id: "challenge",
+    type: "story",
+    title: "10,000 documents a month.",
     content:
-      "The header row packs too much into a tight space. Column labels, sort arrows, resize handles, and type badges all compete within each cell. The heavy bottom border and dark background make the header feel like a wall separating the toolbar from the data below.",
-    highlight: { top: 18, left: 24, width: 76, height: 9 },
+      "150+ daily users processing thousands of documents, with usage analytics revealing extraction workflows riddled with failure points. Users abandoned complex extraction tasks after 3 failed attempts — a 73% abandonment rate.",
+    highlight: null,
   },
   {
-    id: "column-layout",
-    type: "critique",
-    title: "Column Layout",
+    id: "research",
+    type: "story",
+    title: "The research.",
     content:
-      "Five columns are distributed evenly regardless of content width. The Document column — often the longest value — gets the same space as Status, which holds a single badge. This wastes horizontal real estate and forces truncation where it hurts most.",
-    highlight: { top: 27, left: 24, width: 76, height: 48 },
+      "Task observation sessions documenting current workflows and competitive research evaluating Google Vision, Nanonets, and 8 enterprise alternatives. Key finding: 97% accuracy is achievable when AI understands header structure and business context.",
+    highlight: null,
   },
   {
-    id: "row-spacing",
-    type: "critique",
-    title: "Row Spacing",
+    id: "insight",
+    type: "story",
+    title: "Visual feedback changes everything.",
     content:
-      "Each row has generous vertical padding and a full-width divider. Combined with the large checkbox and document icon per row, only six or seven records fit on screen. Users extracting data from dozens of documents spend more time scrolling than scanning.",
-    highlight: { top: 27, left: 24, width: 76, height: 48 },
+      "Real-time guidance reduces user uncertainty by 60%. The gap wasn't in AI capability — it was in how users interacted with and corrected extraction results.",
+    highlight: null,
   },
   {
-    id: "filter-controls",
-    type: "critique",
-    title: "Filter Controls",
+    id: "extracted-fields",
+    type: "product",
+    title: "Optimizing extracted fields.",
     content:
-      "The filter bar stretches across the full content width with four separate dropdowns, a date picker, and a search field — all rendered at full size simultaneously. Most users only filter by one or two dimensions, yet the controls permanently occupy valuable vertical space.",
-    highlight: { top: 10, left: 24, width: 76, height: 8 },
+      "An iterative design process emphasizing user feedback and technical collaboration. Colors chosen to be differentiable by color-blind users, validated through competitive research across Google Vision, Nanonets, and similar tools.",
+    highlight: null,
   },
   {
-    id: "data-type-indicators",
-    type: "critique",
-    title: "Data Type Indicators",
+    id: "table-structure",
+    type: "product",
+    title: "Clarity in the table.",
     content:
-      "Each cell shows a tiny type icon (text, number, date, currency) alongside the value. While informative, these icons create visual noise at scale — fifty cells means fifty small icons competing with the actual data. The type information is useful on hover, not at rest.",
-    highlight: { top: 27, left: 24, width: 76, height: 48 },
+      "Transformed the table structure for exceptional clarity and intuitive organization, empowering users to effortlessly interpret and utilize extracted data.",
+    highlight: null,
   },
   {
-    id: "export-actions",
-    type: "critique",
-    title: "Export Actions",
+    id: "ai-extraction",
+    type: "product",
+    title: "Interactive AI-powered extraction.",
     content:
-      "Export options are scattered: a download button in the toolbar, a share icon in the header, and a context-menu export on each row. Three paths to the same action with inconsistent formatting. Users hesitate, unsure which export gives them what they need.",
-    highlight: { top: 80, left: 24, width: 76, height: 20 },
+      "The core innovation transforms table extraction from a black-box process into an interactive, visual workflow where enterprise users maintain control while benefiting from AI assistance.",
+    highlight: null,
   },
   {
-    id: "refinement-headers",
-    type: "refinement",
-    title: "Streamlining Headers",
+    id: "detection",
+    type: "product",
+    title: "AI visual table detection.",
     content:
-      "Reduced the header to clean text labels with a subtle underline on the sorted column. Type badges moved to a tooltip on hover. The header now reads as a quiet guide rather than a competing data row.",
-    highlight: { top: 17, left: 24, width: 76, height: 8 },
+      "Intelligent identification and highlighting of table boundaries with confidence scoring. Users select and map column headers directly with business context awareness.",
+    highlight: null,
   },
   {
-    id: "refinement-density",
-    type: "refinement",
-    title: "Optimizing Row Density",
+    id: "field-mapping",
+    type: "product",
+    title: "Smart field mapping.",
     content:
-      "Cut row padding by 35% and replaced full-width dividers with hairline separators. Removed per-row icons, relying on the column header for context. The result: twelve or more records visible without scrolling — nearly double the original.",
-    highlight: { top: 25, left: 24, width: 76, height: 52 },
+      "Drag-and-drop assignment of data fields with AI-powered suggestions and validation. Real-time population preview with instant accuracy indicators on extracted line items.",
+    highlight: null,
   },
   {
-    id: "refinement-filters",
-    type: "refinement",
-    title: "Simplifying Filters",
+    id: "impact",
+    type: "closing",
+    title: "The numbers.",
     content:
-      "Four dropdowns collapsed into a single unified search bar with inline filter chips. Users type naturally and the interface suggests filters. The bar expands only when focused, reclaiming vertical space when idle.",
-    highlight: { top: 10, left: 24, width: 76, height: 7 },
+      "50% reduction in time spent correcting extraction errors. 30-40% improvement in overall extraction accuracy reducing downstream operational costs. 3x faster document processing workflows.",
+    highlight: null,
   },
   {
-    id: "refinement-export",
-    type: "refinement",
-    title: "Cleaner Export Flow",
+    id: "support",
+    type: "closing",
+    title: "73% fewer support tickets.",
     content:
-      "All export options consolidated into one clearly labeled button at the top right. Clicking it opens a dropdown with format choices (CSV, Excel, PDF) and a row-count summary. One path, zero ambiguity.",
-    highlight: { top: 80, left: 24, width: 76, height: 20 },
+      "IT support tickets related to table extraction and document processing dropped by 73%, enabling accelerated business decision-making across the organization.",
+    highlight: null,
   },
   {
-    id: "summary",
-    type: "summary",
-    title: "",
+    id: "testimonial",
+    type: "closing",
+    title: "From the users.",
     content:
-      "The refinements targeted density and clarity — making every row, header, and control earn its visual weight. Filters became conversational, exports became singular, and the table itself became the hero. The interface now lets users focus on the data, not the chrome around it.",
+      "\"The new table extraction feels like magic for our finance team. What used to take our analysts 20 minutes per invoice now takes 3 minutes with higher accuracy.\"",
     highlight: null,
   },
 ];
@@ -491,16 +491,16 @@ export default function StapleTablesPage() {
             {sections.map((section, i) => {
               const prev = i > 0 ? sections[i - 1] : null;
               const showGroupHeading =
-                (section.type === "critique" && prev?.type !== "critique") ||
-                (section.type === "refinement" && prev?.type !== "refinement") ||
-                (section.type === "summary" && prev?.type !== "summary");
+                (section.type === "story" && prev?.type !== "story") ||
+                (section.type === "product" && prev?.type !== "product") ||
+                (section.type === "closing" && prev?.type !== "closing");
               const groupLabel =
-                section.type === "critique"
-                  ? "Critique"
-                  : section.type === "refinement"
-                  ? "Refinement"
-                  : section.type === "summary"
-                  ? "Summary"
+                section.type === "story"
+                  ? "The Story"
+                  : section.type === "product"
+                  ? "The Product"
+                  : section.type === "closing"
+                  ? "Reflection"
                   : null;
 
               return (
@@ -521,39 +521,13 @@ export default function StapleTablesPage() {
                     titleSize={
                       section.type === "intro"
                         ? "lg"
-                        : section.type === "summary"
+                        : section.id === "testimonial"
                         ? "sm"
                         : "md"
                     }
                     onActive={handleActive}
                   >
                     {section.content}
-                    {section.type === "summary" && (
-                      <div className="mt-4">
-                        <div className="inline-flex rounded-full bg-black/[0.06] p-0.5">
-                          <button
-                            onClick={() => setShowAfter(false)}
-                            className={`px-4 py-1.5 rounded-full text-[12px] font-semibold transition-all ${
-                              !showAfter
-                                ? "bg-white text-txt-heading shadow-sm"
-                                : "text-txt-secondary"
-                            }`}
-                          >
-                            Before
-                          </button>
-                          <button
-                            onClick={() => setShowAfter(true)}
-                            className={`px-4 py-1.5 rounded-full text-[12px] font-semibold transition-all ${
-                              showAfter
-                                ? "bg-white text-txt-heading shadow-sm"
-                                : "text-txt-secondary"
-                            }`}
-                          >
-                            After
-                          </button>
-                        </div>
-                      </div>
-                    )}
                   </NarrativeSection>
                 </div>
               );

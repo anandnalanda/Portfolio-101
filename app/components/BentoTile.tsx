@@ -37,7 +37,7 @@ export default function BentoTile({
         y: -2,
         boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
       }}
-      className="bg-white rounded-card border border-surface-border overflow-hidden relative flex items-center justify-center cursor-pointer h-full"
+      className="bg-white rounded-card border-2 border-surface-border overflow-hidden relative flex items-center justify-center cursor-pointer h-full"
     >
       <span className="text-[11px] font-mono tracking-[0.12em] text-black/[0.15] uppercase select-none">
         {artifactLabel}

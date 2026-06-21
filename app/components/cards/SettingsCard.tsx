@@ -13,7 +13,7 @@ export default function SettingsCard() {
         y: -2,
         boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
       }}
-      className="bg-white rounded-card border border-surface-border overflow-hidden relative flex items-center justify-center cursor-pointer p-4"
+      className="bg-white rounded-card border-2 border-surface-border overflow-hidden relative flex items-center justify-center cursor-pointer p-4"
     >
       <svg
         viewBox="0 0 220 220"

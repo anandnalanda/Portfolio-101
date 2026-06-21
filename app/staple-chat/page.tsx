@@ -15,7 +15,7 @@ const spectral = Spectral({
 /*  Section data                                                       */
 /* ------------------------------------------------------------------ */
 
-type SectionType = "intro" | "critique" | "refinement" | "summary";
+type SectionType = "intro" | "critique" | "refinement" | "summary" | "story" | "product" | "closing";
 
 interface Section {
   id: string;
@@ -34,97 +34,105 @@ const sections: Section[] = [
   {
     id: "intro",
     type: "intro",
-    title: "Refining Staple Chat",
+    title: "Staple Chat",
     content:
-      "A design critique and refinement of the Staple Chat dashboard — the conversational AI interface for document analysis. This walkthrough covers what worked, what needed improvement, and how the interface evolved from a functional prototype to a polished product.",
+      "Transforming complex data analysis into natural conversations.",
     highlight: null,
   },
   {
-    id: "nav-bar",
-    type: "critique",
-    title: "Navigation Bar",
+    id: "challenge",
+    type: "story",
+    title: "One question. Five dashboards.",
     content:
-      "The top navigation carries too much visual weight. Four tabs compete for attention alongside the logo, search, and profile. The active state is a heavy filled background that dominates the header. Users reported not knowing where they were in the app.",
-    highlight: { top: 0, left: 0, width: 100, height: 10.5 },
+      "Users navigated 3–5 different dashboards to compile simple reports, spending 15+ minutes on tasks that should take seconds. Critical data scattered across invoice systems, customer feedback platforms, and sales databases with no unified access point.",
+    highlight: null,
   },
   {
-    id: "sidebar",
-    type: "critique",
-    title: "Conversation Sidebar",
+    id: "bottleneck",
+    type: "story",
+    title: "The analyst bottleneck.",
     content:
-      "The sidebar lists conversations with inconsistent density. Each item shows a title, preview text, timestamp, and document count — too many competing signals. The selected state barely differs from the rest, making it hard to track your position.",
-    highlight: { top: 10.5, left: 0, width: 30, height: 89.5 },
+      "Non-technical stakeholders depended on analysts for basic questions, creating bottlenecks in decision-making. Static reports lacked the conversational context needed to explore follow-up questions or validate assumptions.",
+    highlight: null,
   },
   {
-    id: "metrics",
-    type: "critique",
-    title: "Metrics Overload",
+    id: "research",
+    type: "story",
+    title: "23 interviews. One pattern.",
     content:
-      "Four separate stat cards span the top of the content area. Each has its own border, background, icon, label, and value — creating a wall of competing boxes. Users glance at metrics, they don't study them. This layout demands study.",
-    highlight: { top: 10.5, left: 30, width: 70, height: 17 },
+      "Stakeholder interviews with finance managers, operations leaders, and compliance officers revealed that 73% of data queries required cross-referencing multiple sources. We mapped critical friction points where users abandoned complex analytical tasks.",
+    highlight: null,
   },
   {
-    id: "chat-density",
-    type: "critique",
-    title: "Chat Message Density",
+    id: "vision",
+    type: "story",
+    title: "Not another dashboard.",
     content:
-      "Messages have generous padding and large avatars, pushing conversation context off-screen. Users analyzing documents need to reference earlier messages frequently. Every extra scroll breaks their train of thought.",
-    highlight: { top: 27.5, left: 30, width: 70, height: 32 },
+      "Rather than building another dashboard, we envisioned a conversational intelligence platform that could democratize data access across the organization. The core philosophy: transform complex analytical workflows into natural language conversations.",
+    highlight: null,
   },
   {
-    id: "ai-cards",
-    type: "critique",
-    title: "AI Response Cards",
+    id: "query-engine",
+    type: "product",
+    title: "Ask it like you'd say it.",
     content:
-      "Analysis results sit inside bordered cards with drop shadows — a card-in-card pattern that adds visual nesting without aiding comprehension. The borders compete with the content and create a cluttered, boxy feel.",
-    highlight: { top: 59.5, left: 30, width: 70, height: 22 },
+      "Natural language processing that understands business context, terminology, and analytical intent. Users ask complex questions without learning query syntax or navigating interface hierarchies.",
+    highlight: null,
   },
   {
-    id: "input-area",
-    type: "critique",
-    title: "Input Area",
+    id: "data-connection",
+    type: "product",
+    title: "Bring your own data.",
     content:
-      "The input field is undersized relative to its importance — it's the primary interaction point. Action buttons are scattered across the full width. The file attachment icon is small and easy to miss, despite being a core workflow.",
-    highlight: { top: 81.5, left: 30, width: 70, height: 18.5 },
+      "Upload datasets — customer reviews, invoices, operational tables — then fine-tune analytical requests by attaching instructions for filtering, aggregation, or custom logic. The engine adapts its response based on user-provided directives.",
+    highlight: null,
   },
   {
-    id: "refinement-nav",
-    type: "refinement",
-    title: "Simplifying Navigation",
+    id: "visualization",
+    type: "product",
+    title: "Charts, inline.",
     content:
-      "Reduced to two primary tabs with a subtle underline active state. Search moved into the content area where it's contextually relevant. The header now breathes — logo, tabs, and profile icon with generous spacing.",
-    highlight: { top: 0, left: 0, width: 100, height: 10.5 },
+      "Complex analytical queries generate instant visual insights through dynamic chart generation, eliminating manual report creation. Charts embedded directly in conversation flow, maintaining context and enabling follow-up questions.",
+    highlight: null,
   },
   {
-    id: "refinement-metrics",
-    type: "refinement",
-    title: "Consolidating Metrics",
+    id: "interface",
+    type: "product",
+    title: "Progressive disclosure.",
     content:
-      "Four cards became a single inline metrics bar — values separated by dots with tiny inline sparklines. Same information, a fraction of the visual space. Users can glance and move on.",
-    highlight: { top: 10.5, left: 30, width: 70, height: 11 },
+      "The interface prioritizes clarity, revealing complexity only when needed while maintaining conversational flow. Clean conversation layout with clear distinction between user queries and system responses.",
+    highlight: null,
   },
   {
-    id: "refinement-chat",
-    type: "refinement",
-    title: "Tightening the Chat Flow",
+    id: "suggestions",
+    type: "product",
+    title: "It anticipates.",
     content:
-      "Reduced message padding by 40% and replaced large avatars with small inline indicators. Added subtle time-based grouping. The result: 60% more conversation visible without scrolling.",
-    highlight: { top: 21.5, left: 30, width: 70, height: 42 },
+      "Intelligent query suggestions based on current context and user patterns. A right-side panel for data source management with intuitive connection workflows.",
+    highlight: null,
   },
   {
-    id: "refinement-input",
-    type: "refinement",
-    title: "Elevating the Input",
+    id: "validation",
+    type: "product",
+    title: "Trust, built in.",
     content:
-      "The input field is now taller with a visible file-drop zone. Action buttons are grouped on the right. Placeholder text guides the interaction. It finally looks as important as it is.",
-    highlight: { top: 82, left: 30, width: 70, height: 18 },
+      "Built-in validation loops with user feedback mechanisms ensuring analytical accuracy. Every finding shows its reasoning — transparent, auditable, and correctable.",
+    highlight: null,
   },
   {
-    id: "summary",
-    type: "summary",
-    title: "",
+    id: "impact",
+    type: "closing",
+    title: "The numbers.",
     content:
-      "The refinements focused on density and hierarchy — reducing visual noise while preserving all functionality. Every pixel now earns its place. The result is an interface that lets the AI conversation take center stage, not the chrome around it.",
+      "340% increase in daily analytical queries within the first quarter. Average time-to-insight reduced from 15 minutes to 2 minutes. 89% user satisfaction rating with 95% feature retention rate.",
+    highlight: null,
+  },
+  {
+    id: "adoption",
+    type: "closing",
+    title: "Democratized.",
+    content:
+      "67% of queries now performed by non-technical users, reducing data science team dependency. Executive reporting cycles accelerated by 3x, enabling faster strategic decisions.",
     highlight: null,
   },
 ];
@@ -481,16 +489,16 @@ export default function StapleChatPage() {
             {sections.map((section, i) => {
               const prev = i > 0 ? sections[i - 1] : null;
               const showGroupHeading =
-                (section.type === "critique" && prev?.type !== "critique") ||
-                (section.type === "refinement" && prev?.type !== "refinement") ||
-                (section.type === "summary" && prev?.type !== "summary");
+                (section.type === "story" && prev?.type !== "story") ||
+                (section.type === "product" && prev?.type !== "product") ||
+                (section.type === "closing" && prev?.type !== "closing");
               const groupLabel =
-                section.type === "critique"
-                  ? "Critique"
-                  : section.type === "refinement"
-                  ? "Refinement"
-                  : section.type === "summary"
-                  ? "Summary"
+                section.type === "story"
+                  ? "The Story"
+                  : section.type === "product"
+                  ? "The Product"
+                  : section.type === "closing"
+                  ? "Reflection"
                   : null;
 
               return (
@@ -509,41 +517,15 @@ export default function StapleChatPage() {
                     id={section.id}
                     title={section.title}
                     titleSize={
-                      section.type === "intro"
+                      section.id === "intro"
                         ? "lg"
-                        : section.type === "summary"
+                        : section.id === "adoption"
                         ? "sm"
                         : "md"
                     }
                     onActive={handleActive}
                   >
                     {section.content}
-                    {section.type === "summary" && (
-                      <div className="mt-4">
-                        <div className="inline-flex rounded-full bg-black/[0.06] p-0.5">
-                          <button
-                            onClick={() => setShowAfter(false)}
-                            className={`px-4 py-1.5 rounded-full text-[12px] font-semibold transition-all ${
-                              !showAfter
-                                ? "bg-white text-txt-heading shadow-sm"
-                                : "text-txt-secondary"
-                            }`}
-                          >
-                            Before
-                          </button>
-                          <button
-                            onClick={() => setShowAfter(true)}
-                            className={`px-4 py-1.5 rounded-full text-[12px] font-semibold transition-all ${
-                              showAfter
-                                ? "bg-white text-txt-heading shadow-sm"
-                                : "text-txt-secondary"
-                            }`}
-                          >
-                            After
-                          </button>
-                        </div>
-                      </div>
-                    )}
                   </NarrativeSection>
                 </div>
               );

@@ -11,7 +11,7 @@ const config: Config = {
         surface: {
           DEFAULT: "#ffffff",
           muted: "#fafafa",
-          border: "rgba(0, 0, 0, 0.06)",
+          border: "rgba(0, 0, 0, 0.02)",
         },
         txt: {
           heading: "rgb(37, 36, 41)",
@@ -24,7 +24,7 @@ const config: Config = {
         },
       },
       borderRadius: {
-        card: "24px",
+        card: "28px",
       },
       gridTemplateColumns: {
         bento: "repeat(4, 258px)",

@@ -13,7 +13,7 @@ export default function LaptopCard() {
         y: -2,
         boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
       }}
-      className="col-span-2 row-span-2 bg-white rounded-card border border-surface-border overflow-hidden relative cursor-pointer"
+      className="col-span-2 row-span-2 bg-white rounded-card border-2 border-surface-border overflow-hidden relative cursor-pointer"
     >
       <svg
         viewBox="0 0 540 540"
