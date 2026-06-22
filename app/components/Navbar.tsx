@@ -22,12 +22,12 @@ export default function Navbar() {
     >
       <div className="relative flex items-center justify-center h-10 max-w-[1104px] mx-auto">
         <motion.div
-          className="absolute left-0 w-10 h-10 rounded-full border-2 flex items-center justify-center cursor-pointer"
+          className="absolute left-0 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
           whileHover="hover"
           initial="rest"
           variants={{
-            rest: { scale: 1, backgroundColor: "rgba(0,0,0,0)", borderColor: "rgba(0,0,0,0.1)" },
-            hover: { scale: 1.05, backgroundColor: "rgba(0,0,0,0.04)", borderColor: "rgba(0,0,0,0.2)" },
+            rest: { scale: 1, backgroundColor: "rgba(0,0,0,0)", boxShadow: "0 0 0 2px rgba(0,0,0,0.1)" },
+            hover: { scale: 1.05, backgroundColor: "rgba(0,0,0,0.04)", boxShadow: "0 0 0 2px rgba(0,0,0,0.2)" },
           }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         >
@@ -52,7 +52,7 @@ export default function Navbar() {
           onMouseLeave={() => setDropdownOpen(false)}
         >
           <motion.div
-            className="flex items-center gap-2 px-4 h-10 rounded-full border-2 border-black/[0.1] bg-transparent cursor-pointer hover:bg-black/[0.03] transition-colors"
+            className="flex items-center gap-2 px-4 h-10 rounded-full shadow-[0_0_0_2px_rgba(0,0,0,0.1)] bg-transparent cursor-pointer hover:bg-black/[0.03] transition-colors"
             whileHover="hover"
             initial="rest"
           >
@@ -160,13 +160,13 @@ export default function Navbar() {
 
         <motion.a
           href="mailto:anand97nalanda@gmail.com"
-          className="absolute right-0 h-10 rounded-full border-2 flex items-center justify-center cursor-pointer overflow-hidden"
+          className="absolute right-0 h-10 rounded-full flex items-center justify-center cursor-pointer overflow-hidden"
           title="Get in touch"
           whileHover="hover"
           initial="rest"
           variants={{
-            rest: { width: 40, paddingLeft: 0, paddingRight: 0, backgroundColor: "rgba(0,0,0,0)", borderColor: "rgba(0,0,0,0.1)" },
-            hover: { width: 144, paddingLeft: 2, paddingRight: 2, backgroundColor: "rgba(0,0,0,0.04)", borderColor: "rgba(0,0,0,0.2)" },
+            rest: { width: 40, paddingLeft: 0, paddingRight: 0, backgroundColor: "rgba(0,0,0,0)", boxShadow: "0 0 0 2px rgba(0,0,0,0.1)" },
+            hover: { width: 144, paddingLeft: 2, paddingRight: 2, backgroundColor: "rgba(0,0,0,0.04)", boxShadow: "0 0 0 2px rgba(0,0,0,0.2)" },
           }}
           transition={{ type: "spring", visualDuration: 0.35, bounce: 0.15 }}
         >

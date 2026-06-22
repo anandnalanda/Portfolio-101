@@ -14,12 +14,44 @@ export default function StapleTablesCard() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{
-        y: -2,
-        boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
-      }}
+      whileHover="hover"
       className="bg-white rounded-card border-2 border-surface-border overflow-hidden relative cursor-pointer p-6 flex flex-col justify-end h-full"
     >
+      <motion.div
+        variants={{
+          hover: { y: -2, boxShadow: "0 8px 24px rgba(0,0,0,0.06)" },
+        }}
+        className="absolute inset-0"
+      />
+      <motion.div
+        className="absolute bottom-2 left-2 right-4 flex items-center gap-3 z-10"
+        variants={{
+          rest: { opacity: 0, y: 8 },
+          hover: { opacity: 1, y: 0 },
+        }}
+        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div className="w-9 h-9 rounded-full bg-white shadow-[0_0_0_2px_rgba(0,0,0,0.1)] flex items-center justify-center flex-shrink-0">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="rgba(0,0,0,0.6)"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M7 17L17 7" />
+            <path d="M7 7h10v10" />
+          </svg>
+        </div>
+        <p className="text-[13px] text-txt-primary truncate">
+          <strong className="font-semibold text-txt-heading">Staple Tables</strong>
+          {" — "}
+          Structured data editing for teams.
+        </p>
+      </motion.div>
       <div className="border border-black/[0.06] rounded-xl overflow-hidden">
         <table className="w-full text-left text-[13px]">
           <thead>
