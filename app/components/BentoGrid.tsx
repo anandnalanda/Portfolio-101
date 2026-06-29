@@ -7,6 +7,7 @@ import StickerCard from "./cards/StickerCard";
 import StapleTablesCard from "./cards/StapleTablesCard";
 import SocialCard from "./cards/SocialCard";
 import LaptopCard from "./cards/LaptopCard";
+import VisualDirectionCard from "./cards/VisualDirectionCard";
 import BentoTile from "./BentoTile";
 
 export default function BentoGrid() {
@@ -45,11 +46,7 @@ export default function BentoGrid() {
 
         <SocialCard />
 
-        <BentoTile
-          title="Visual Direction"
-          descriptor="OFM Jobs & Jobsly — UI design and visual systems."
-          artifactLabel=""
-        />
+        <VisualDirectionCard />
 
         <LaptopCard />
 
