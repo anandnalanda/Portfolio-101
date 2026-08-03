@@ -16,13 +16,12 @@ export default function SocialCard() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.45, ease }}
-      whileHover={{ y: -2 }}
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
       className="rounded-card border-2 overflow-hidden relative cursor-pointer p-6 flex flex-col justify-between transition-all duration-300"
       style={{
         backgroundColor: hovered ? "#1c1c1e" : "#ffffff",
-        borderColor: hovered ? "rgba(0,0,0,0.8)" : "rgba(0,0,0,0.02)",
+        borderColor: hovered ? "rgba(0,0,0,0.8)" : "rgba(0,0,0,0.04)",
         boxShadow: hovered ? "0 8px 24px rgba(0,0,0,0.2)" : "none",
       }}
     >

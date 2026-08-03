@@ -11,7 +11,7 @@ const config: Config = {
         surface: {
           DEFAULT: "#ffffff",
           muted: "#fafafa",
-          border: "rgba(0, 0, 0, 0.02)",
+          border: "rgba(0, 0, 0, 0.04)",
         },
         txt: {
           heading: "rgb(37, 36, 41)",

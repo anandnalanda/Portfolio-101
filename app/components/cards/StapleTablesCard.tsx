@@ -10,7 +10,6 @@ export default function StapleTablesCard() {
   return (
     <Link href="/staple-tables" className="col-span-2">
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
@@ -97,7 +96,7 @@ export default function StapleTablesCard() {
           </svg>
         </div>
         <div
-          className="h-[32px] rounded-full bg-white backdrop-blur-md flex items-center px-4 max-w-0 opacity-0 group-hover/arrow:max-w-[600px] group-hover/arrow:opacity-100 transition-all duration-300 ease-[cubic-bezier(0.65,0,0.35,1)] overflow-hidden whitespace-nowrap"
+          className="h-[32px] rounded-full bg-white/70 backdrop-blur-md flex items-center px-4 max-w-0 opacity-0 group-hover/arrow:max-w-[600px] group-hover/arrow:opacity-100 transition-all duration-300 ease-[cubic-bezier(0.65,0,0.35,1)] overflow-hidden whitespace-nowrap"
           style={{ boxShadow: "0 0 0 1.5px rgba(0,0,0,0.08)" }}
         >
           <p className="text-[13px] text-txt-primary font-medium">

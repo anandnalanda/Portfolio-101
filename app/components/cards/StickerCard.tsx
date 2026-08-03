@@ -15,7 +15,7 @@ export default function StickerCard() {
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       className="group rounded-card border-2 overflow-hidden relative flex flex-col items-center justify-center cursor-pointer bg-white hover:bg-[#f0d0c4] transition-colors duration-300"
-      style={{ borderColor: "rgba(0,0,0,0.02)" }}
+      style={{ borderColor: "rgba(0,0,0,0.04)" }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
