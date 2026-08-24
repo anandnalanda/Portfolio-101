@@ -1,9 +1,21 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { Spectral } from "next/font/google";
+import { StapleWordmark } from "../staple-chat/StapleWordmark";
+import ScaleVisual from "./ScaleVisual";
+import ResearchVisual from "./ResearchVisual";
+import PrinciplesVisual from "./PrinciplesVisual";
+import OutcomeVisual from "./OutcomeVisual";
+import ScaledCanvas from "@/components/screens/_ui/ScaledCanvas";
+import StapleTablesScreen, {
+  type Variant,
+} from "@/components/screens/staple-tables/StapleTablesScreen";
+
+/* Staple brand color — the deep teal from the logo. */
+const BRAND = "#003B4A";
 
 const spectral = Spectral({
   subsets: ["latin"],
@@ -15,13 +27,15 @@ const spectral = Spectral({
 /*  Section data                                                       */
 /* ------------------------------------------------------------------ */
 
-type SectionType = "intro" | "critique" | "refinement" | "summary" | "story" | "product" | "closing";
+type SectionType = "intro" | "story" | "research" | "product" | "closing";
 
 interface Section {
   id: string;
   type: SectionType;
   title: string;
   content: string;
+  /** Optional scannable points rendered as a bullet list under the lead. */
+  bullets?: string[];
   highlight: {
     top: number;
     left: number;
@@ -30,347 +44,262 @@ interface Section {
   } | null;
 }
 
+/* Case-study meta, shown as a small header row under the opening title. */
+const META = [
+  { label: "Client", value: "StapleAI" },
+  { label: "Role", value: "Lead Designer" },
+  { label: "Year", value: "2024" },
+];
+
 const sections: Section[] = [
   {
-    id: "intro",
+    id: "open",
     type: "intro",
     title: "Staple Tables",
-    content:
-      "From manual data correction chaos to AI-powered interactive mapping workflows.",
+    content: `Staple Tables pulls structured data out of documents like invoices. The extraction itself worked. The problem was everything after it: reading the result and correcting it. As lead designer, I rebuilt the two surfaces where that happens, the extracted fields and the extracted table.`,
     highlight: null,
   },
+
+  /* ---- The Problem: the "before" state, one beat per broken surface ---- */
   {
-    id: "challenge",
+    id: "scale",
     type: "story",
-    title: "10,000 documents a month.",
-    content:
-      "150+ daily users processing thousands of documents, with usage analytics revealing extraction workflows riddled with failure points. Users abandoned complex extraction tasks after 3 failed attempts — a 73% abandonment rate.",
+    title: "Ten thousand documents a month.",
+    content: `This was not a demo. Staple Tables sat inside real operational volume, and every one of those documents ended at a human review screen.`,
+    bullets: [
+      `150+ daily users processing 10,000+ documents a month.`,
+      `Invoices, receipts, and operational reports, all funnelling into the same review step.`,
+      `At that scale, every extra second on the review screen multiplies into days.`,
+    ],
     highlight: null,
   },
   {
-    id: "research",
+    id: "problem-fields",
     type: "story",
-    title: "The research.",
-    content:
-      "Task observation sessions documenting current workflows and competitive research evaluating Google Vision, Nanonets, and 8 enterprise alternatives. Key finding: 97% accuracy is achievable when AI understands header structure and business context.",
+    title: "The fields were a flat wall.",
+    content: `The extracted fields came back as one long list where nothing stood out. Finding the number that mattered meant reading every row.`,
+    bullets: [
+      `Poor visual hierarchy: every field carried the same weight.`,
+      `No validation cues: you could not see which fields had been mapped.`,
+      `Limited context: no sense of what to do next, approve, edit, or move on.`,
+    ],
     highlight: null,
   },
   {
-    id: "insight",
+    id: "problem-table",
     type: "story",
-    title: "Visual feedback changes everything.",
-    content:
-      "Real-time guidance reduces user uncertainty by 60%. The gap wasn't in AI capability — it was in how users interacted with and corrected extraction results.",
+    title: "The table fought the reader.",
+    content: `The extracted line-item table was worse. It was dense and flat, and gave the eye nothing to hold on to.`,
+    bullets: [
+      `No hierarchy: nothing separated important data from the rest.`,
+      `Cramped layout: minimal padding made it hard to scan across a row.`,
+      `No colour: everything read at the same importance.`,
+    ],
     highlight: null,
   },
   {
-    id: "extracted-fields",
+    id: "problem-toolbar",
+    type: "story",
+    title: "The toolbar tried to be everything.",
+    content: `The top bar crammed the whole product into one row, and still left power users stuck.`,
+    bullets: [
+      `Complete, Reject, Label, zoom, and Export sat as equal-weight buttons, next to the search, notifications, and your profile.`,
+      `The one action that actually mattered, the review decision, was lost in the crowd.`,
+      `And you could only see one document at a time. To reach the next, you went back and opened it again. No quick jump for power users.`,
+    ],
+    highlight: null,
+  },
+  /* ---- Discovery: evidence before pixels ---- */
+  {
+    id: "research-methods",
+    type: "research",
+    title: "Three ways into the problem.",
+    content: `I grounded the redesign in evidence rather than taste.`,
+    bullets: [
+      `Usage analytics across 150+ daily users and 10,000+ monthly documents.`,
+      `Task observation sessions documenting the real extraction workflow and where it failed.`,
+      `A competitive teardown of Google Vision, Nanonets, and eight enterprise alternatives.`,
+    ],
+    highlight: null,
+  },
+  {
+    id: "principles",
+    type: "research",
+    title: "Three rules for the redesign.",
+    content: `Every change that follows, on both surfaces, obeys one of three rules.`,
+    bullets: [
+      `Hierarchy first: the important number should find you, not the other way around.`,
+      `Colour with meaning: categories you can see, chosen to work for colour-blind users too.`,
+      `Room to breathe: white space as a scanning tool, not decoration.`,
+    ],
+    highlight: null,
+  },
+
+  /* ---- The Redesign: Feature 1 (fields), broken into moves ---- */
+  {
+    id: "fields-groups",
     type: "product",
-    title: "Optimizing extracted fields.",
-    content:
-      "An iterative design process emphasizing user feedback and technical collaboration. Colors chosen to be differentiable by color-blind users, validated through competitive research across Google Vision, Nanonets, and similar tools.",
+    title: "Feature 1: Structure for the fields.",
+    content: `I rebuilt the extracted-fields panel around structure, colour, and space. Instead of one flat list, related fields now sit in logical groups, each with a coloured indicator, in a layout with room to breathe.`,
+    bullets: [
+      `Grouped related fields together, with coloured bars categorising each type at a glance.`,
+      `A palette benchmarked to stay distinguishable for colour-blind users.`,
+      `Generous spacing so the data has a clear shape and any field is quick to scan and locate.`,
+    ],
     highlight: null,
   },
   {
-    id: "table-structure",
+    id: "fields-locate",
     type: "product",
-    title: "Clarity in the table.",
-    content:
-      "Transformed the table structure for exceptional clarity and intuitive organization, empowering users to effortlessly interpret and utilize extracted data.",
+    title: "Feature 2: See where each value came from.",
+    content: `Extraction is only trustworthy if you can check it. Click any field and its exact source is highlighted on the document with a bounding box, so a reviewer can see where the value was read from and correct it in place.`,
+    bullets: [
+      `Click a field to locate and box its source text on the page.`,
+      `Wrong or missing? Edit the value, or re-key it, right on the spot.`,
+      `Verify at a glance instead of hunting through the document.`,
+    ],
     highlight: null,
   },
+
+  /* ---- The Redesign: Feature 2 (table), broken into moves ---- */
   {
-    id: "ai-extraction",
+    id: "table-grid",
     type: "product",
-    title: "Interactive AI-powered extraction.",
-    content:
-      "The core innovation transforms table extraction from a black-box process into an interactive, visual workflow where enterprise users maintain control while benefiting from AI assistance.",
+    title: "Feature 3: A grid you can read.",
+    content: `The line-item table got the same treatment, rebuilt around clarity. Open it and the document steps aside, so the extracted rows sit right below the source they came from.`,
+    bullets: [
+      `A clean, modern grid with aligned columns, and subtle zebra striping to keep the eye on the right line across a wide row.`,
+      `It mirrors the source document, so you can reconcile the extraction row against row.`,
+    ],
     highlight: null,
   },
   {
-    id: "detection",
+    id: "table-headers",
     type: "product",
-    title: "AI visual table detection.",
-    content:
-      "Intelligent identification and highlighting of table boundaries with confidence scoring. Users select and map column headers directly with business context awareness.",
+    title: "Headers you can remap.",
+    content: `The columns read in plain language, but the real point is what happens when the extractor guesses one wrong.`,
+    bullets: [
+      `Every header is a dropdown: if a column lands under the wrong field, remap it in one click, no re-running the model.`,
+      `Plain words over raw keys, so a non-technical reviewer can verify an extraction at a glance, and fix it without help.`,
+    ],
     highlight: null,
   },
   {
-    id: "field-mapping",
+    id: "toolbar-fix",
     type: "product",
-    title: "Smart field mapping.",
-    content:
-      "Drag-and-drop assignment of data fields with AI-powered suggestions and validation. Real-time population preview with instant accuracy indicators on extracted line items.",
+    title: "Feature 4: A toolbar that knows its place.",
+    content: `I split the toolbar by altitude, and gave power users a way through.`,
+    bullets: [
+      `The document's actions drop into a floating bar over the page, with Complete as the clear primary.`,
+      `The top bar keeps only global chrome: a universal search, notifications, and your profile.`,
+      `That search doubles as the quick jump: open any document without going back first.`,
+    ],
     highlight: null,
   },
+
   {
-    id: "impact",
+    id: "doc-switch",
+    type: "product",
+    title: "Feature 5: Jump between documents.",
+    content: `Reviewing a batch meant going Back to the list and hunting for the next file every time. I put the whole queue right beside the document.`,
+    bullets: [
+      `A thumbnail rail down the left shows every document in the batch, the current one highlighted.`,
+      `Click any page to jump straight to it, no trip back through the list.`,
+    ],
+    highlight: null,
+  },
+
+  /* ---- The Outcome ---- */
+  {
+    id: "results",
     type: "closing",
-    title: "The numbers.",
-    content:
-      "50% reduction in time spent correcting extraction errors. 30-40% improvement in overall extraction accuracy reducing downstream operational costs. 3x faster document processing workflows.",
+    title: "The results.",
+    content: `The review step went from a chore to a glance, and the win carried past the review screen into organisation-level numbers.`,
+    bullets: [
+      `50% less time spent correcting extraction errors.`,
+      `30 to 40% higher extraction accuracy.`,
+      `3x faster document-processing workflows.`,
+      `73% fewer IT support tickets tied to table extraction.`,
+      `Handles more diverse document types, viable across industries.`,
+    ],
     highlight: null,
   },
   {
-    id: "support",
+    id: "testimonials",
     type: "closing",
-    title: "73% fewer support tickets.",
-    content:
-      "IT support tickets related to table extraction and document processing dropped by 73%, enabling accelerated business decision-making across the organization.",
-    highlight: null,
-  },
-  {
-    id: "testimonial",
-    type: "closing",
-    title: "From the users.",
-    content:
-      "\"The new table extraction feels like magic for our finance team. What used to take our analysts 20 minutes per invoice now takes 3 minutes with higher accuracy.\"",
+    title: "In their words.",
+    content: `The teams felt it before the dashboards did.`,
+    bullets: [
+      `"I can see exactly where every value was read from now, so approving an extraction is a glance instead of a hunt through the page."`,
+      `"The line items finally read like a spreadsheet, and when a column lands wrong I just remap the header. No re-running anything."`,
+      `"The whole batch sits right beside the document. I move down the queue instead of bouncing back to a list every time."`,
+    ],
     highlight: null,
   },
 ];
 
 const ease = [0.22, 1, 0.36, 1];
 
-/* ------------------------------------------------------------------ */
-/*  Dashboard mockups                                                  */
-/* ------------------------------------------------------------------ */
+/* Beats that render the live extraction workspace, and the state it shows.
+   (More beats plug in here as we design them.) */
+type Region = "fields" | "table" | "toolbar" | "review" | "rail" | null;
+const WORKSPACE_BEATS: Record<
+  string,
+  { fields: Variant; toolbar: Variant; table: Variant | null; highlight: Region }
+> = {
+  /* The problem beats: the old screen, spotlighting each broken surface. */
+  "problem-fields": { fields: "before", toolbar: "before", table: null, highlight: "fields" },
+  "problem-table": { fields: "before", toolbar: "before", table: "before", highlight: "table" },
+  "problem-toolbar": { fields: "before", toolbar: "before", table: null, highlight: "toolbar" },
+  /* Feature 1 — the redesigned fields. Only the fields panel changes here; the
+     toolbar stays in its current (pre-redesign) state, actions in the top bar.
+     The toolbar itself is redesigned later, in Feature 3. */
+  "fields-groups": { fields: "after", toolbar: "before", table: null, highlight: "fields" },
+  "fields-locate": { fields: "after", toolbar: "before", table: null, highlight: "fields" },
+  /* Feature 3 — the redesigned line-item table. Same layout as Features 1–2
+     (fields docked right, current toolbar); the sheet docks over the document. */
+  "table-grid": { fields: "after", toolbar: "before", table: "after", highlight: "table" },
+  "table-headers": { fields: "after", toolbar: "before", table: "after", highlight: "table" },
+  /* Feature 3 — the redesigned toolbar. */
+  "toolbar-fix": { fields: "after", toolbar: "after", table: null, highlight: "toolbar" },
+  /* Feature 5 — the document thumbnail rail for quick switching. */
+  "doc-switch": { fields: "after", toolbar: "after", table: null, highlight: "rail" },
+};
 
-function DashboardBefore() {
-  return (
-    <div className="w-full h-full flex flex-col text-[10px] leading-tight bg-white rounded-xl overflow-hidden border border-black/[0.08]">
-      {/* Nav */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-black/[0.06] bg-gray-50/80 shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-4 h-4 rounded bg-black/80" />
-          <span className="font-bold text-[10px]">Staple</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="px-2 py-1 rounded text-black/40 text-[9px]">Chats</span>
-          <span className="px-2 py-1 rounded bg-black/10 font-semibold text-[9px]">Tables</span>
-          <span className="px-2 py-1 rounded text-black/40 text-[9px]">Analytics</span>
-          <span className="px-2 py-1 rounded text-black/40 text-[9px]">Settings</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-16 h-5 rounded border border-black/10 bg-white" />
-          <div className="w-5 h-5 rounded-full bg-black/10" />
-        </div>
-      </div>
+/* What the right-hand panel shows for each beat: which product surface, and
+   what the highlight focuses on. The real Staple Tables screens (extraction
+   workspace + fields panel + line-item table) slot into these states; until
+   then the panel previews the plan so every beat drives a distinct right side. */
+const BEAT_PANEL: Record<string, { surface: string; focus: string }> = {
+  open: { surface: "The extraction workspace", focus: "Document, fields, and table in one view" },
+  scale: { surface: "The workspace at scale", focus: "Where 10,000 documents land each month" },
+  "problem-fields": { surface: "Extracted fields, before", focus: "A flat list, no hierarchy or cues" },
+  "problem-table": { surface: "Extracted table, before", focus: "Cramped rows, no colour" },
+  "problem-toolbar": { surface: "The toolbar, before", focus: "Everything crammed into one row" },
+  "research-methods": { surface: "The research", focus: "Analytics, observation, teardown" },
+  principles: { surface: "The design principles", focus: "Hierarchy, colour, breathing room" },
+  "fields-groups": { surface: "Extracted fields, redesigned", focus: "Grouped, colour-coded, scannable" },
+  "fields-locate": { surface: "Click to locate", focus: "Bounding box on the source + inline edit" },
+  "table-grid": { surface: "Extracted table, redesigned", focus: "A clean, aligned grid with zebra striping" },
+  "table-headers": { surface: "Extracted table, redesigned", focus: "Remap a column header in one click" },
+  "toolbar-fix": { surface: "The toolbar, redesigned", focus: "Global chrome up top, actions where the work is" },
+  "doc-switch": { surface: "The batch queue", focus: "Every document a click away, in a thumbnail rail" },
+  results: { surface: "The outcome", focus: "Faster, more accurate review" },
+  testimonials: { surface: "In their words", focus: "Feedback from the field" },
+};
 
-      {/* Body */}
-      <div className="flex flex-1 min-h-0">
-        {/* Sidebar */}
-        <div className="w-[24%] border-r border-black/[0.06] p-2 flex flex-col gap-1 bg-gray-50/40 shrink-0 overflow-hidden">
-          <div className="text-[8px] font-semibold text-black/30 uppercase tracking-wider px-1 mb-1">Documents</div>
-          {["Q3 Revenue Report", "Invoice Batch #412", "Vendor Contracts", "Tax Filing 2024", "Payroll Summary"].map(
-            (name, i) => (
-              <div
-                key={name}
-                className={`px-2 py-1.5 rounded text-[9px] ${
-                  i === 0
-                    ? "bg-black/[0.05] font-medium"
-                    : "text-black/50"
-                }`}
-              >
-                <div className="truncate">{name}</div>
-                <div className="text-[7px] text-black/25 mt-0.5 truncate">
-                  {i === 0 ? "24 rows · 2m ago" : `${(i + 1) * 8} rows · ${i}h ago`}
-                </div>
-              </div>
-            )
-          )}
-        </div>
-
-        {/* Main content */}
-        <div className="flex-1 flex flex-col min-h-0">
-          {/* Filter bar */}
-          <div className="flex items-center gap-1.5 p-2 border-b border-black/[0.06] shrink-0">
-            <div className="h-5 px-2 rounded border border-black/10 bg-white flex items-center">
-              <span className="text-[8px] text-black/30">Type ▾</span>
-            </div>
-            <div className="h-5 px-2 rounded border border-black/10 bg-white flex items-center">
-              <span className="text-[8px] text-black/30">Status ▾</span>
-            </div>
-            <div className="h-5 px-2 rounded border border-black/10 bg-white flex items-center">
-              <span className="text-[8px] text-black/30">Date ▾</span>
-            </div>
-            <div className="h-5 px-2 rounded border border-black/10 bg-white flex items-center">
-              <span className="text-[8px] text-black/30">Pages ▾</span>
-            </div>
-            <div className="flex-1 h-5 rounded border border-black/10 bg-white px-2 flex items-center">
-              <span className="text-[8px] text-black/25">Search rows...</span>
-            </div>
-          </div>
-
-          {/* Table */}
-          <div className="flex-1 overflow-hidden">
-            {/* Table header */}
-            <div className="grid grid-cols-5 gap-0 border-b-2 border-black/10 bg-gray-50 shrink-0">
-              {["Document", "Type", "Pages", "Extracted", "Status"].map((col) => (
-                <div key={col} className="px-2 py-1.5 text-[8px] font-bold text-black/60 uppercase tracking-wider flex items-center gap-1">
-                  <span>{col}</span>
-                  <span className="text-[7px] text-black/20">↕</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Table rows */}
-            {[
-              { doc: "Q3 Revenue Report", type: "📄 PDF", pages: "12", extracted: "89 fields", status: "Complete" },
-              { doc: "Invoice Batch #412", type: "📊 XLSX", pages: "3", extracted: "24 fields", status: "Complete" },
-              { doc: "Vendor Contracts", type: "📄 PDF", pages: "47", extracted: "156 fields", status: "In Progress" },
-              { doc: "Tax Filing 2024", type: "📋 DOC", pages: "8", extracted: "41 fields", status: "Pending" },
-              { doc: "Payroll Summary", type: "📊 XLSX", pages: "5", extracted: "62 fields", status: "Complete" },
-              { doc: "Board Deck Q3", type: "📄 PDF", pages: "22", extracted: "—", status: "Queued" },
-            ].map((row, i) => (
-              <div key={i} className="grid grid-cols-5 gap-0 border-b border-black/[0.06]">
-                <div className="px-2 py-2 text-[9px] flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded border border-black/10 shrink-0" />
-                  <span className="truncate font-medium">{row.doc}</span>
-                </div>
-                <div className="px-2 py-2 text-[9px] text-black/50">{row.type}</div>
-                <div className="px-2 py-2 text-[9px] text-black/50">{row.pages}</div>
-                <div className="px-2 py-2 text-[9px] text-black/50">{row.extracted}</div>
-                <div className="px-2 py-2 text-[9px]">
-                  <span className={`px-1.5 py-0.5 rounded text-[7px] font-semibold ${
-                    row.status === "Complete" ? "bg-green-100 text-green-700" :
-                    row.status === "In Progress" ? "bg-blue-100 text-blue-700" :
-                    row.status === "Pending" ? "bg-yellow-100 text-yellow-700" :
-                    "bg-gray-100 text-gray-500"
-                  }`}>{row.status}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Export bar */}
-          <div className="border-t border-black/[0.06] p-2 shrink-0 flex items-center justify-between">
-            <div className="text-[8px] text-black/30">6 documents · 97 pages total</div>
-            <div className="flex items-center gap-1.5">
-              <div className="h-5 px-2 rounded border border-black/10 bg-white flex items-center">
-                <span className="text-[8px] text-black/40">↗ Share</span>
-              </div>
-              <div className="h-5 px-2 rounded bg-black/80 flex items-center">
-                <span className="text-[8px] text-white font-medium">⬇ Download</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DashboardAfter() {
-  return (
-    <div className="w-full h-full flex flex-col text-[10px] leading-tight bg-white rounded-xl overflow-hidden border border-black/[0.08]">
-      {/* Nav - simplified */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-black/[0.04] shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-black/80" />
-            <span className="font-bold text-[10px]">Staple</span>
-          </div>
-          <div className="flex items-center gap-3 text-[9px]">
-            <span className="text-black/35">Chats</span>
-            <span className="font-semibold text-black/80 border-b border-black/80 pb-0.5">Tables</span>
-          </div>
-        </div>
-        <div className="w-5 h-5 rounded-full bg-black/10" />
-      </div>
-
-      {/* Body */}
-      <div className="flex flex-1 min-h-0">
-        {/* Sidebar - cleaner */}
-        <div className="w-[24%] border-r border-black/[0.04] p-2 flex flex-col gap-0.5 shrink-0 overflow-hidden">
-          <div className="text-[8px] font-semibold text-black/30 uppercase tracking-wider px-2 mb-1">Documents</div>
-          {["Q3 Revenue Report", "Invoice Batch #412", "Vendor Contracts", "Tax Filing 2024", "Payroll Summary"].map(
-            (name, i) => (
-              <div
-                key={name}
-                className={`px-2 py-1.5 rounded-lg text-[9px] ${
-                  i === 0
-                    ? "bg-black/[0.04] font-semibold"
-                    : "text-black/40"
-                }`}
-              >
-                <div className="truncate">{name}</div>
-              </div>
-            )
-          )}
-        </div>
-
-        {/* Main content */}
-        <div className="flex-1 flex flex-col min-h-0">
-          {/* Unified search/filter bar */}
-          <div className="px-3 py-2 border-b border-black/[0.04] shrink-0">
-            <div className="flex items-center gap-2">
-              <div className="flex-1 h-6 rounded-lg border border-black/[0.06] bg-gray-50/50 px-2 flex items-center gap-1.5">
-                <span className="text-[8px] text-black/25">Filter or search...</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="px-1.5 py-0.5 rounded-md bg-black/[0.04] text-[8px] text-black/50">PDF</span>
-                <span className="px-1.5 py-0.5 rounded-md bg-black/[0.04] text-[8px] text-black/50">Complete</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Table - cleaner */}
-          <div className="flex-1 overflow-hidden">
-            {/* Table header - simplified */}
-            <div className="grid grid-cols-[2fr_0.8fr_0.6fr_1fr_0.8fr] gap-0 border-b border-black/[0.04] shrink-0">
-              {["Document", "Type", "Pages", "Extracted", "Status"].map((col, i) => (
-                <div key={col} className="px-3 py-1.5 text-[8px] font-semibold text-black/40 tracking-wider flex items-center">
-                  <span>{col}</span>
-                  {i === 0 && <span className="ml-1 text-[7px] text-black/20">↓</span>}
-                </div>
-              ))}
-            </div>
-
-            {/* Table rows - tighter */}
-            {[
-              { doc: "Q3 Revenue Report", type: "PDF", pages: "12", extracted: "89 fields", status: "Complete" },
-              { doc: "Invoice Batch #412", type: "XLSX", pages: "3", extracted: "24 fields", status: "Complete" },
-              { doc: "Vendor Contracts", type: "PDF", pages: "47", extracted: "156 fields", status: "In Progress" },
-              { doc: "Tax Filing 2024", type: "DOC", pages: "8", extracted: "41 fields", status: "Pending" },
-              { doc: "Payroll Summary", type: "XLSX", pages: "5", extracted: "62 fields", status: "Complete" },
-              { doc: "Board Deck Q3", type: "PDF", pages: "22", extracted: "—", status: "Queued" },
-              { doc: "Lease Agreement", type: "PDF", pages: "15", extracted: "73 fields", status: "Complete" },
-              { doc: "Benefits Enrollment", type: "DOC", pages: "6", extracted: "28 fields", status: "Complete" },
-              { doc: "Audit Trail Q2", type: "PDF", pages: "31", extracted: "112 fields", status: "Complete" },
-              { doc: "Insurance Policy", type: "PDF", pages: "9", extracted: "36 fields", status: "In Progress" },
-              { doc: "NDA — Acme Corp", type: "PDF", pages: "4", extracted: "18 fields", status: "Complete" },
-              { doc: "Travel Expense Oct", type: "XLSX", pages: "2", extracted: "15 fields", status: "Complete" },
-            ].map((row, i) => (
-              <div key={i} className="grid grid-cols-[2fr_0.8fr_0.6fr_1fr_0.8fr] gap-0 border-b border-black/[0.02]">
-                <div className="px-3 py-[5px] text-[9px] truncate font-medium text-black/80">{row.doc}</div>
-                <div className="px-3 py-[5px] text-[9px] text-black/40">{row.type}</div>
-                <div className="px-3 py-[5px] text-[9px] text-black/40">{row.pages}</div>
-                <div className="px-3 py-[5px] text-[9px] text-black/40">{row.extracted}</div>
-                <div className="px-3 py-[5px] text-[9px]">
-                  <span className={`text-[8px] font-medium ${
-                    row.status === "Complete" ? "text-green-600/70" :
-                    row.status === "In Progress" ? "text-blue-600/70" :
-                    row.status === "Pending" ? "text-amber-600/70" :
-                    "text-black/30"
-                  }`}>{row.status}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Export - consolidated */}
-          <div className="p-2 shrink-0">
-            <div className="flex items-center justify-between">
-              <div className="text-[8px] text-black/25">12 documents · 164 pages</div>
-              <div className="h-6 px-3 rounded-lg bg-black/80 flex items-center">
-                <span className="text-[8px] text-white font-medium">Export ▾</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+/* Group label shown above the first section of each type (mirrors the Staple
+   Chat case study's "The Story / The Decisions / The Outcome" rhythm). */
+function groupLabelFor(type: SectionType): string | null {
+  return type === "story"
+    ? "The Problem"
+    : type === "research"
+    ? "Discovery"
+    : type === "product"
+    ? "The Redesign"
+    : type === "closing"
+    ? "The Outcome"
+    : null;
 }
 
 /* ------------------------------------------------------------------ */
@@ -381,40 +310,30 @@ interface NarrativeSectionProps {
   id: string;
   title: string;
   children: React.ReactNode;
+  /** Scannable points shown as a bullet list beneath the lead paragraph. */
+  bullets?: string[];
   titleSize?: "lg" | "md" | "sm";
-  onActive?: (id: string) => void;
+  /** Render the title in the Spectral serif (used for the opening title). */
+  serif?: boolean;
+  /** Selected/highlighted state, controlled by the page-level scroll-spy. */
+  active?: boolean;
+  /** Jump-to: click the section to scroll it into the active position. */
+  onNavigate?: () => void;
+  /** Small meta rows (Client / Year) shown under the opening title. */
+  meta?: { label: string; value: string }[];
 }
 
 function NarrativeSection({
   id,
   title,
   children,
+  bullets,
   titleSize = "md",
-  onActive,
+  serif = false,
+  active = false,
+  onNavigate,
+  meta,
 }: NarrativeSectionProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [isActive, setIsActive] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsActive(true);
-          onActive?.(id);
-        } else {
-          setIsActive(false);
-        }
-      },
-      { rootMargin: "-49% 0px -49% 0px", threshold: 0 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [id, onActive]);
-
   const titleClass =
     titleSize === "lg"
       ? "text-[28px] tracking-[-0.02em] leading-tight"
@@ -422,19 +341,73 @@ function NarrativeSection({
       ? "text-[22px] tracking-[-0.01em]"
       : "text-[18px]";
 
+  const handleCardClick = () => {
+    if (window.getSelection()?.toString()) return;
+    onNavigate?.();
+  };
+
   return (
-    <div ref={ref} data-section={id} className="mb-6">
+    <div data-section={id} className="mb-6">
       <div
-        className={`py-4 px-4 transition-all duration-[250ms] ease-out border-l-[2.4px] ${
-          isActive
+        onClick={onNavigate ? handleCardClick : undefined}
+        className={`group py-4 px-4 transition-all duration-[450ms] ease-[cubic-bezier(0.22,1,0.36,1)] border-l-[2.4px] ${
+          onNavigate ? "cursor-pointer" : ""
+        } ${
+          active
             ? "border-l-txt-secondary bg-surface-muted opacity-100"
-            : "border-l-transparent opacity-[0.75]"
+            : `border-l-transparent opacity-[0.75] ${
+                onNavigate ? "hover:opacity-100 hover:bg-black/[0.02]" : ""
+              }`
         }`}
       >
-        <h2 className={`font-semibold text-txt-heading mb-2 ${titleClass}`}>
-          {title}
+        <h2
+          className={`mb-2 text-txt-heading ${titleClass} ${
+            serif ? `${spectral.className} font-normal` : "font-semibold"
+          }`}
+        >
+          {onNavigate ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onNavigate();
+              }}
+              className="text-left transition-colors hover:text-txt-primary focus-visible:outline-none focus-visible:underline"
+            >
+              {title}
+            </button>
+          ) : (
+            title
+          )}
         </h2>
-        <p className="text-[15px] leading-[1.7] text-txt-primary">{children}</p>
+        {meta && (
+          <div className="mb-3 flex gap-8">
+            {meta.map((m) => (
+              <div key={m.label}>
+                <div className="text-[11px] uppercase tracking-[0.1em] text-txt-secondary">
+                  {m.label}
+                </div>
+                <div className="text-[14px] font-medium text-txt-heading">{m.value}</div>
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="text-[15px] leading-[1.7] text-txt-primary">
+          {children && <p>{children}</p>}
+          {bullets && bullets.length > 0 && (
+            <ul
+              className={`${
+                children ? "mt-2.5" : ""
+              } list-disc space-y-1.5 pl-[18px] marker:text-txt-secondary`}
+            >
+              {bullets.map((b, i) => (
+                <li key={i} className="pl-1">
+                  {b}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -445,32 +418,138 @@ function NarrativeSection({
 /* ------------------------------------------------------------------ */
 
 export default function StapleTablesPage() {
-  const [activeSection, setActiveSection] = useState<string>("intro");
-  const [showAfter, setShowAfter] = useState(false);
+  const [activeId, setActiveId] = useState(sections[0].id);
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  const handleActive = useCallback((id: string) => {
-    setActiveSection(id);
+  const scrollToSection = (id: string) => {
+    const el = sectionRefs.current[id];
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + window.scrollY - 200;
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    window.scrollTo({ top, behavior: prefersReduced ? "auto" : "smooth" });
+  };
+
+  // Scroll-spy: the last section whose top has crossed a fixed line near the
+  // top of the viewport is the active beat. Coalesced to one layout read per
+  // frame so scrolling never thrashes layout.
+  useEffect(() => {
+    let raf = 0;
+    const compute = () => {
+      raf = 0;
+      let current = sections[0].id;
+      for (const s of sections) {
+        const el = sectionRefs.current[s.id];
+        if (el && el.getBoundingClientRect().top <= 220) current = s.id;
+      }
+      if (
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 120
+      ) {
+        current = sections[sections.length - 1].id;
+      }
+      setActiveId(current);
+    };
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(compute);
+    };
+    compute();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
-  // Auto-switch to "after" when scrolling into refinement sections
-  useEffect(() => {
-    const section = sections.find((s) => s.id === activeSection);
-    if (section) {
-      if (section.type === "refinement" || section.type === "summary") {
-        setShowAfter(true);
-      } else if (section.type === "critique" || section.type === "intro") {
-        setShowAfter(false);
-      }
-    }
-  }, [activeSection]);
+  const activeSection =
+    sections.find((s) => s.id === activeId) ?? sections[0];
+
+  const renderSections = () =>
+    sections.map((section, i) => {
+      const prev = i > 0 ? sections[i - 1] : null;
+      const showGroupHeading =
+        section.type !== "intro" && section.type !== prev?.type;
+      const groupLabel = groupLabelFor(section.type);
+      return (
+        <div
+          key={section.id}
+          ref={(el) => {
+            sectionRefs.current[section.id] = el;
+          }}
+        >
+          {showGroupHeading && groupLabel && (
+            <div className="mt-12 mb-4 pl-4">
+              <h3
+                className={`${spectral.className} text-[24px] text-txt-heading pb-[2px] tracking-[-1px]`}
+              >
+                {groupLabel}
+              </h3>
+              <div className="border-b border-surface-border" />
+            </div>
+          )}
+          <NarrativeSection
+            id={section.id}
+            title={section.title}
+            bullets={section.bullets}
+            meta={section.id === "open" ? META : undefined}
+            serif={section.id === "open"}
+            active={section.id === activeId}
+            onNavigate={() => scrollToSection(section.id)}
+            titleSize={section.id === "open" ? "lg" : "md"}
+          >
+            {section.content}
+          </NarrativeSection>
+        </div>
+      );
+    });
+
+  const ContinueReading = () => (
+    <div className="mt-10">
+      <h4 className="text-[12px] font-normal text-txt-secondary uppercase tracking-[0.08em] mb-2 pl-4">
+        Continue Reading
+      </h4>
+      {[
+        {
+          title: "Staple Chat",
+          descriptor: "Ask questions of your data in plain language.",
+          href: "/staple-chat",
+        },
+        {
+          title: "Kanban and AI",
+          descriptor: "Hiring pipeline with AI-ranked candidates.",
+          href: "/kanban-and-ai",
+        },
+        {
+          title: "OFM Jobs Tests",
+          descriptor: "Assessment system with AI-powered hiring.",
+          href: "/ofm-jobs-tests",
+        },
+      ].map((project) => (
+        <Link
+          key={project.title}
+          href={project.href}
+          className="block py-4 pl-4 border-b border-surface-border hover:bg-black/[0.02] transition-all duration-[250ms] ease-out"
+        >
+          <h5 className="text-[15px] font-semibold text-txt-heading">
+            {project.title}
+          </h5>
+          <p className="text-[13px] text-txt-secondary mt-0.5">
+            {project.descriptor}
+          </p>
+        </Link>
+      ))}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Two-column layout */}
       <div className="flex max-lg:flex-col">
         {/* Left: scrolling narrative */}
         <div className="w-full md:w-[440px] lg:w-[480px] md:flex-shrink-0 bg-surface relative">
-
           <div className="px-6 py-16 md:px-10">
             {/* Back link */}
             <motion.div
@@ -488,153 +567,157 @@ export default function StapleTablesPage() {
               </Link>
             </motion.div>
 
-            {sections.map((section, i) => {
-              const prev = i > 0 ? sections[i - 1] : null;
-              const showGroupHeading =
-                (section.type === "story" && prev?.type !== "story") ||
-                (section.type === "product" && prev?.type !== "product") ||
-                (section.type === "closing" && prev?.type !== "closing");
-              const groupLabel =
-                section.type === "story"
-                  ? "The Story"
-                  : section.type === "product"
-                  ? "The Product"
-                  : section.type === "closing"
-                  ? "Reflection"
-                  : null;
+            {renderSections()}
 
-              return (
-                <div key={section.id}>
-                  {showGroupHeading && groupLabel && (
-                    <div className="mt-12 mb-4 pl-4">
-                      <h3
-                        className={`${spectral.className} text-[24px] text-txt-heading pb-[2px] tracking-[-1px]`}
-                      >
-                        {groupLabel}
-                      </h3>
-                      <div className="border-b border-surface-border" />
-                    </div>
-                  )}
-                  <NarrativeSection
-                    id={section.id}
-                    title={section.title}
-                    titleSize={
-                      section.type === "intro"
-                        ? "lg"
-                        : section.id === "testimonial"
-                        ? "sm"
-                        : "md"
-                    }
-                    onActive={handleActive}
-                  >
-                    {section.content}
-                  </NarrativeSection>
-                </div>
-              );
-            })}
-
-            {/* Continue Reading */}
-            <div className="mt-16">
-              <h4 className="text-[12px] font-normal text-txt-secondary uppercase tracking-[0.08em] mb-2 pl-4">
-                Continue Reading
-              </h4>
-              {[
-                {
-                  title: "Staple Chat",
-                  descriptor: "Conversational AI for document analysis.",
-                  href: "/staple-chat",
-                },
-                {
-                  title: "Kanban and AI",
-                  descriptor: "Hiring pipeline with AI-ranked candidates.",
-                  href: "/kanban-and-ai",
-                },
-                {
-                  title: "OFM Jobs Tests",
-                  descriptor: "Assessment system with AI-powered hiring.",
-                  href: "/ofm-jobs-tests",
-                },
-              ].map((project) => (
-                <Link
-                  key={project.title}
-                  href={project.href}
-                  className="block py-4 pl-4 border-b border-surface-border hover:bg-black/[0.02] transition-all duration-[250ms] ease-out"
-                >
-                  <h5 className="text-[15px] font-semibold text-txt-heading">
-                    {project.title}
-                  </h5>
-                  <p className="text-[13px] text-txt-secondary mt-0.5">
-                    {project.descriptor}
-                  </p>
-                </Link>
-              ))}
-            </div>
-
+            <ContinueReading />
           </div>
         </div>
 
-        {/* Right: sticky artifact panel */}
+        {/* Right: sticky artifact panel (placeholder — real product screens TBD) */}
         <div className="flex-1 min-w-0 max-lg:hidden">
           <div className="sticky top-0 h-screen pl-2 pr-[28px] py-[28px] flex flex-col">
-            {/* Beige panel */}
-            <div className="flex-1 rounded-[32px] bg-[#f5f0eb] p-[28px] flex flex-col">
-              {/* Dashboard container */}
-              <div className="relative flex-1 min-h-0 bg-white rounded-[32px] shadow-lg overflow-hidden">
-                {/* Before/After dashboards */}
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={showAfter ? "after" : "before"}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.4, ease }}
-                    className="absolute inset-0"
+            <div className="flex-1 rounded-3xl bg-[#f5f0eb] p-[28px] flex flex-col">
+              <div
+                className="relative flex-1 min-h-0 flex items-center justify-center"
+                style={{ containerType: "size" }}
+              >
+                <div
+                  className="relative rounded-2xl bg-white shadow-lg overflow-hidden"
+                  style={{
+                    aspectRatio: "1440 / 900",
+                    width: "min(100%, calc(100cqh * (1440 / 900)))",
+                  }}
+                >
+                  {/* Landing beat: the brand logo on the brand color — the
+                      same opening as the Staple Chat case study. */}
+                  <div
+                    className={`absolute inset-0 z-10 flex items-center justify-center transition-opacity duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-[opacity] motion-reduce:transition-none ${
+                      activeSection.id === "open"
+                        ? "opacity-100"
+                        : "opacity-0 pointer-events-none"
+                    }`}
+                    style={{ background: BRAND }}
                   >
-                    {showAfter ? <DashboardAfter /> : <DashboardBefore />}
-                  </motion.div>
-                </AnimatePresence>
-
-                {/* Highlight overlays */}
-                {sections.map(
-                  (section) =>
-                    section.highlight && (
-                      <motion.div
-                        key={section.id}
-                        className="absolute pointer-events-none z-10"
-                        style={{
-                          top: `${section.highlight.top}%`,
-                          left: `${section.highlight.left}%`,
-                          width: `${section.highlight.width}%`,
-                          height: `${section.highlight.height}%`,
-                        }}
-                        animate={{
-                          opacity: activeSection === section.id ? 1 : 0,
-                        }}
-                        transition={{ duration: 0.35, ease }}
-                      >
-                        <div
-                          className={`w-full h-full rounded-lg border ${
-                            sections.find((s) => s.id === section.id)?.type ===
-                            "refinement"
-                              ? "bg-emerald-400/[0.12] border-emerald-400/30"
-                              : "bg-red-400/[0.15] border-red-400/30"
-                          }`}
+                    <StapleWordmark className="w-[62%] max-w-[520px] text-white" />
+                  </div>
+                  {/* Scale beat: the "10,000 documents" funnel diagram. */}
+                  <div
+                    className={`absolute inset-0 z-10 transition-opacity duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-[opacity] motion-reduce:transition-none ${
+                      activeSection.id === "scale"
+                        ? "opacity-100"
+                        : "opacity-0 pointer-events-none"
+                    }`}
+                  >
+                    {activeSection.id === "scale" && <ScaleVisual />}
+                  </div>
+                  {/* Research beat: the three-method evidence triptych. */}
+                  <div
+                    className={`absolute inset-0 z-10 transition-opacity duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-[opacity] motion-reduce:transition-none ${
+                      activeSection.id === "research-methods"
+                        ? "opacity-100"
+                        : "opacity-0 pointer-events-none"
+                    }`}
+                  >
+                    {activeSection.id === "research-methods" && (
+                      <ScaledCanvas>
+                        <ResearchVisual />
+                      </ScaledCanvas>
+                    )}
+                  </div>
+                  {/* Principles beat: three rules, each proven on a specimen. */}
+                  <div
+                    className={`absolute inset-0 z-10 transition-opacity duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-[opacity] motion-reduce:transition-none ${
+                      activeSection.id === "principles"
+                        ? "opacity-100"
+                        : "opacity-0 pointer-events-none"
+                    }`}
+                  >
+                    {activeSection.id === "principles" && (
+                      <ScaledCanvas>
+                        <PrinciplesVisual />
+                      </ScaledCanvas>
+                    )}
+                  </div>
+                  {/* Workspace beats: the live Staple Tables extraction screen. */}
+                  <div
+                    className={`absolute inset-0 z-10 transition-opacity duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-[opacity] motion-reduce:transition-none ${
+                      WORKSPACE_BEATS[activeSection.id]
+                        ? "opacity-100"
+                        : "opacity-0 pointer-events-none"
+                    }`}
+                  >
+                    {WORKSPACE_BEATS[activeSection.id] && (
+                      <ScaledCanvas>
+                        <StapleTablesScreen
+                          fieldsVariant={WORKSPACE_BEATS[activeSection.id].fields}
+                          /* Feature 1 (the redesigned fields) docks the panel on
+                             the right, document on the left, like the product. */
+                          /* All Redesign features share the product's real
+                             layout: fields docked right of the document. */
+                          fieldsSide={
+                            activeSection.id.startsWith("fields-") ||
+                            activeSection.id.startsWith("table-") ||
+                            activeSection.id === "toolbar-fix" ||
+                            activeSection.id === "doc-switch"
+                              ? "right"
+                              : "left"
+                          }
+                          /* The click-to-locate beat auto-selects a field so the
+                             bounding box + editor demonstrate themselves. */
+                          demoField={activeSection.id === "fields-locate" ? "Merchant_Address" : undefined}
+                          /* The remap beat auto-opens a column header dropdown so
+                             the re-mapping affordance demonstrates itself. */
+                          demoHeader={activeSection.id === "table-headers" ? "Unit price" : undefined}
+                          /* The quick-switch beat shows the document thumbnail rail. */
+                          docRail={activeSection.id === "doc-switch"}
+                          toolbarVariant={WORKSPACE_BEATS[activeSection.id].toolbar}
+                          tableVariant={WORKSPACE_BEATS[activeSection.id].table}
+                          highlight={WORKSPACE_BEATS[activeSection.id].highlight}
                         />
-                      </motion.div>
-                    )
-                )}
+                      </ScaledCanvas>
+                    )}
+                  </div>
+                  {/* The Outcome beats: a clean results surface (metrics, impact,
+                      testimonials) in the product's design language. */}
+                  <div
+                    className={`absolute inset-0 z-10 transition-opacity duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-[opacity] motion-reduce:transition-none ${
+                      ["results", "testimonials"].includes(activeSection.id)
+                        ? "opacity-100"
+                        : "opacity-0 pointer-events-none"
+                    }`}
+                  >
+                    {["results", "testimonials"].includes(activeSection.id) && (
+                      <ScaledCanvas>
+                        <OutcomeVisual beat={activeSection.id} />
+                      </ScaledCanvas>
+                    )}
+                  </div>
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeSection.id}
+                      className="absolute inset-0 flex flex-col items-center justify-center px-[10%] text-center"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4, ease }}
+                    >
+                      <div className="text-[12px] uppercase tracking-[0.16em] text-txt-secondary">
+                        {BEAT_PANEL[activeSection.id]?.surface ?? "Staple Tables"}
+                      </div>
+                      <div
+                        className={`${spectral.className} mt-3 text-[28px] leading-tight text-txt-heading`}
+                      >
+                        {BEAT_PANEL[activeSection.id]?.focus ?? activeSection.title}
+                      </div>
+                      <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-surface-border px-3 py-1 text-[12px] text-txt-secondary">
+                        <span className="size-1.5 rounded-full bg-txt-secondary/50" />
+                        Screen in progress
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
               </div>
-
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile artifact (shown inline on small screens) */}
-      <div className="lg:hidden px-4 pb-10">
-        <div className="rounded-2xl bg-[#f5f0eb] p-4">
-          <div className="relative aspect-[4/3] bg-white rounded-[32px] shadow-lg overflow-hidden">
-            {showAfter ? <DashboardAfter /> : <DashboardBefore />}
           </div>
         </div>
       </div>
