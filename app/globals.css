@@ -25,3 +25,58 @@ body {
     @apply bg-white rounded-card border border-surface-border overflow-hidden relative;
   }
 }
+
+/* ── Kibo UI (OFM Jobs) — SCOPED design tokens ───────────────────────────
+   Every shadcn/Kibo variable lives on `.kibo`, never on global `:root`, and
+   the border reset is scoped to `.kibo *`. Result: the Kibo design system is
+   physically caged inside any subtree wrapped in <div className="kibo">, so it
+   cannot leak into Staple (Untitled UI) or the portfolio shell — and nothing
+   outside can reach in. Placed in @layer base so component utilities win. */
+@layer base {
+  .kibo {
+    /* OFM Jobs product UI uses Inter (scoped here; portfolio stays Geist) */
+    font-family: var(--font-inter), system-ui, sans-serif;
+
+    /* Shared OFM Jobs palette — Kanban + TSS both consume these.
+       All values are stock Tailwind colors, expressed as HSL triplets.
+       Brand = emerald; neutrals = slate; status = red/emerald/amber. */
+
+    /* Surfaces */
+    --background: 0 0% 100%;         /* white */
+    --foreground: 222 47% 11%;       /* slate-900 #0f172a */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Brand */
+    --primary: 156 100% 22%;         /* OFM green — logo #006E42 (ofm-600) */
+    --primary-foreground: 0 0% 100%;
+
+    /* Neutrals — slate */
+    --secondary: 210 40% 96%;        /* slate-100 #f1f5f9 */
+    --secondary-foreground: 217 33% 17%; /* slate-800 #1e293b */
+    --muted: 210 40% 96%;            /* slate-100 */
+    --muted-foreground: 215 16% 47%; /* slate-500 #64748b */
+
+    /* Accent — emerald-50 tint for hover / selected rows */
+    --accent: 153 34% 95%;           /* OFM green tint — ofm-50 #ECF6F1 */
+    --accent-foreground: 156 100% 22%;/* OFM green — ofm-600 */
+
+    /* Status */
+    --destructive: 0 72% 51%;        /* red-600 #dc2626 — fail / remove */
+    --destructive-foreground: 0 0% 100%;
+    --success: 156 100% 22%;         /* OFM green — ofm-600 #006E42 */
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;           /* amber-500 #f59e0b — in-progress */
+    --warning-foreground: 0 0% 100%;
+
+    /* Lines & focus */
+    --border: 214 32% 91%;           /* slate-200 #e2e8f0 */
+    --input: 214 32% 91%;
+    --ring: 156 100% 22%;            /* focus ring = OFM green ofm-600 */
+  }
+  .kibo * {
+    border-color: hsl(var(--border));
+  }
+}
