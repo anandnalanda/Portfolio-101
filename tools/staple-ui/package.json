@@ -1,0 +1,19 @@
+{
+  "name": "staple-ui-build",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Isolated Tailwind CSS v4 toolchain used ONLY to compile the scoped Untitled UI stylesheet for the Staple Chat screen. Kept out of the app's node_modules so the site's Tailwind v3 pipeline is untouched.",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.0",
+    "tailwindcss": "^4.1.0",
+    "@tailwindcss/typography": "^0.5.16",
+    "tailwindcss-react-aria-components": "^2.0.1",
+    "tailwindcss-animate": "^1.0.7",
+    "postcss": "^8.5.0",
+    "postcss-prefix-selector": "^2.1.1"
+  }
+}

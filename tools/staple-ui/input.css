@@ -1,0 +1,66 @@
+/* Tailwind v4 build entry for the shared Staple product UI (Untitled UI).
+   `source(none)` disables auto-scanning so ONLY the Staple product component
+   trees are scanned — nothing from the rest of the app leaks in. */
+@import "tailwindcss" source(none);
+
+/* Untitled UI design tokens + typography (vendored, shared under _ui/) */
+@import "../../components/screens/_ui/styles/theme.css";
+@import "../../components/screens/_ui/styles/typography.css";
+
+/* Plugins Untitled UI relies on */
+@plugin "@tailwindcss/typography";
+@plugin "tailwindcss-react-aria-components";
+@plugin "tailwindcss-animate";
+
+/* Custom variants + utilities from Untitled UI's globals.css */
+@custom-variant dark (&:where(.dark-mode, .dark-mode *));
+@custom-variant label (& [data-label]);
+@custom-variant focus-input-within (&:has(input:focus));
+
+@utility scrollbar-hide {
+  &::-webkit-scrollbar {
+    display: none;
+    -webkit-appearance: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@utility transition-inherit-all {
+  transition-property: inherit;
+  transition-duration: inherit;
+  transition-timing-function: inherit;
+}
+
+/* Subtle auto-hiding scrollbar for chat/panel scroll areas: invisible at
+   rest, thumb fades in while the pointer is over the scroll area (i.e. when
+   the user is about to scroll). Thin overlay width so no layout shift. */
+@utility scrollbar-subtle {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 150ms ease;
+  &:hover,
+  &:focus-within {
+    scrollbar-color: var(--color-border-primary) transparent;
+  }
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 9999px;
+  }
+  &:hover::-webkit-scrollbar-thumb,
+  &:focus-within::-webkit-scrollbar-thumb {
+    background: var(--color-border-primary);
+  }
+}
+
+/* Scan the shared vendored UI plus every Staple product's screen tree, so one
+   generated stylesheet covers both case studies (Chat + Tables). */
+@source "../../components/screens/_ui/**/*.{ts,tsx}";
+@source "../../components/screens/staple-chat/**/*.{ts,tsx}";
+@source "../../components/screens/staple-tables/**/*.{ts,tsx}";

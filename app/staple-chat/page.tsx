@@ -1,9 +1,81 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { Spectral } from "next/font/google";
+import ScaledStapleChat from "@/components/screens/staple-chat/ScaledStapleChat";
+import ScaledCanvas from "@/components/screens/_ui/ScaledCanvas";
+import SpacesScreen from "@/components/screens/staple-chat/SpacesScreen";
+import {
+  blankConversation,
+  chartConversation,
+  chartFollowUps,
+  impactConversation,
+  revealConversation,
+  revealFollowUps,
+  voiceFollowUps,
+} from "@/components/screens/staple-chat/data";
+
+/* Blank-canvas beat hides the pinned follow-up row entirely. */
+const NO_FOLLOW_UPS: string[] = [];
+
+/* The "full flow" beats reuse the same sticky panel — each flow section maps
+   to a Staple Chat screen state, cross-faded as the reader scrolls through. */
+const FLOW_SCREENS: Record<string, React.ComponentProps<typeof ScaledStapleChat>> = {
+  /* Cold start: nothing connected, nothing asked — no follow-up chips (the
+     product can't suggest questions about data it doesn't have yet). */
+  "flow-idle": {
+    idle: true,
+    messages: [],
+    configurePanel: true,
+    panelTab: "data",
+    followUpItems: NO_FOLLOW_UPS,
+  },
+  "flow-connect": {
+    idle: true,
+    messages: [],
+    configurePanel: true,
+    panelTab: "data",
+    connectModal: true,
+    followUpItems: NO_FOLLOW_UPS,
+  },
+  /* Quiet chips: the neutral walkthrough points at nothing. */
+  "flow-connected": { blankCanvas: "chips-quiet", configurePanel: true, panelTab: "data" },
+  /* Just the question, freshly sent — the answer is the NEXT step. */
+  /* One combined beat: the question is sent, the answer processes, then it
+     reveals — played automatically via answerSequence. */
+  "flow-ask": {
+    messages: revealConversation,
+    answerSequence: true,
+    configurePanel: false,
+    followUpItems: revealFollowUps,
+  },
+  /* The thread continues: scroll down into the new follow-up + inline chart,
+     watching the bars animate in. */
+  "flow-chart": {
+    messages: chartConversation,
+    reasoningExpanded: false,
+    configurePanel: false,
+    followUpItems: chartFollowUps,
+    restScroll: "reveal",
+  },
+  /* The configure panel slides in from the right, Instructions selected. */
+  "flow-instructions": {
+    messages: chartConversation,
+    panelReveal: true,
+    panelTab: "instructions",
+    followUpItems: chartFollowUps,
+    restScroll: "bottom",
+  },
+};
+import { StapleWordmark } from "./StapleWordmark";
+import { ProblemVisual } from "./ProblemVisual";
+import { BigTypeVisual } from "./BigTypeVisual";
+import ImpactVisual from "./ImpactVisual";
+
+/* Staple brand color — the deep teal from the logo. */
+const BRAND = "#003B4A";
 
 const spectral = Spectral({
   subsets: ["latin"],
@@ -15,13 +87,15 @@ const spectral = Spectral({
 /*  Section data                                                       */
 /* ------------------------------------------------------------------ */
 
-type SectionType = "intro" | "critique" | "refinement" | "summary" | "story" | "product" | "closing";
+type SectionType = "intro" | "critique" | "refinement" | "summary" | "story" | "product" | "flow" | "closing";
 
 interface Section {
   id: string;
   type: SectionType;
   title: string;
   content: string;
+  /** Optional scannable points rendered as a bullet list under the lead. */
+  bullets?: string[];
   highlight: {
     top: number;
     left: number;
@@ -32,344 +106,176 @@ interface Section {
 
 const sections: Section[] = [
   {
-    id: "intro",
+    id: "open",
     type: "intro",
-    title: "Staple Chat",
-    content:
-      "Transforming complex data analysis into natural conversations.",
-    highlight: null,
-  },
-  {
-    id: "challenge",
-    type: "story",
-    title: "One question. Five dashboards.",
-    content:
-      "Users navigated 3–5 different dashboards to compile simple reports, spending 15+ minutes on tasks that should take seconds. Critical data scattered across invoice systems, customer feedback platforms, and sales databases with no unified access point.",
+    title: "Building Staple Chat",
+    content: `Staple Chat is an AI data-analysis tool I designed: ask a question in plain language, get an answer straight from your connected data. What follows is how we identified the problem, designed our way to this product, and turned it into one of the company's biggest selling points.`,
     highlight: null,
   },
   {
     id: "bottleneck",
     type: "story",
     title: "The analyst bottleneck.",
-    content:
-      "Non-technical stakeholders depended on analysts for basic questions, creating bottlenecks in decision-making. Static reports lacked the conversational context needed to explore follow-up questions or validate assumptions.",
+    content: `The bottleneck was never the data. It was translation.`,
+    bullets: [
+      `Non-technical people queued behind analysts for one-sentence answers.`,
+      `Static reports couldn't answer the obvious follow-up, so every question restarted the tour.`,
+    ],
     highlight: null,
   },
   {
-    id: "research",
+    id: "interviews",
     type: "story",
     title: "23 interviews. One pattern.",
-    content:
-      "Stakeholder interviews with finance managers, operations leaders, and compliance officers revealed that 73% of data queries required cross-referencing multiple sources. We mapped critical friction points where users abandoned complex analytical tasks.",
+    content: `The obvious brief was "build a better dashboard." Twenty-three interviews with finance, ops, and compliance killed it.`,
+    bullets: [
+      `One pattern under every complaint: the tool makes me translate my question into its language.`,
+      `Nobody wanted a better dashboard. They wanted to stop needing one.`,
+    ],
     highlight: null,
   },
   {
-    id: "vision",
+    id: "brief",
     type: "story",
-    title: "Not another dashboard.",
-    content:
-      "Rather than building another dashboard, we envisioned a conversational intelligence platform that could democratize data access across the organization. The core philosophy: transform complex analytical workflows into natural language conversations.",
+    title: "The brief was one sentence.",
+    content: `One line from our CEO: "we should be able to chat with documents." Turning it into a product was mine. I scoped v1 with the CEO and PM:`,
+    bullets: [
+      `What a query could touch.`,
+      `How documents came in.`,
+      `What we'd show on screen.`,
+    ],
     highlight: null,
   },
   {
-    id: "query-engine",
+    id: "d1",
     type: "product",
-    title: "Ask it like you'd say it.",
-    content:
-      "Natural language processing that understands business context, terminology, and analytical intent. Users ask complex questions without learning query syntax or navigating interface hierarchies.",
+    title: "Decision 1: Chat is the product, not a feature.",
+    content: `The safe version was a chatbot bolted onto the dashboards, an assistant in the corner of the maze. We rejected it early.`,
+    bullets: [
+      `A bot that answers questions about a maze is still a maze.`,
+      `If natural language was how people thought, it had to be the whole interface.`,
+    ],
     highlight: null,
   },
   {
-    id: "data-connection",
+    id: "d2",
     type: "product",
-    title: "Bring your own data.",
-    content:
-      "Upload datasets — customer reviews, invoices, operational tables — then fine-tune analytical requests by attaching instructions for filtering, aggregation, or custom logic. The engine adapts its response based on user-provided directives.",
+    title: "Decision 2: Show the thinking.",
+    content: `"Excluding returns and taxes" carries real business logic. The system should translate intent, not make users do it. But a translation you can't see is just a black box, and finance won't sign off on numbers they can't audit.`,
+    bullets: [
+      `Every answer shows its work: what it read, what it filtered, how it totaled.`,
+      `Visible reasoning turns "a number" into "a number I'll put in front of my CFO."`,
+    ],
     highlight: null,
   },
   {
-    id: "visualization",
+    id: "d3",
     type: "product",
-    title: "Charts, inline.",
-    content:
-      "Complex analytical queries generate instant visual insights through dynamic chart generation, eliminating manual report creation. Charts embedded directly in conversation flow, maintaining context and enabling follow-up questions.",
+    title: "Decision 3: Charts live inside the conversation.",
+    content: `Every tool we studied put visualization somewhere else: a tab, a builder, an export. But the point is the follow-up. "Now break that down by outlet" only feels natural if you never left the thread.`,
+    bullets: [
+      `Charts render inline, and the conversation keeps going.`,
+      `A separate charts tab would have been the maze sneaking back in.`,
+    ],
     highlight: null,
   },
   {
-    id: "interface",
+    id: "d4",
     type: "product",
-    title: "Progressive disclosure.",
-    content:
-      "The interface prioritizes clarity, revealing complexity only when needed while maintaining conversational flow. Clean conversation layout with clear distinction between user queries and system responses.",
+    title: "Decision 4: Power without a setup wizard.",
+    content: `Power users needed their own data on the table: invoices, POS exports, P&L, outlet masters, ready to be questioned. The lazy version is a setup wizard; the clever-looking version sprays settings through the chat. We did neither.`,
+    bullets: [
+      `A side panel holds everything you've connected, summoned when needed, invisible otherwise.`,
+      `Clean for the person who just wants an answer; depth one click away for the person who doesn't.`,
+    ],
     highlight: null,
   },
   {
-    id: "suggestions",
+    id: "d5",
     type: "product",
-    title: "It anticipates.",
-    content:
-      "Intelligent query suggestions based on current context and user patterns. A right-side panel for data source management with intuitive connection workflows.",
+    title: "Decision 5: The blank canvas problem.",
+    content: `A chat interface has a dirty secret: an empty input box is scarier than a bad dashboard. New users don't know what to ask, so they ask nothing and leave.`,
+    bullets: [
+      `Suggestion chips propose the next question from what's connected and what was just asked.`,
+      `Not a convenience feature; it's how the product teaches its own ceiling.`,
+      `The rejected alternative was onboarding tours and docs, for a product whose whole promise was no learning curve.`,
+    ],
     highlight: null,
   },
   {
-    id: "validation",
-    type: "product",
-    title: "Trust, built in.",
-    content:
-      "Built-in validation loops with user feedback mechanisms ensuring analytical accuracy. Every finding shows its reasoning — transparent, auditable, and correctable.",
+    id: "flow-idle",
+    type: "flow",
+    title: "Start from your spaces.",
+    content: `Every dataset lives in its own space: invoices in one, reviews in another. You land on the workspace you've built, and adding more is one click away.`,
+    highlight: null,
+  },
+  {
+    id: "flow-connect",
+    type: "flow",
+    title: "Connect the sources.",
+    content: `Add opens a picker of files and tables: everything a new space should see, chosen before the first question is asked.`,
+    highlight: null,
+  },
+  {
+    id: "flow-connected",
+    type: "flow",
+    title: "The workspace is ready.",
+    content: `Sources land in the Data panel. Nothing has been asked yet, but the conversation can start.`,
+    highlight: null,
+  },
+  {
+    id: "flow-ask",
+    type: "flow",
+    title: "Ask, and watch it answer.",
+    content: `The real question, typed the way you'd say it out loud, with no syntax or field names. It answers with a reasoning drawer, the prose, and a table where every figure traces back to its rows.`,
+    highlight: null,
+  },
+  {
+    id: "flow-chart",
+    type: "flow",
+    title: "The thread keeps going.",
+    content: `A follow-up becomes a real message, answered by a chart that renders inline. You never leave the conversation.`,
+    highlight: null,
+  },
+  {
+    id: "flow-instructions",
+    type: "flow",
+    title: "Logic, set once.",
+    content: `Custom business rules, like "treat anything below three stars as negative," quietly applied to every answer.`,
     highlight: null,
   },
   {
     id: "impact",
     type: "closing",
-    title: "The numbers.",
-    content:
-      "340% increase in daily analytical queries within the first quarter. Average time-to-insight reduced from 15 minutes to 2 minutes. 89% user satisfaction rating with 95% feature retention rate.",
+    title: "Impact.",
+    content: `Time-to-insight went from 15 minutes to 2, not because people got faster, but because the tour of five dashboards stopped existing.`,
+    bullets: [
+      `Within a quarter, 67% of queries came from non-technical people.`,
+      `The analyst queue dissolved, and the founding promise reached the people it was made for.`,
+    ],
     highlight: null,
   },
   {
-    id: "adoption",
+    id: "next",
     type: "closing",
-    title: "Democratized.",
-    content:
-      "67% of queries now performed by non-technical users, reducing data science team dependency. Executive reporting cycles accelerated by 3x, enabling faster strategic decisions.",
+    title: "Where it goes next: from chatting to talking.",
+    content: `Chat removes the dashboard, but you're still typing. The next step I designed was voice.`,
+    bullets: [
+      `Ask out loud, and drill in by just asking.`,
+      `Text was the right v1: precise, auditable, shareable. Voice is the v2 that matches how people already think out loud.`,
+    ],
     highlight: null,
   },
 ];
 
 const ease = [0.22, 1, 0.36, 1];
 
-/* ------------------------------------------------------------------ */
-/*  Dashboard mockups                                                  */
-/* ------------------------------------------------------------------ */
-
-function DashboardBefore() {
-  return (
-    <div className="w-full h-full flex flex-col text-[10px] leading-tight bg-white rounded-xl overflow-hidden border border-black/[0.08]">
-      {/* Nav */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-black/[0.06] bg-gray-50/80 shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-4 h-4 rounded bg-black/80" />
-          <span className="font-bold text-[10px]">Staple</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="px-2 py-1 rounded bg-black/10 font-semibold text-[9px]">Chats</span>
-          <span className="px-2 py-1 rounded text-black/40 text-[9px]">Documents</span>
-          <span className="px-2 py-1 rounded text-black/40 text-[9px]">Analytics</span>
-          <span className="px-2 py-1 rounded text-black/40 text-[9px]">Settings</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-16 h-5 rounded border border-black/10 bg-white" />
-          <div className="w-5 h-5 rounded-full bg-black/10" />
-        </div>
-      </div>
-
-      {/* Body */}
-      <div className="flex flex-1 min-h-0">
-        {/* Sidebar */}
-        <div className="w-[30%] border-r border-black/[0.06] p-2 flex flex-col gap-1 bg-gray-50/40 shrink-0 overflow-hidden">
-          <div className="text-[8px] font-semibold text-black/30 uppercase tracking-wider px-1 mb-1">Recent</div>
-          {["Q3 Revenue Analysis", "Invoice Batch #847", "Budget Forecast", "Sales Pipeline", "Marketing Report"].map(
-            (name, i) => (
-              <div
-                key={name}
-                className={`px-2 py-1.5 rounded text-[9px] ${
-                  i === 0
-                    ? "bg-black/[0.05] font-medium"
-                    : "text-black/50"
-                }`}
-              >
-                <div className="truncate">{name}</div>
-                <div className="text-[7px] text-black/25 mt-0.5 truncate">
-                  {i === 0 ? "3 docs · 2m ago" : `${i + 1} docs · ${i}h ago`}
-                </div>
-              </div>
-            )
-          )}
-        </div>
-
-        {/* Main content */}
-        <div className="flex-1 flex flex-col min-h-0">
-          {/* Metrics */}
-          <div className="grid grid-cols-4 gap-1.5 p-2 border-b border-black/[0.06] shrink-0">
-            {[
-              { label: "Documents", value: "1,247", icon: "📄" },
-              { label: "Queries", value: "89", icon: "💬" },
-              { label: "Accuracy", value: "94%", icon: "✓" },
-              { label: "Avg Time", value: "1.2s", icon: "⏱" },
-            ].map((m) => (
-              <div
-                key={m.label}
-                className="border border-black/[0.08] rounded-lg p-1.5 bg-white"
-              >
-                <div className="text-[8px] text-black/40">{m.icon} {m.label}</div>
-                <div className="font-bold text-[12px] mt-0.5">{m.value}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Chat messages */}
-          <div className="flex-1 p-3 flex flex-col gap-3 overflow-hidden">
-            {/* User message */}
-            <div className="flex gap-2">
-              <div className="w-6 h-6 rounded-full bg-blue-100 shrink-0 flex items-center justify-center text-[8px]">U</div>
-              <div className="bg-gray-50 rounded-xl px-3 py-2 max-w-[80%]">
-                <div className="text-[9px]">Show me the key findings from the Q3 revenue report</div>
-                <div className="text-[7px] text-black/25 mt-1">2:34 PM</div>
-              </div>
-            </div>
-
-            {/* AI response with cards */}
-            <div className="flex gap-2">
-              <div className="w-6 h-6 rounded-full bg-black/80 shrink-0 flex items-center justify-center text-[8px] text-white">AI</div>
-              <div className="flex flex-col gap-1.5 max-w-[85%]">
-                <div className="bg-gray-50 rounded-xl px-3 py-2">
-                  <div className="text-[9px]">Here are the key findings from the Q3 report:</div>
-                </div>
-                <div className="border border-black/10 rounded-lg p-2 shadow-sm bg-white">
-                  <div className="text-[8px] font-semibold">📈 Revenue Growth</div>
-                  <div className="text-[8px] text-black/50 mt-0.5">Revenue grew 23% YoY to $4.2M</div>
-                </div>
-                <div className="border border-black/10 rounded-lg p-2 shadow-sm bg-white">
-                  <div className="text-[8px] font-semibold">⚠️ Risk Factor</div>
-                  <div className="text-[8px] text-black/50 mt-0.5">Supply chain delays in APAC region</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Input */}
-          <div className="border-t border-black/[0.06] p-2 shrink-0">
-            <div className="flex items-center gap-2">
-              <div className="flex-1 h-7 rounded-lg border border-black/10 bg-white px-2 flex items-center">
-                <span className="text-[8px] text-black/25">Type a message...</span>
-              </div>
-              <div className="w-6 h-6 rounded bg-black/[0.04] flex items-center justify-center text-[10px]">📎</div>
-              <div className="w-6 h-6 rounded bg-black/80 flex items-center justify-center text-[10px] text-white">➤</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DashboardAfter() {
-  return (
-    <div className="w-full h-full flex flex-col text-[10px] leading-tight bg-white rounded-xl overflow-hidden border border-black/[0.08]">
-      {/* Nav - simplified */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-black/[0.04] shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-black/80" />
-            <span className="font-bold text-[10px]">Staple</span>
-          </div>
-          <div className="flex items-center gap-3 text-[9px]">
-            <span className="font-semibold text-black/80 border-b border-black/80 pb-0.5">Chats</span>
-            <span className="text-black/35">Documents</span>
-          </div>
-        </div>
-        <div className="w-5 h-5 rounded-full bg-black/10" />
-      </div>
-
-      {/* Body */}
-      <div className="flex flex-1 min-h-0">
-        {/* Sidebar - cleaner */}
-        <div className="w-[30%] border-r border-black/[0.04] p-2 flex flex-col gap-0.5 shrink-0 overflow-hidden">
-          <div className="text-[8px] font-semibold text-black/30 uppercase tracking-wider px-2 mb-1">Recent</div>
-          {["Q3 Revenue Analysis", "Invoice Batch #847", "Budget Forecast", "Sales Pipeline", "Marketing Report"].map(
-            (name, i) => (
-              <div
-                key={name}
-                className={`px-2 py-1.5 rounded-lg text-[9px] ${
-                  i === 0
-                    ? "bg-black/[0.04] font-semibold"
-                    : "text-black/40"
-                }`}
-              >
-                <div className="truncate">{name}</div>
-              </div>
-            )
-          )}
-        </div>
-
-        {/* Main content */}
-        <div className="flex-1 flex flex-col min-h-0">
-          {/* Metrics - consolidated bar */}
-          <div className="px-3 py-2 border-b border-black/[0.04] shrink-0">
-            <div className="flex items-center gap-3 text-[9px] text-black/50">
-              <span><strong className="text-black/70">1,247</strong> docs</span>
-              <span className="text-black/15">·</span>
-              <span><strong className="text-black/70">89</strong> queries</span>
-              <span className="text-black/15">·</span>
-              <span><strong className="text-black/70">94%</strong> accuracy</span>
-              <span className="text-black/15">·</span>
-              <span className="text-[8px]">▲ 12%</span>
-            </div>
-          </div>
-
-          {/* Chat messages - tighter */}
-          <div className="flex-1 p-3 flex flex-col gap-2 overflow-hidden">
-            {/* User message */}
-            <div className="flex gap-2 items-start">
-              <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 shrink-0" />
-              <div>
-                <div className="text-[9px]">Show me the key findings from the Q3 revenue report</div>
-              </div>
-            </div>
-
-            {/* AI response - no cards */}
-            <div className="flex gap-2 items-start">
-              <div className="w-1 h-1 rounded-full bg-black/60 mt-1.5 shrink-0" />
-              <div className="flex flex-col gap-1">
-                <div className="text-[9px] text-black/70">Here are the key findings from the Q3 report:</div>
-                <div className="text-[9px] pl-2 border-l-[2.4px] border-black/[0.08]">
-                  <div className="font-medium">Revenue grew 23% YoY to $4.2M</div>
-                  <div className="text-black/40 mt-0.5">Driven by enterprise segment expansion</div>
-                </div>
-                <div className="text-[9px] pl-2 border-l-[2.4px] border-amber-300/40">
-                  <div className="font-medium">Risk: Supply chain delays</div>
-                  <div className="text-black/40 mt-0.5">APAC region — 2 week average delay</div>
-                </div>
-                <div className="text-[9px] pl-2 border-l-[2.4px] border-black/[0.08]">
-                  <div className="font-medium">Net retention at 118%</div>
-                  <div className="text-black/40 mt-0.5">Up from 112% in Q2</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Second exchange - tighter */}
-            <div className="flex gap-2 items-start mt-1">
-              <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 shrink-0" />
-              <div className="text-[9px]">Break down the APAC risk by sub-region</div>
-            </div>
-            <div className="flex gap-2 items-start">
-              <div className="w-1 h-1 rounded-full bg-black/60 mt-1.5 shrink-0" />
-              <div className="text-[9px] text-black/70">
-                <div>Southeast Asia accounts for 68% of the delay...</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Input - elevated */}
-          <div className="p-2 shrink-0">
-            <div className="rounded-xl border border-black/[0.08] bg-gray-50/50 p-2">
-              <div className="h-6 flex items-center">
-                <span className="text-[9px] text-black/25">Ask about your documents...</span>
-              </div>
-              <div className="flex items-center justify-between mt-1">
-                <div className="flex items-center gap-1.5 text-[8px] text-black/30">
-                  <span className="px-1.5 py-0.5 rounded bg-black/[0.04]">📎 Attach</span>
-                </div>
-                <div className="w-6 h-5 rounded-lg bg-black/80 flex items-center justify-center text-[9px] text-white">➤</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+/* One shared crossfade recipe for every right-panel beat layer, so any two
+   beats fade in/out over the SAME duration + curve. Balanced crossfades (the
+   outgoing beat leaves exactly as the incoming arrives) are what make the
+   scroll read as smooth in both directions, instead of one layer lingering. */
+const CROSSFADE =
+  "absolute inset-0 transition-opacity duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-[opacity] motion-reduce:transition-none";
 
 /* ------------------------------------------------------------------ */
 /*  NarrativeSection component                                         */
@@ -379,40 +285,28 @@ interface NarrativeSectionProps {
   id: string;
   title: string;
   children: React.ReactNode;
+  /** Scannable points shown as a bullet list beneath the lead paragraph. */
+  bullets?: string[];
   titleSize?: "lg" | "md" | "sm";
-  onActive?: (id: string) => void;
+  /** Render the title in the Spectral serif (used for the opening title). */
+  serif?: boolean;
+  /** Selected/highlighted state, controlled by the page-level scroll-spy. */
+  active?: boolean;
+  /** Jump-to: click the section to scroll it into the active position (the
+      right-hand screen then transitions via the normal scroll-spy). */
+  onNavigate?: () => void;
 }
 
 function NarrativeSection({
   id,
   title,
   children,
+  bullets,
   titleSize = "md",
-  onActive,
+  serif = false,
+  active = false,
+  onNavigate,
 }: NarrativeSectionProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [isActive, setIsActive] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsActive(true);
-          onActive?.(id);
-        } else {
-          setIsActive(false);
-        }
-      },
-      { rootMargin: "-49% 0px -49% 0px", threshold: 0 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [id, onActive]);
-
   const titleClass =
     titleSize === "lg"
       ? "text-[28px] tracking-[-0.02em] leading-tight"
@@ -420,21 +314,175 @@ function NarrativeSection({
       ? "text-[22px] tracking-[-0.01em]"
       : "text-[18px]";
 
+  // A click anywhere on the card jumps to the section — but not when the
+  // reader is actually selecting its text (a drag that ends in a click).
+  const handleCardClick = () => {
+    if (window.getSelection()?.toString()) return;
+    onNavigate?.();
+  };
+
   return (
-    <div ref={ref} data-section={id} className="mb-6">
+    <div data-section={id} className="mb-6">
       <div
-        className={`py-4 px-4 transition-all duration-[250ms] ease-out border-l-[2.4px] ${
-          isActive
+        onClick={onNavigate ? handleCardClick : undefined}
+        className={`group py-4 px-4 transition-all duration-[450ms] ease-[cubic-bezier(0.22,1,0.36,1)] border-l-[2.4px] ${
+          onNavigate ? "cursor-pointer" : ""
+        } ${
+          active
             ? "border-l-txt-secondary bg-surface-muted opacity-100"
-            : "border-l-transparent opacity-[0.75]"
+            : `border-l-transparent opacity-[0.75] ${
+                onNavigate ? "hover:opacity-100 hover:bg-black/[0.02]" : ""
+              }`
         }`}
       >
-        <h2 className={`font-semibold text-txt-heading mb-2 ${titleClass}`}>
-          {title}
+        <h2
+          className={`mb-2 text-txt-heading ${titleClass} ${
+            serif ? `${spectral.className} font-normal` : "font-semibold"
+          }`}
+        >
+          {onNavigate ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onNavigate();
+              }}
+              className="text-left transition-colors hover:text-txt-primary focus-visible:outline-none focus-visible:underline"
+            >
+              {title}
+            </button>
+          ) : (
+            title
+          )}
         </h2>
-        <p className="text-[15px] leading-[1.7] text-txt-primary">{children}</p>
+        <div className="text-[15px] leading-[1.7] text-txt-primary">
+          {children && <p>{children}</p>}
+          {bullets && bullets.length > 0 && (
+            <ul
+              className={`${
+                children ? "mt-2.5" : ""
+              } list-disc space-y-1.5 pl-[18px] marker:text-txt-secondary`}
+            >
+              {bullets.map((b, i) => (
+                <li key={i} className="pl-1">
+                  {b}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
     </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Right-panel artifact — per-beat UI                                 */
+/* ------------------------------------------------------------------ */
+
+/**
+ * The UI shown in the sticky right panel.
+ *
+ * The product's first appearance (beat "d1") is a reveal carried by the
+ * HIGHLIGHT FRAME, not by the screen: the screen arrives still, the frame
+ * lands around the whole canvas, then flies down and tightens onto the
+ * composer ("chat is the entire product" in one gesture). The frame's
+ * choreography lives in StapleChatScreen; reduced motion shows it
+ * statically on the composer.
+ */
+/** Which story state the product screen is in for the active beat. */
+type ScreenBeat =
+  | "base"
+  | "reveal"
+  | "reasoning"
+  | "chart"
+  | "panel"
+  | "blank";
+
+function StapleArtifact({
+  beat = "base",
+  restingPanel = false,
+}: {
+  beat?: ScreenBeat;
+  /* Keep the configure panel open in the "base" state (the mobile inline
+     artifact). The desktop instance leaves it closed: its base state is
+     never visible, and an open panel there would animate shut during the
+     d1 reveal — a 460px reflow reading as a stray "responsive" resize. */
+  restingPanel?: boolean;
+}) {
+  // The single-query thread (panel collapsed) carries beats d1–d2; the chart
+  // beat extends it with the follow-up exchange. Base = full resting screen.
+  const inStory = beat !== "base";
+  return (
+    <div className="absolute inset-0">
+      <ScaledStapleChat
+        highlightComposer={beat === "reveal"}
+        messages={
+          beat === "blank"
+            ? blankConversation
+            : beat === "chart" || beat === "panel"
+            ? chartConversation
+            : inStory
+            ? revealConversation
+            : undefined
+        }
+        followUpItems={
+          beat === "blank"
+            ? NO_FOLLOW_UPS
+            : beat === "chart" || beat === "panel"
+            ? chartFollowUps
+            : inStory
+            ? revealFollowUps
+            : undefined
+        }
+        /* The panel stays open from d4 INTO d5 — the blank canvas reads as
+           "workspace ready, nothing asked yet" with the data still in view,
+           and the d4 → d5 hand-off loses its distracting close animation. */
+        configurePanel={
+          beat === "panel" || beat === "blank" || (!inStory && restingPanel)
+        }
+        highlightThinking={beat === "reasoning"}
+        reasoningExpanded={beat === "reasoning"}
+        highlightChart={beat === "chart"}
+        highlightSources={beat === "panel"}
+        /* Straight to the resolution: chips + brand accent (no red
+           problem-frame phase — the copy carries the problem). */
+        blankCanvas={beat === "blank" ? "chips" : undefined}
+      />
+    </div>
+  );
+}
+
+/* Full-flow screen — the product driven to a flow beat, cross-faded between
+   states as the reader scrolls the flow list. Mounts only while a flow beat is
+   active (active !== null), so it costs nothing elsewhere. */
+function FlowScreen({ active }: { active: string | null }) {
+  const reduce = useReducedMotion();
+  // The first two flow beats live on the Spaces HOME (the product's real cold
+  // start): the workspace you return to, then the Add → connect-data step.
+  // From "workspace ready" onward it's the chat screen.
+  const isSpaces = active === "flow-idle" || active === "flow-connect";
+  return (
+    <AnimatePresence initial={false}>
+      {active && (
+        <motion.div
+          key={isSpaces ? "flow-spaces" : active}
+          className="absolute inset-0"
+          initial={reduce ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: reduce ? 0 : 0.3, ease }}
+        >
+          {isSpaces ? (
+            <ScaledCanvas>
+              <SpacesScreen connectModal={active === "flow-connect"} />
+            </ScaledCanvas>
+          ) : (
+            <ScaledStapleChat {...(FLOW_SCREENS[active] ?? {})} />
+          )}
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -443,24 +491,172 @@ function NarrativeSection({
 /* ------------------------------------------------------------------ */
 
 export default function StapleChatPage() {
-  const [activeSection, setActiveSection] = useState<string>("intro");
-  const [showAfter, setShowAfter] = useState(false);
+  // Landing state shows the brand logo. Once the reader scrolls to the first
+  // story beat (its top crosses the viewport center), the logo cross-fades out
+  // and the live product appears. Driven by scroll position (not the center-
+  // band observer) so the logo reliably stays on first paint.
+  // Single source of truth for the active beat: a scroll-spy that names the
+  // last section whose top has crossed a fixed line near the top of the
+  // viewport. Both the left-hand highlight and the right-hand screen derive
+  // from it, so exactly ONE beat is ever selected. "open" (the logo beat) is
+  // active on landing; scrolling to the first story beat switches it.
+  const [activeId, setActiveId] = useState(sections[0].id);
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  const handleActive = useCallback((id: string) => {
-    setActiveSection(id);
+  // Jump-to-section: smooth-scroll the target just above the spy line (220)
+  // so it becomes active; the scroll-spy then drives the right-hand screen
+  // with its normal cross-fade/flight transitions. Respects reduced motion.
+  const scrollToSection = (id: string) => {
+    const el = sectionRefs.current[id];
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + window.scrollY - 200;
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    window.scrollTo({ top, behavior: prefersReduced ? "auto" : "smooth" });
+  };
+
+  useEffect(() => {
+    let raf = 0;
+    const compute = () => {
+      raf = 0;
+      let current = sections[0].id;
+      for (const s of sections) {
+        const el = sectionRefs.current[s.id];
+        if (el && el.getBoundingClientRect().top <= 220) current = s.id;
+      }
+      /* The last beat sits too close to the page bottom for its top to ever
+         cross the spy line on shorter viewports — approaching the end of
+         the page must always land the final beat. */
+      if (
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 120
+      ) {
+        current = sections[sections.length - 1].id;
+      }
+      setActiveId(current);
+    };
+    // Coalesce scroll events to one layout read per animation frame so the
+    // scroll never thrashes layout — keeps it buttery.
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(compute);
+    };
+    compute();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
-  // Auto-switch to "after" when scrolling into refinement sections
-  useEffect(() => {
-    const section = sections.find((s) => s.id === activeSection);
-    if (section) {
-      if (section.type === "refinement" || section.type === "summary") {
-        setShowAfter(true);
-      } else if (section.type === "critique" || section.type === "intro") {
-        setShowAfter(false);
-      }
-    }
-  }, [activeSection]);
+  // Which screen the right panel shows for the active beat. The problem
+  // diagram spans beats 2–3 (its dotted path draws across both via scroll);
+  // the "brief" beat is a deliberate big-type pause before the product.
+  const screen =
+    activeId === "open"
+      ? "logo"
+      : activeId === "bottleneck" || activeId === "interviews"
+      ? "problem"
+      : activeId === "brief"
+      ? "quote"
+      : activeId === "impact"
+      ? "impact"
+      : activeId === "next"
+      ? "voice"
+      : activeId.startsWith("flow-")
+      ? "flow"
+      : "product";
+
+  const renderSections = (arr: typeof sections) =>
+    arr.map((section, i) => {
+      const prev = i > 0 ? arr[i - 1] : null;
+      const showGroupHeading =
+        (section.type === "story" && prev?.type !== "story") ||
+        (section.type === "product" && prev?.type !== "product") ||
+        (section.type === "flow" && prev?.type !== "flow") ||
+        (section.type === "closing" && prev?.type !== "closing");
+      const groupLabel =
+        section.type === "story"
+          ? "The Story"
+          : section.type === "product"
+          ? "The Decisions"
+          : section.type === "flow"
+          ? "The Full Flow"
+          : section.type === "closing"
+          ? "The Outcome"
+          : null;
+      return (
+        <div
+          key={section.id}
+          ref={(el) => {
+            sectionRefs.current[section.id] = el;
+          }}
+        >
+          {showGroupHeading && groupLabel && (
+            <div className="mt-12 mb-4 pl-4">
+              <h3
+                className={`${spectral.className} text-[24px] text-txt-heading pb-[2px] tracking-[-1px]`}
+              >
+                {groupLabel}
+              </h3>
+              <div className="border-b border-surface-border" />
+            </div>
+          )}
+          <NarrativeSection
+            id={section.id}
+            title={section.title}
+            bullets={section.bullets}
+            serif={section.id === "open"}
+            active={section.id === activeId}
+            onNavigate={() => scrollToSection(section.id)}
+            titleSize={section.id === "open" ? "lg" : "md"}
+          >
+            {section.content}
+          </NarrativeSection>
+        </div>
+      );
+    });
+
+  const ContinueReading = () => (
+    <div className="mt-10">
+      <h4 className="text-[12px] font-normal text-txt-secondary uppercase tracking-[0.08em] mb-2 pl-4">
+        Continue Reading
+      </h4>
+      {[
+        {
+          title: "Staple Tables",
+          descriptor: "Structured data extraction from documents.",
+          href: "/staple-tables",
+        },
+        {
+          title: "Kanban and AI",
+          descriptor: "Hiring pipeline with AI-ranked candidates.",
+          href: "/kanban-and-ai",
+        },
+        {
+          title: "OFM Jobs Tests",
+          descriptor: "Assessment system with AI-powered hiring.",
+          href: "/ofm-jobs-tests",
+        },
+      ].map((project) => (
+        <Link
+          key={project.title}
+          href={project.href}
+          className="block py-4 pl-4 border-b border-surface-border hover:bg-black/[0.02] transition-all duration-[250ms] ease-out"
+        >
+          <h5 className="text-[15px] font-semibold text-txt-heading">
+            {project.title}
+          </h5>
+          <p className="text-[13px] text-txt-secondary mt-0.5">
+            {project.descriptor}
+          </p>
+        </Link>
+      ))}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-white">
@@ -486,87 +682,9 @@ export default function StapleChatPage() {
               </Link>
             </motion.div>
 
-            {sections.map((section, i) => {
-              const prev = i > 0 ? sections[i - 1] : null;
-              const showGroupHeading =
-                (section.type === "story" && prev?.type !== "story") ||
-                (section.type === "product" && prev?.type !== "product") ||
-                (section.type === "closing" && prev?.type !== "closing");
-              const groupLabel =
-                section.type === "story"
-                  ? "The Story"
-                  : section.type === "product"
-                  ? "The Product"
-                  : section.type === "closing"
-                  ? "Reflection"
-                  : null;
+            {renderSections(sections)}
 
-              return (
-                <div key={section.id}>
-                  {showGroupHeading && groupLabel && (
-                    <div className="mt-12 mb-4 pl-4">
-                      <h3
-                        className={`${spectral.className} text-[24px] text-txt-heading pb-[2px] tracking-[-1px]`}
-                      >
-                        {groupLabel}
-                      </h3>
-                      <div className="border-b border-surface-border" />
-                    </div>
-                  )}
-                  <NarrativeSection
-                    id={section.id}
-                    title={section.title}
-                    titleSize={
-                      section.id === "intro"
-                        ? "lg"
-                        : section.id === "adoption"
-                        ? "sm"
-                        : "md"
-                    }
-                    onActive={handleActive}
-                  >
-                    {section.content}
-                  </NarrativeSection>
-                </div>
-              );
-            })}
-
-            {/* Continue Reading */}
-            <div className="mt-16">
-              <h4 className="text-[12px] font-normal text-txt-secondary uppercase tracking-[0.08em] mb-2 pl-4">
-                Continue Reading
-              </h4>
-              {[
-                {
-                  title: "Staple Tables",
-                  descriptor: "Structured data extraction from documents.",
-                  href: "/staple-tables",
-                },
-                {
-                  title: "Kanban and AI",
-                  descriptor: "Hiring pipeline with AI-ranked candidates.",
-                  href: "/kanban-and-ai",
-                },
-                {
-                  title: "OFM Jobs Tests",
-                  descriptor: "Assessment system with AI-powered hiring.",
-                  href: "/ofm-jobs-tests",
-                },
-              ].map((project) => (
-                <Link
-                  key={project.title}
-                  href={project.href}
-                  className="block py-4 pl-4 border-b border-surface-border hover:bg-black/[0.02] transition-all duration-[250ms] ease-out"
-                >
-                  <h5 className="text-[15px] font-semibold text-txt-heading">
-                    {project.title}
-                  </h5>
-                  <p className="text-[13px] text-txt-secondary mt-0.5">
-                    {project.descriptor}
-                  </p>
-                </Link>
-              ))}
-            </div>
+            <ContinueReading />
 
           </div>
         </div>
@@ -574,53 +692,133 @@ export default function StapleChatPage() {
         {/* Right: sticky artifact panel */}
         <div className="flex-1 min-w-0 max-lg:hidden">
           <div className="sticky top-0 h-screen pl-2 pr-[28px] py-[28px] flex flex-col">
-            {/* Beige panel */}
-            <div className="flex-1 rounded-[32px] bg-[#f5f0eb] p-[28px] flex flex-col">
-              {/* Dashboard container */}
-              <div className="relative flex-1 min-h-0 bg-white rounded-[32px] shadow-lg overflow-hidden">
-                {/* Before/After dashboards */}
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={showAfter ? "after" : "before"}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.4, ease }}
-                    className="absolute inset-0"
-                  >
-                    {showAfter ? <DashboardAfter /> : <DashboardBefore />}
-                  </motion.div>
-                </AnimatePresence>
-
-                {/* Highlight overlays */}
-                {sections.map(
-                  (section) =>
-                    section.highlight && (
+            {/* Beige panel — design-system radii: frame rounded-3xl (24px),
+                white panel rounded-2xl (16px) to match the product's cards. */}
+            <div className="flex-1 rounded-3xl bg-[#f5f0eb] p-[28px] flex flex-col">
+              {/* Dashboard container — pinned to a fixed 1440×900 desktop
+                  canvas so every viewer sees the IDENTICAL screen (same
+                  layout, wraps, and choreography); only the zoom differs.
+                  Contain-fit and centered in the beige mat. */}
+              <div
+                className="relative flex-1 min-h-0 flex items-center justify-center"
+                style={{ containerType: "size" }}
+              >
+              <div
+                className="relative rounded-2xl shadow-lg overflow-hidden"
+                style={{
+                  aspectRatio: "1440 / 900",
+                  width: "min(100%, calc(100cqh * (1440 / 900)))",
+                }}
+              >
+                {/* Landing beat: brand logo on the brand color */}
+                <div
+                  className={`${CROSSFADE} flex items-center justify-center ${
+                    screen === "logo" ? "opacity-100" : "opacity-0 pointer-events-none"
+                  }`}
+                  style={{ background: BRAND }}
+                >
+                  <StapleWordmark className="w-[62%] max-w-[520px] text-white" />
+                </div>
+                {/* Problem beat: the establishing "five islands" diagram. */}
+                <div
+                  className={`${CROSSFADE} ${
+                    screen === "problem"
+                      ? "opacity-100"
+                      : "opacity-0 pointer-events-none"
+                  }`}
+                >
+                  <ProblemVisual />
+                </div>
+                {/* Big-type pause beat: one line, nothing else */}
+                <div
+                  className={`${CROSSFADE} ${
+                    screen === "quote" ? "opacity-100" : "opacity-0 pointer-events-none"
+                  }`}
+                >
+                  <BigTypeVisual active={screen === "quote"} />
+                </div>
+                {/* Later beats: the live product. Its first arrival (out of
+                    the big-type pause) is a quicker 500ms fade + subtle scale
+                    so it reads as the product calmly "arriving". */}
+                <div
+                  className={`${CROSSFADE} ${
+                    screen === "product" ? "opacity-100" : "opacity-0 pointer-events-none"
+                  }`}
+                >
+                  {/* Beat → screen-state mapping:
+                      d1 = reveal (single query, panel collapsed, input framed)
+                      d2 = reasoning (drawer expands, highlight travels to it)
+                      d3 = chart (thread continues, inline bars)
+                      d4 = panel (slides open, instruction highlighted)
+                      d5 = blank canvas (empty + red frame → chips + accent) */}
+                  <StapleArtifact
+                    beat={
+                      activeId === "d1"
+                        ? "reveal"
+                        : activeId === "d2"
+                        ? "reasoning"
+                        : activeId === "d3"
+                        ? "chart"
+                        : activeId === "d4"
+                        ? "panel"
+                        : activeId === "d5"
+                        ? "blank"
+                        : "base"
+                    }
+                  />
+                </div>
+                {/* Full-flow beats: the same product, driven through its seven
+                    states, cross-faded as the reader scrolls the flow list. */}
+                <div
+                  className={`${CROSSFADE} ${
+                    screen === "flow" ? "opacity-100" : "opacity-0 pointer-events-none"
+                  }`}
+                >
+                  <FlowScreen active={screen === "flow" ? activeId : null} />
+                </div>
+                {/* Impact beat: a warm chibi scene — the analyst queue
+                    dissolving — on a clean canvas, with the headline metrics
+                    below. A deliberate tonal shift for the emotional payoff. */}
+                <div
+                  className={`${CROSSFADE} ${
+                    screen === "impact"
+                      ? "opacity-100"
+                      : "opacity-0 pointer-events-none"
+                  }`}
+                >
+                  <AnimatePresence initial={false}>
+                    {screen === "impact" && <ImpactVisual key="impact-scene" />}
+                  </AnimatePresence>
+                </div>
+                {/* Voice beat: the same product in a new input mode — the
+                    composer comes alive, listens, and the spoken answer
+                    lands in the thread. Mounted only while active so the
+                    idle → listening → answer sequence replays on re-entry. */}
+                <div
+                  className={`${CROSSFADE} ${
+                    screen === "voice" ? "opacity-100" : "opacity-0 pointer-events-none"
+                  }`}
+                >
+                  <AnimatePresence initial={false}>
+                    {screen === "voice" && (
                       <motion.div
-                        key={section.id}
-                        className="absolute pointer-events-none z-10"
-                        style={{
-                          top: `${section.highlight.top}%`,
-                          left: `${section.highlight.left}%`,
-                          width: `${section.highlight.width}%`,
-                          height: `${section.highlight.height}%`,
-                        }}
-                        animate={{
-                          opacity: activeSection === section.id ? 1 : 0,
-                        }}
-                        transition={{ duration: 0.35, ease }}
+                        key="voice"
+                        className="absolute inset-0"
+                        initial={false}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
                       >
-                        <div
-                          className={`w-full h-full rounded-lg border ${
-                            sections.find((s) => s.id === section.id)?.type ===
-                            "refinement"
-                              ? "bg-emerald-400/[0.12] border-emerald-400/30"
-                              : "bg-red-400/[0.15] border-red-400/30"
-                          }`}
+                        <ScaledStapleChat
+                          messages={impactConversation}
+                          followUpItems={voiceFollowUps}
+                          voice="sequence"
                         />
                       </motion.div>
-                    )
-                )}
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
               </div>
 
             </div>
@@ -630,9 +828,9 @@ export default function StapleChatPage() {
 
       {/* Mobile artifact (shown inline on small screens) */}
       <div className="lg:hidden px-4 pb-10">
-        <div className="rounded-2xl bg-[#f5f0eb] p-4">
-          <div className="relative aspect-[4/3] bg-white rounded-[32px] shadow-lg overflow-hidden">
-            {showAfter ? <DashboardAfter /> : <DashboardBefore />}
+        <div className="rounded-3xl bg-[#f5f0eb] p-3">
+          <div className="relative aspect-[1440/900] bg-white rounded-xl shadow-lg overflow-hidden">
+            <StapleArtifact restingPanel />
           </div>
         </div>
       </div>
