@@ -12,8 +12,8 @@ export default function BioCard() {
     >
       <div>
         <h1 className="text-[22px] leading-[1.3] text-txt-secondary mb-4">
-          <strong className="text-txt-heading font-bold">Anand</strong>{" "}
-          <span className="text-txt-secondary font-medium">— Design engineer and product builder at{" "}</span>
+          <strong className="text-txt-heading font-bold">Anand</strong>
+          <span className="text-txt-secondary font-medium">, design engineer and product builder at{" "}</span>
           <strong className="text-txt-heading font-bold">GTSS</strong>
         </h1>
 

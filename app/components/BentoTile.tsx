@@ -75,7 +75,7 @@ function CaseStudyBar({ title, descriptor }: { title: string; descriptor: string
       >
         <p className="text-[13px] text-txt-primary font-medium">
           <strong className="font-semibold text-txt-heading">{title}</strong>
-          {" — "}
+          {": "}
           {descriptor}
         </p>
       </div>

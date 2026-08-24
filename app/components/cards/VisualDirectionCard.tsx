@@ -8,7 +8,7 @@ export default function VisualDirectionCard() {
   const [hovered, setHovered] = useState(false);
 
   return (
-    <Link href="/visual-direction" className="relative">
+    <Link href="/visual-direction" className="relative hover:z-[500]">
       <motion.div
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-40px" }}
@@ -62,7 +62,7 @@ export default function VisualDirectionCard() {
                 <stop offset="100%" stopColor="#ec4899" />
               </linearGradient>
             </defs>
-            {/* Main swatch — stays in place */}
+            {/* Main swatch - stays in place */}
             <g className="transition-opacity duration-300" style={{ opacity: hovered ? 1 : 0, transitionDelay: hovered ? "0ms" : "200ms" }}>
               <path d="M10 4.5V18C10 19.08 9.56 20.07 8.86 20.79L8.82 20.83C8.73 20.92 8.63 21.01 8.54 21.08C8.24 21.34 7.9 21.54 7.55 21.68C7.44 21.73 7.33 21.77 7.22 21.81C6.83 21.94 6.41 22 6 22C5.73 22 5.46 21.97 5.2 21.92C5.07 21.89 4.94 21.86 4.81 21.82C4.65 21.77 4.5 21.72 4.35 21.65C4.35 21.64 4.35 21.64 4.34 21.65C4.06 21.51 3.79 21.35 3.54 21.16L3.53 21.15C3.4 21.05 3.28 20.95 3.17 20.83C3.06 20.71 2.95 20.59 2.84 20.46C2.65 20.21 2.49 19.94 2.35 19.66C2.36 19.65 2.36 19.65 2.35 19.65C2.35 19.65 2.35 19.64 2.34 19.63C2.28 19.49 2.23 19.34 2.18 19.19C2.14 19.06 2.11 18.93 2.08 18.8C2.03 18.54 2 18.27 2 18V4.5C2 3 3 2 4.5 2H7.5C9 2 10 3 10 4.5Z" fill="url(#swatch1)" />
             </g>
@@ -134,8 +134,8 @@ export default function VisualDirectionCard() {
           >
             <p className="text-[13px] text-txt-primary font-medium">
               <strong className="font-semibold text-txt-heading">Visual Direction</strong>
-              {" — "}
-              OFM Jobs & Jobsly — UI design and visual systems.
+              {": "}
+              OFM Jobs & Jobsly, UI design and visual systems.
             </p>
           </div>
         </motion.div>

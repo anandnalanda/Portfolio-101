@@ -87,7 +87,7 @@ export default function SwooshCard() {
           >
             <p className="text-[13px] text-txt-primary font-medium">
               <span>💬</span> <strong className="font-semibold text-txt-heading">Staple Chat</strong>
-              {" — "}
+              {": "}
               Conversational AI for document analysis.
             </p>
           </div>

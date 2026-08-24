@@ -8,6 +8,7 @@ import StapleTablesCard from "./cards/StapleTablesCard";
 import SocialCard from "./cards/SocialCard";
 import LaptopCard from "./cards/LaptopCard";
 import VisualDirectionCard from "./cards/VisualDirectionCard";
+import ExperimentsCard from "./cards/ExperimentsCard";
 import BentoTile from "./BentoTile";
 
 export default function BentoGrid() {
@@ -20,12 +21,7 @@ export default function BentoGrid() {
 
         <SettingsCard />
 
-        <BentoTile
-          variant="tall"
-          title="Experiments with AI"
-          descriptor="Products built with AI — from concept to shipped."
-          artifactLabel=""
-        />
+        <ExperimentsCard />
 
         <StickerCard />
 
