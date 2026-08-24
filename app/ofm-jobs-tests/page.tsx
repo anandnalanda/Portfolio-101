@@ -36,7 +36,7 @@ const sections: Section[] = [
     type: "intro",
     title: "Refining OFM Jobs Tests",
     content:
-      "A design critique and refinement of the OFM Jobs Tests interface — the assessment builder for AI-powered hiring workflows. This walkthrough examines the test creation experience, from question authoring to scoring configuration, and traces how the interface evolved into a cleaner, more focused tool.",
+      "A design critique and refinement of the OFM Jobs Tests interface, the assessment builder for AI-powered hiring workflows. This walkthrough examines the test creation experience, from question authoring to scoring configuration, and traces how the interface evolved into a cleaner, more focused tool.",
     highlight: null,
   },
   {
@@ -44,7 +44,7 @@ const sections: Section[] = [
     type: "critique",
     title: "Test Builder Layout",
     content:
-      "The builder splits into three rigid columns — test list, question editor, and settings panel — each competing for horizontal space. On standard screens the question editor is squeezed to barely 40% width, making long-form questions hard to read and edit. The layout prioritizes structure over the authoring task.",
+      "The builder splits into three rigid columns (test list, question editor, and settings panel), each competing for horizontal space. On standard screens the question editor is squeezed to barely 40% width, making long-form questions hard to read and edit. The layout prioritizes structure over the authoring task.",
     highlight: { top: 0, left: 0, width: 100, height: 10.5 },
   },
   {
@@ -52,7 +52,7 @@ const sections: Section[] = [
     type: "critique",
     title: "Question Type Selector",
     content:
-      "Question types live in a floating panel with large icon tiles — multiple choice, free response, coding, video, and ranking each get their own bordered card. The panel opens as a modal overlay, breaking the author's flow. Selecting a type dismisses the panel and resets scroll position.",
+      "Question types live in a floating panel with large icon tiles: multiple choice, free response, coding, video, and ranking each get their own bordered card. The panel opens as a modal overlay, breaking the author's flow. Selecting a type dismisses the panel and resets scroll position.",
     highlight: { top: 10.5, left: 0, width: 25, height: 89.5 },
   },
   {
@@ -68,7 +68,7 @@ const sections: Section[] = [
     type: "critique",
     title: "Scoring Rubric",
     content:
-      "Rubric configuration hides behind a tab inside each question card. Authors must click into the question, switch to the Scoring tab, then configure point values, partial credit, and AI evaluation criteria — three levels deep. Most authors miss the partial credit options entirely.",
+      "Rubric configuration hides behind a tab inside each question card. Authors must click into the question, switch to the Scoring tab, then configure point values, partial credit, and AI evaluation criteria, three levels deep. Most authors miss the partial credit options entirely.",
     highlight: { top: 10.5, left: 25, width: 45, height: 50 },
   },
   {
@@ -76,7 +76,7 @@ const sections: Section[] = [
     type: "critique",
     title: "Timer Controls",
     content:
-      "Timer settings scatter across two locations — a global test duration in the header and per-question time limits inside each question's settings tab. The two systems don't visually connect. When per-question times exceed the global limit, there's no warning until the author tries to publish.",
+      "Timer settings scatter across two locations: a global test duration in the header and per-question time limits inside each question's settings tab. The two systems don't visually connect. When per-question times exceed the global limit, there's no warning until the author tries to publish.",
     highlight: { top: 60.5, left: 25, width: 75, height: 20 },
   },
   {
@@ -92,7 +92,7 @@ const sections: Section[] = [
     type: "refinement",
     title: "Streamlining the Builder",
     content:
-      "Collapsed the three-column layout into a focused single-column editor with a collapsible test list rail. The question editor now spans the full content width. A persistent inline toolbar replaces the settings panel — every option is one click away, not three.",
+      "Collapsed the three-column layout into a focused single-column editor with a collapsible test list rail. The question editor now spans the full content width. A persistent inline toolbar replaces the settings panel. Every option is one click away, not three.",
     highlight: { top: 0, left: 0, width: 100, height: 10.5 },
   },
   {
@@ -100,7 +100,7 @@ const sections: Section[] = [
     type: "refinement",
     title: "Cleaner Question Types",
     content:
-      "Replaced the modal panel with an inline type selector — a compact row of labeled icons that sits at the insertion point. Choosing a type instantly scaffolds the question block in place. The author never loses context or scroll position.",
+      "Replaced the modal panel with an inline type selector, a compact row of labeled icons that sits at the insertion point. Choosing a type instantly scaffolds the question block in place. The author never loses context or scroll position.",
     highlight: { top: 10.5, left: 0, width: 25, height: 72 },
   },
   {
@@ -108,7 +108,7 @@ const sections: Section[] = [
     type: "refinement",
     title: "Unified Preview",
     content:
-      "Preview now opens as a slide-over panel with device-size toggles (mobile, tablet, desktop). Updates are instant — no lag. A split-view mode lets authors edit and preview side by side without the cramped three-column squeeze.",
+      "Preview now opens as a slide-over panel with device-size toggles (mobile, tablet, desktop). Updates are instant. No lag. A split-view mode lets authors edit and preview side by side without the cramped three-column squeeze.",
     highlight: { top: 10.5, left: 25, width: 75, height: 42 },
   },
   {
@@ -116,7 +116,7 @@ const sections: Section[] = [
     type: "refinement",
     title: "Simplified Scoring",
     content:
-      "Scoring controls surface directly below each question — point value, partial credit toggle, and AI criteria in a single visible row. Global scoring rules sit in a top-level settings bar with clear conflict warnings. No more hidden tabs.",
+      "Scoring controls surface directly below each question: point value, partial credit toggle, and AI criteria in a single visible row. Global scoring rules sit in a top-level settings bar with clear conflict warnings. No more hidden tabs.",
     highlight: { top: 82, left: 0, width: 100, height: 18 },
   },
   {
@@ -124,7 +124,7 @@ const sections: Section[] = [
     type: "summary",
     title: "",
     content:
-      "The refinements prioritized authoring flow over structural symmetry — fewer columns, inline controls, and surface-level scoring. The test builder now feels like a writing tool rather than a configuration panel. Authors spend time on questions, not on navigating the interface around them.",
+      "The refinements prioritized authoring flow over structural symmetry: fewer columns, inline controls, and surface-level scoring. The test builder now feels like a writing tool rather than a configuration panel. Authors spend time on questions, not on navigating the interface around them.",
     highlight: null,
   },
 ];
@@ -158,7 +158,7 @@ function DashboardBefore() {
 
       {/* Body */}
       <div className="flex flex-1 min-h-0">
-        {/* Sidebar — test list */}
+        {/* Sidebar - test list */}
         <div className="w-[25%] border-r border-black/[0.06] p-2 flex flex-col gap-1 bg-gray-50/40 shrink-0 overflow-hidden">
           <div className="text-[8px] font-semibold text-black/30 uppercase tracking-wider px-1 mb-1">Tests</div>
           {["Frontend Skills", "Backend Logic", "System Design", "Culture Fit", "AI/ML Quiz"].map(
@@ -180,7 +180,7 @@ function DashboardBefore() {
           )}
         </div>
 
-        {/* Main content — question builder */}
+        {/* Main content - question builder */}
         <div className="flex-1 flex flex-col min-h-0">
           {/* Question types panel */}
           <div className="grid grid-cols-5 gap-1 p-2 border-b border-black/[0.06] shrink-0">
@@ -206,13 +206,13 @@ function DashboardBefore() {
             {/* Question 1 */}
             <div className="border border-black/[0.08] rounded-lg p-2 bg-white">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[8px] font-semibold">Q1 — Multiple Choice</span>
+                <span className="text-[8px] font-semibold">Q1: Multiple Choice</span>
                 <span className="text-[7px] text-black/30">10 pts</span>
               </div>
               <div className="text-[8px] text-black/60">What is the time complexity of binary search?</div>
               <div className="mt-1 flex flex-col gap-0.5">
                 <div className="text-[7px] text-black/40 flex items-center gap-1"><span className="w-2 h-2 rounded-full border border-black/20" /> O(n)</div>
-                <div className="text-[7px] text-black/40 flex items-center gap-1"><span className="w-2 h-2 rounded-full border border-black/20 bg-emerald-200" /> O(log n)</div>
+                <div className="text-[7px] text-black/40 flex items-center gap-1"><span className="w-2 h-2 rounded-full border border-black/20 bg-success" /> O(log n)</div>
                 <div className="text-[7px] text-black/40 flex items-center gap-1"><span className="w-2 h-2 rounded-full border border-black/20" /> O(n log n)</div>
               </div>
               <div className="mt-1.5 flex gap-1">
@@ -224,7 +224,7 @@ function DashboardBefore() {
             {/* Question 2 */}
             <div className="border border-black/[0.08] rounded-lg p-2 bg-white">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[8px] font-semibold">Q2 — Free Response</span>
+                <span className="text-[8px] font-semibold">Q2: Free Response</span>
                 <span className="text-[7px] text-black/30">20 pts</span>
               </div>
               <div className="text-[8px] text-black/60">Explain the difference between REST and GraphQL.</div>
@@ -289,7 +289,7 @@ function DashboardAfter() {
 
       {/* Body */}
       <div className="flex flex-1 min-h-0">
-        {/* Sidebar — collapsible rail */}
+        {/* Sidebar - collapsible rail */}
         <div className="w-[25%] border-r border-black/[0.04] p-2 flex flex-col gap-0.5 shrink-0 overflow-hidden">
           <div className="text-[8px] font-semibold text-black/30 uppercase tracking-wider px-2 mb-1">Tests</div>
           {["Frontend Skills", "Backend Logic", "System Design", "Culture Fit", "AI/ML Quiz"].map(
@@ -308,7 +308,7 @@ function DashboardAfter() {
           )}
         </div>
 
-        {/* Main content — streamlined builder */}
+        {/* Main content - streamlined builder */}
         <div className="flex-1 flex flex-col min-h-0">
           {/* Inline toolbar */}
           <div className="px-3 py-2 border-b border-black/[0.04] shrink-0">
@@ -323,11 +323,11 @@ function DashboardAfter() {
             </div>
           </div>
 
-          {/* Question editor — full width */}
+          {/* Question editor - full width */}
           <div className="flex-1 p-3 flex flex-col gap-2 overflow-hidden">
             {/* Question 1 */}
             <div className="flex gap-2 items-start">
-              <div className="w-1 h-1 rounded-full bg-emerald-400 mt-1.5 shrink-0" />
+              <div className="w-1 h-1 rounded-full bg-primary mt-1.5 shrink-0" />
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-0.5">
                   <span className="text-[9px] font-medium">Q1</span>
@@ -337,7 +337,7 @@ function DashboardAfter() {
                 <div className="text-[9px] text-black/70">What is the time complexity of binary search?</div>
                 <div className="mt-1 flex flex-col gap-0.5 pl-2 border-l-[2.4px] border-black/[0.08]">
                   <div className="text-[8px] text-black/40">O(n)</div>
-                  <div className="text-[8px] font-medium text-emerald-600">O(log n) ✓</div>
+                  <div className="text-[8px] font-medium text-success">O(log n) ✓</div>
                   <div className="text-[8px] text-black/40">O(n log n)</div>
                 </div>
                 <div className="mt-1 flex items-center gap-2 text-[7px] text-black/30">
@@ -350,7 +350,7 @@ function DashboardAfter() {
 
             {/* Question 2 */}
             <div className="flex gap-2 items-start">
-              <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 shrink-0" />
+              <div className="w-1 h-1 rounded-full bg-primary/60 mt-1.5 shrink-0" />
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-0.5">
                   <span className="text-[9px] font-medium">Q2</span>
@@ -369,7 +369,7 @@ function DashboardAfter() {
 
             {/* Question 3 */}
             <div className="flex gap-2 items-start">
-              <div className="w-1 h-1 rounded-full bg-purple-400 mt-1.5 shrink-0" />
+              <div className="w-1 h-1 rounded-full bg-primary/30 mt-1.5 shrink-0" />
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-0.5">
                   <span className="text-[9px] font-medium">Q3</span>
@@ -395,7 +395,7 @@ function DashboardAfter() {
             </div>
           </div>
 
-          {/* Bottom bar — simplified */}
+          {/* Bottom bar - simplified */}
           <div className="p-2 shrink-0">
             <div className="rounded-xl border border-black/[0.08] bg-gray-50/50 p-2">
               <div className="flex items-center justify-between">
@@ -644,8 +644,8 @@ export default function OFMJobsTestsPage() {
           <div className="sticky top-0 h-screen pl-2 pr-[28px] py-[28px] flex flex-col">
             {/* Beige panel */}
             <div className="flex-1 rounded-[32px] bg-[#f5f0eb] p-[28px] flex flex-col">
-              {/* Dashboard container */}
-              <div className="relative flex-1 min-h-0 bg-white rounded-[32px] shadow-lg overflow-hidden">
+              {/* Dashboard container - .kibo scopes the OFM palette tokens */}
+              <div className="kibo relative flex-1 min-h-0 bg-white rounded-[32px] shadow-lg overflow-hidden">
                 {/* Before/After dashboards */}
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -682,8 +682,8 @@ export default function OFMJobsTestsPage() {
                           className={`w-full h-full rounded-lg border ${
                             sections.find((s) => s.id === section.id)?.type ===
                             "refinement"
-                              ? "bg-emerald-400/[0.12] border-emerald-400/30"
-                              : "bg-red-400/[0.15] border-red-400/30"
+                              ? "bg-success/[0.12] border-success/30"
+                              : "bg-destructive/[0.15] border-destructive/30"
                           }`}
                         />
                       </motion.div>
@@ -699,7 +699,7 @@ export default function OFMJobsTestsPage() {
       {/* Mobile artifact (shown inline on small screens) */}
       <div className="lg:hidden px-4 pb-10">
         <div className="rounded-2xl bg-[#f5f0eb] p-4">
-          <div className="relative aspect-[4/3] bg-white rounded-[32px] shadow-lg overflow-hidden">
+          <div className="kibo relative aspect-[4/3] bg-white rounded-[32px] shadow-lg overflow-hidden">
             {showAfter ? <DashboardAfter /> : <DashboardBefore />}
           </div>
         </div>
