@@ -1,9 +1,69 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { Spectral } from "next/font/google";
+import OfmLogo from "@/components/screens/ofm/OfmLogo";
+import JobPostRequire from "@/components/screens/ofm/tests/JobPostRequire";
+import TestLibrary from "@/components/screens/ofm/tests/TestLibrary";
+import GatedJob from "@/components/screens/ofm/tests/GatedJob";
+import VerifiedProfile from "@/components/screens/ofm/tests/VerifiedProfile";
+import InviteScreen from "@/components/screens/ofm/tests/InviteScreen";
+import EnglishTest from "@/components/screens/ofm/tests/EnglishTest";
+import VerbalTest from "@/components/screens/ofm/tests/VerbalTest";
+import ListeningTest from "@/components/screens/ofm/tests/ListeningTest";
+import SpeedTest from "@/components/screens/ofm/tests/SpeedTest";
+import TypingTest from "@/components/screens/ofm/tests/TypingTest";
+import ScorecardScreen from "@/components/screens/ofm/tests/ScorecardScreen";
+import ApplicationUnlocked from "@/components/screens/ofm/tests/ApplicationUnlocked";
+import ResultsTable from "@/components/screens/ofm/tests/ResultsTable";
+import BoardReturn from "@/components/screens/ofm/tests/BoardReturn";
+import PromiseVisual from "@/components/screens/ofm/tests/PromiseVisual";
+import LateVisual from "@/components/screens/ofm/tests/LateVisual";
+import TestLibraryGrid from "@/components/screens/ofm/tests/TestLibraryGrid";
+import JobPostWizard from "@/components/screens/ofm/tests/JobPostWizard";
+import DecisionPortable from "@/components/screens/ofm/tests/DecisionPortable";
+import CandidatePool from "@/components/screens/ofm/tests/CandidatePool";
+import DecisionTrust from "@/components/screens/ofm/tests/DecisionTrust";
+import FindWork from "@/components/screens/ofm/tests/FindWork";
+import ImpactScreen from "@/components/screens/ofm/tests/ImpactScreen";
+
+/* Deep emerald landing, drawn from the OFM `.kibo` brand hue. */
+const BRAND = "#064E3B";
+
+/* The d1 beat: the full "Post a job" wizard, autoplaying a cursor that clicks
+   Continue from Details through Requirements to the Tests step. */
+function JobPostTestsBeat() {
+  return <JobPostWizard autoplay />;
+}
+
+/* Beats whose right-panel artifact is built. Others fall back to the
+   SpecNote build brief. */
+const FLOW_SCREENS: Record<string, React.ComponentType> = {
+  promise: PromiseVisual,
+  late: LateVisual,
+  d1: JobPostTestsBeat,    // test the job, not trivia — the job-post wizard, autoplayed
+  d2: FindWork,            // proof to apply, not proof to shortlist — the Find work board, gated by proof
+  d3: CandidatePool,       // grade it the moment it's done — the employer's graded candidate pool
+  d4: DecisionTrust,       // a score you can trust
+  d5: DecisionPortable,    // prove it once, carry it everywhere — employer sees the portable profile
+  f1: JobPostRequire,      // set the bar when you post
+  f2: TestLibrary,         // a library, not a quiz you build
+  f3: GatedJob,            // the job, with a gate
+  f4: VerifiedProfile,     // prove it once, on your own time
+  f5: InviteScreen,        // what the candidate opens
+  f6: EnglishTest,
+  f7: VerbalTest,
+  f8: ListeningTest,
+  f9: SpeedTest,
+  f10: TypingTest,
+  f11: ScorecardScreen,    // scored, saved to the profile
+  f12: ApplicationUnlocked,// application unlocked
+  f13: ResultsTable,       // a pre-qualified pool
+  f14: BoardReturn,        // verified, from column one
+  impact: ImpactScreen,    // the filter moved to the front — outcome dashboard
+};
 
 const spectral = Spectral({
   subsets: ["latin"],
@@ -12,469 +72,682 @@ const spectral = Spectral({
 });
 
 /* ------------------------------------------------------------------ */
-/*  Section data                                                       */
+/*  Section data - the whole left-column narrative                     */
 /* ------------------------------------------------------------------ */
 
-type SectionType = "intro" | "critique" | "refinement" | "summary";
+type SectionType = "intro" | "story" | "decision" | "flow" | "closing";
 
 interface Section {
   id: string;
   type: SectionType;
   title: string;
   content: string;
-  highlight: {
-    top: number;
-    left: number;
-    width: number;
-    height: number;
-  } | null;
+  /** Scannable points under the lead paragraph. */
+  bullets?: string[];
+  /** Flow beats only: the numbered right-panel screen slot. */
+  screen?: number;
 }
 
 const sections: Section[] = [
   {
-    id: "intro",
+    id: "open",
     type: "intro",
-    title: "Refining OFM Jobs Tests",
-    content:
-      "A design critique and refinement of the OFM Jobs Tests interface, the assessment builder for AI-powered hiring workflows. This walkthrough examines the test creation experience, from question authoring to scoring configuration, and traces how the interface evolved into a cleaner, more focused tool.",
-    highlight: null,
+    title: "Proof to apply",
+    content: `OFM Jobs got an employer to a shortlist, but a shortlist is a stack of claims. "Fluent English," "fast typist," "great on calls": everyone writes it, few can prove it, and you only found out it was false after an interview you'd already paid for. Tests move the proof all the way to the front. An employer sets the required skills when they post the job, chosen from a shared test library, and a candidate can't apply until they've cleared the bar. Candidates prove it once, on their own time, and carry a verified profile from job to job. I designed and shipped it end to end, from the job post to the gate, the five tests, and the way proof lands back on the board.`,
+  },
+
+  /* ── The Story ─────────────────────────────────────────────── */
+  {
+    id: "promise",
+    type: "story",
+    title: `A résumé is a promise, not proof.`,
+    content: `For these roles the job is the skill itself, and almost none of it survives a CV.`,
+    bullets: [
+      `Can they actually hold a conversation in English, or just tick "B2"?`,
+      `Do they type fast enough to run three chats at once?`,
+      `Is their connection even stable enough to work?`,
+      `A CV answers none of it, but the job depends on all of it.`,
+    ],
   },
   {
-    id: "builder-layout",
-    type: "critique",
-    title: "Test Builder Layout",
-    content:
-      "The builder splits into three rigid columns (test list, question editor, and settings panel), each competing for horizontal space. On standard screens the question editor is squeezed to barely 40% width, making long-form questions hard to read and edit. The layout prioritizes structure over the authoring task.",
-    highlight: { top: 0, left: 0, width: 100, height: 10.5 },
+    id: "late",
+    type: "story",
+    title: `You found out too late.`,
+    content: `The only place to check a skill was the interview, the most expensive filter in the funnel.`,
+    bullets: [
+      `Thirty minutes in, you learn they type 22 WPM.`,
+      `A call that drops every two minutes, discovered on the call.`,
+      `The filter existed; it just sat at the wrong end of the pipe.`,
+    ],
+  },
+
+  /* ── The Decisions ─────────────────────────────────────────── */
+  {
+    id: "d1",
+    type: "decision",
+    title: `Test the job, not trivia.`,
+    content: `Five tests, each mapped to something the work actually needs, and nothing it doesn't. An off-the-shelf vendor would have been faster and wrong: generic tests screen generic skills, and they run on someone else's site, so the candidate and the score both leave OFM. So the tests are built native, shaped to chat work, and the result lands straight on the board.`,
+    bullets: [
+      `English: reading and grammar, the baseline for chat work.`,
+      `Verbal: a spoken prompt, recorded, for roles that get on calls.`,
+      `Listening: audio comprehension, because half the job is catching what's said.`,
+      `Internet speed: the boring thing that quietly ends chat work.`,
+      `Typing: raw words-per-minute and accuracy under a clock.`,
+    ],
   },
   {
-    id: "question-types",
-    type: "critique",
-    title: "Question Type Selector",
-    content:
-      "Question types live in a floating panel with large icon tiles: multiple choice, free response, coding, video, and ranking each get their own bordered card. The panel opens as a modal overlay, breaking the author's flow. Selecting a type dismisses the panel and resets scroll position.",
-    highlight: { top: 10.5, left: 0, width: 25, height: 89.5 },
+    id: "d2",
+    type: "decision",
+    title: `Proof to apply, not proof to shortlist.`,
+    content: `A test that runs after the shortlist still lets a stack of claims into the pile. So the test became the door. A candidate only sees Apply on the roles their verified skills already clear; the rest stay locked until they prove them. Nothing is submitted below the bar, so the pile an employer receives is pre-filtered, by the standard the role needs, not by a person.`,
+    bullets: [
+      `Required skills are chosen when the job is posted, not bolted on later.`,
+      `Roles a candidate has already proven are one-click apply; the rest stay locked until they take the test.`,
+      `Proof sits at the very front of the funnel, where the leak used to start.`,
+      `Clearing the bar opens the door, not the job — the employer still chooses among everyone who qualifies.`,
+    ],
   },
   {
-    id: "preview-pane",
-    type: "critique",
-    title: "Preview Pane",
-    content:
-      "The preview renders in a narrow right column with its own scroll context. It shows a phone-sized viewport by default, but most candidates take tests on desktop. The preview updates lag behind edits by a noticeable beat, and there's no way to toggle between device sizes.",
-    highlight: { top: 10.5, left: 70, width: 30, height: 55 },
+    id: "d3",
+    type: "decision",
+    title: `Grade it the moment it's done.`,
+    content: `Waiting on a human to mark tests would just move the bottleneck. So the machine grades what it can, the instant it can.`,
+    bullets: [
+      `Typing and internet speed are measured, not judged. Numbers, not opinions.`,
+      `English and listening auto-score against a key.`,
+      `Verbal is scored by AI, with the reasoning shown, never a number from nowhere.`,
+    ],
   },
   {
-    id: "scoring-rubric",
-    type: "critique",
-    title: "Scoring Rubric",
-    content:
-      "Rubric configuration hides behind a tab inside each question card. Authors must click into the question, switch to the Scoring tab, then configure point values, partial credit, and AI evaluation criteria, three levels deep. Most authors miss the partial credit options entirely.",
-    highlight: { top: 10.5, left: 25, width: 45, height: 50 },
+    id: "d4",
+    type: "decision",
+    title: `A score you can trust.`,
+    content: `A result nobody understands is a result nobody acts on, and a test that punishes a bad day tests the wrong thing.`,
+    bullets: [
+      `Every score opens into how it was reached.`,
+      `Pass marks are the employer's to set, per test and per role.`,
+      `A weak connection or a shaky first take is flagged for a retry, not scored as a fail.`,
+      `Retakes and flags stay visible, not buried in an average.`,
+    ],
   },
   {
-    id: "timer-controls",
-    type: "critique",
-    title: "Timer Controls",
-    content:
-      "Timer settings scatter across two locations: a global test duration in the header and per-question time limits inside each question's settings tab. The two systems don't visually connect. When per-question times exceed the global limit, there's no warning until the author tries to publish.",
-    highlight: { top: 60.5, left: 25, width: 75, height: 20 },
+    id: "d5",
+    type: "decision",
+    title: `Prove it once, carry it everywhere.`,
+    content: `Making a candidate re-test for every employer is its own kind of leak. So the proof lives on the candidate, not the application. Take a test on your own time, and the verified score sits on your profile, ready for the next gated job that needs it.`,
+    bullets: [
+      `Take any test proactively, not only when an employer invites you.`,
+      `Verified scores live on the profile and travel from job to job.`,
+      `Already clear a job's bar? Apply instantly. "Fluent English" is now "English: 92, verified."`,
+    ],
+  },
+
+  /* ── The Full Flow ─────────────────────────────────────────── */
+  {
+    id: "f1",
+    type: "flow",
+    screen: 1,
+    title: `Set the bar when you post.`,
+    content: `Requirements aren't an afterthought; they're part of posting the job. Add the skills the role needs and the score each one has to clear.`,
+    bullets: [
+      `A "Required skills" step, right inside the job post.`,
+      `Pull each test from the shared library and set its pass mark.`,
+      `The job goes live gated: no proof, no application.`,
+    ],
   },
   {
-    id: "results-dashboard",
-    type: "critique",
-    title: "Results Dashboard",
-    content:
-      "The results view mirrors the builder's three-column layout but adds a fourth panel for individual response detail. Score distributions, completion rates, and time analytics each sit in separate bordered cards with inconsistent chart styles. The density makes it hard to spot patterns at a glance.",
-    highlight: { top: 80.5, left: 0, width: 100, height: 19.5 },
+    id: "f2",
+    type: "flow",
+    screen: 2,
+    title: `A library, not a quiz you build.`,
+    content: `Nobody writes their own typing test. The tests are standardized and shared, so the same skill means the same thing on every job across OFM.`,
+    bullets: [
+      `Pick from a catalog of ready, chat-work tests.`,
+      `Same test, same scale, every employer, so scores compare.`,
+      `Choose it, set the bar, and it's attached to the role.`,
+    ],
   },
   {
-    id: "refinement-builder",
-    type: "refinement",
-    title: "Streamlining the Builder",
-    content:
-      "Collapsed the three-column layout into a focused single-column editor with a collapsible test list rail. The question editor now spans the full content width. A persistent inline toolbar replaces the settings panel. Every option is one click away, not three.",
-    highlight: { top: 0, left: 0, width: 100, height: 10.5 },
+    id: "f3",
+    type: "flow",
+    screen: 3,
+    title: `The job, with a gate.`,
+    content: `On the candidate's side, the listing is honest about what it takes. The required skills sit right up top, and Apply is locked until they're met.`,
+    bullets: [
+      `The verified skills the role needs, shown before you start.`,
+      `A locked Apply button; the bar is visible, never a surprise.`,
+      `Green ticks for what you already hold, from earlier tests.`,
+    ],
   },
   {
-    id: "refinement-questions",
-    type: "refinement",
-    title: "Cleaner Question Types",
-    content:
-      "Replaced the modal panel with an inline type selector, a compact row of labeled icons that sits at the insertion point. Choosing a type instantly scaffolds the question block in place. The author never loses context or scroll position.",
-    highlight: { top: 10.5, left: 0, width: 25, height: 72 },
+    id: "f4",
+    type: "flow",
+    screen: 4,
+    title: `Prove it once, on your own time.`,
+    content: `A candidate doesn't have to wait for an invite. They can take any test proactively and build a verified profile that opens doors before they even knock.`,
+    bullets: [
+      `Take a test whenever, not only when an employer asks.`,
+      `Verified scores live on the profile, ready to reuse.`,
+      `One good result unlocks every job that needs it.`,
+    ],
   },
   {
-    id: "refinement-preview",
-    type: "refinement",
-    title: "Unified Preview",
-    content:
-      "Preview now opens as a slide-over panel with device-size toggles (mobile, tablet, desktop). Updates are instant. No lag. A split-view mode lets authors edit and preview side by side without the cramped three-column squeeze.",
-    highlight: { top: 10.5, left: 25, width: 75, height: 42 },
+    id: "f5",
+    type: "flow",
+    screen: 5,
+    title: `What the candidate opens.`,
+    content: `Whether it's to clear a gate or top up a profile, the battery opens as a plain, unintimidating page: here's what you'll do, here's how long it takes.`,
+    bullets: [
+      `The set laid out up front, with an honest time estimate.`,
+      `A mic and connection check before anything counts.`,
+      `One button to begin; the battery runs itself from there.`,
+    ],
   },
   {
-    id: "refinement-scoring",
-    type: "refinement",
-    title: "Simplified Scoring",
-    content:
-      "Scoring controls surface directly below each question: point value, partial credit toggle, and AI criteria in a single visible row. Global scoring rules sit in a top-level settings bar with clear conflict warnings. No more hidden tabs.",
-    highlight: { top: 82, left: 0, width: 100, height: 18 },
+    id: "f6",
+    type: "flow",
+    screen: 6,
+    title: `English.`,
+    content: `A short reading-and-grammar set that mirrors the messages they'd actually send.`,
+    bullets: [
+      `Real chat snippets, not textbook sentences.`,
+      `One question at a time, auto-advancing.`,
+      `Auto-scored against the key the moment it ends.`,
+    ],
   },
   {
-    id: "summary",
-    type: "summary",
-    title: "",
-    content:
-      "The refinements prioritized authoring flow over structural symmetry: fewer columns, inline controls, and surface-level scoring. The test builder now feels like a writing tool rather than a configuration panel. Authors spend time on questions, not on navigating the interface around them.",
-    highlight: null,
+    id: "f7",
+    type: "flow",
+    screen: 7,
+    title: `Verbal.`,
+    content: `A prompt on screen, a recorder underneath: say your answer out loud.`,
+    bullets: [
+      `A scenario to respond to, like a real customer.`,
+      `Record, hear it back, submit.`,
+      `AI scores fluency and clarity, and shows why.`,
+    ],
+  },
+  {
+    id: "f8",
+    type: "flow",
+    screen: 8,
+    title: `Listening.`,
+    content: `Play a clip, answer what it asked, the half of the job that isn't typing.`,
+    bullets: [
+      `Short audio, played once or twice.`,
+      `Comprehension questions that follow the clip.`,
+      `Auto-scored, no employer time spent.`,
+    ],
+  },
+  {
+    id: "f9",
+    type: "flow",
+    screen: 9,
+    title: `Internet speed.`,
+    content: `A live test of the thing that silently decides whether someone can do chat work at all.`,
+    bullets: [
+      `Download, upload, and ping, measured live.`,
+      `A clear pass line for what the work needs.`,
+      `Flagged, not failed, so a bad reading can be retried.`,
+    ],
+  },
+  {
+    id: "f10",
+    type: "flow",
+    screen: 10,
+    title: `Typing.`,
+    content: `A timed passage with words-per-minute and accuracy ticking up as they type.`,
+    bullets: [
+      `Live WPM and accuracy, no waiting for a result.`,
+      `The same passage for everyone, so scores compare.`,
+      `One number the employer already understands.`,
+    ],
+  },
+  {
+    id: "f11",
+    type: "flow",
+    screen: 11,
+    title: `Scored, and saved to the profile.`,
+    content: `The moment they finish, one card sums the battery, and the results don't just vanish into one employer's inbox.`,
+    bullets: [
+      `Five results in a row, each with a pass or a flag.`,
+      `The AI's notes on the verbal answer, in plain words.`,
+      `Saved to the profile, not sent once and gone.`,
+    ],
+  },
+  {
+    id: "f12",
+    type: "flow",
+    screen: 12,
+    title: `Application unlocked.`,
+    content: `Back on the gated job, the proof does its work: every required skill turns green, the lock falls away, and applying takes one tap.`,
+    bullets: [
+      `Cleared the bar, so Apply lights up.`,
+      `The verified scores attach to the application automatically.`,
+      `You apply already proven, not just hopeful.`,
+    ],
+  },
+  {
+    id: "f13",
+    type: "flow",
+    screen: 13,
+    title: `A pre-qualified pool.`,
+    content: `On the employer's side, the applicant list looks different now: everyone in it has already cleared the bar. There's nothing to weed out, only the best to find.`,
+    bullets: [
+      `Every applicant already meets the required skills.`,
+      `Sort among the qualified, not sift through the claimed.`,
+      `Verified badges on every row, comparable at a glance.`,
+    ],
+  },
+  {
+    id: "f14",
+    type: "flow",
+    screen: 14,
+    title: `Verified, from column one.`,
+    content: `The pipeline starts where it used to end. The very first column is already proven, and the AI match score rests on evidence, not a résumé's word.`,
+    bullets: [
+      `The first Kanban column is verified, not hopeful.`,
+      `Open a card and the full scorecard is right there.`,
+      `Testing and pipeline, the two halves of OFM Jobs, become one flow.`,
+    ],
+  },
+
+  /* ── The Outcome ───────────────────────────────────────────── */
+  {
+    id: "impact",
+    type: "closing",
+    title: `Impact.`,
+    content: `Claims became proof, and the filter moved all the way to the front. The board stopped being a place to weed out bad fits; every candidate on it had already cleared the bar. The interview became the reward for passing, not the place you discovered the truth.`,
+    bullets: [
+      `Applications arrived pre-qualified, so the "types 22 WPM" surprise never reached the board.`,
+      `Candidates who tested proactively applied in one tap and reused a single result across roles.`,
+      `A role went from open post to a verified, ranked pool without a manual screen in between.`,
+      `Hiring, from post to offer, now runs start to finish on OFM, so the platform earns a seat at every hire.`,
+    ],
   },
 ];
 
-const ease = [0.22, 1, 0.36, 1];
+const ease = [0.22, 1, 0.36, 1] as const;
+
+const CROSSFADE =
+  "absolute inset-0 transition-opacity duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-[opacity] motion-reduce:transition-none";
 
 /* ------------------------------------------------------------------ */
-/*  Dashboard mockups                                                  */
+/*  NarrativeSection                                                   */
 /* ------------------------------------------------------------------ */
-
-function DashboardBefore() {
-  return (
-    <div className="w-full h-full flex flex-col text-[10px] leading-tight bg-white rounded-xl overflow-hidden border border-black/[0.08]">
-      {/* Nav */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-black/[0.06] bg-gray-50/80 shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-4 h-4 rounded bg-black/80" />
-          <span className="font-bold text-[10px]">OFM Jobs</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="px-2 py-1 rounded bg-black/10 font-semibold text-[9px]">Tests</span>
-          <span className="px-2 py-1 rounded text-black/40 text-[9px]">Candidates</span>
-          <span className="px-2 py-1 rounded text-black/40 text-[9px]">Results</span>
-          <span className="px-2 py-1 rounded text-black/40 text-[9px]">Settings</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-16 h-5 rounded border border-black/10 bg-white" />
-          <div className="w-5 h-5 rounded-full bg-black/10" />
-        </div>
-      </div>
-
-      {/* Body */}
-      <div className="flex flex-1 min-h-0">
-        {/* Sidebar - test list */}
-        <div className="w-[25%] border-r border-black/[0.06] p-2 flex flex-col gap-1 bg-gray-50/40 shrink-0 overflow-hidden">
-          <div className="text-[8px] font-semibold text-black/30 uppercase tracking-wider px-1 mb-1">Tests</div>
-          {["Frontend Skills", "Backend Logic", "System Design", "Culture Fit", "AI/ML Quiz"].map(
-            (name, i) => (
-              <div
-                key={name}
-                className={`px-2 py-1.5 rounded text-[9px] ${
-                  i === 0
-                    ? "bg-black/[0.05] font-medium"
-                    : "text-black/50"
-                }`}
-              >
-                <div className="truncate">{name}</div>
-                <div className="text-[7px] text-black/25 mt-0.5 truncate">
-                  {i === 0 ? "12 questions · Draft" : `${(i + 1) * 4} questions · Published`}
-                </div>
-              </div>
-            )
-          )}
-        </div>
-
-        {/* Main content - question builder */}
-        <div className="flex-1 flex flex-col min-h-0">
-          {/* Question types panel */}
-          <div className="grid grid-cols-5 gap-1 p-2 border-b border-black/[0.06] shrink-0">
-            {[
-              { label: "Multiple Choice", icon: "○" },
-              { label: "Free Response", icon: "✎" },
-              { label: "Coding", icon: "</>" },
-              { label: "Video", icon: "▶" },
-              { label: "Ranking", icon: "≡" },
-            ].map((q) => (
-              <div
-                key={q.label}
-                className="border border-black/[0.08] rounded-lg p-1.5 bg-white text-center"
-              >
-                <div className="text-[12px]">{q.icon}</div>
-                <div className="text-[7px] text-black/40 mt-0.5">{q.label}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Question editor */}
-          <div className="flex-1 p-3 flex flex-col gap-2 overflow-hidden">
-            {/* Question 1 */}
-            <div className="border border-black/[0.08] rounded-lg p-2 bg-white">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[8px] font-semibold">Q1: Multiple Choice</span>
-                <span className="text-[7px] text-black/30">10 pts</span>
-              </div>
-              <div className="text-[8px] text-black/60">What is the time complexity of binary search?</div>
-              <div className="mt-1 flex flex-col gap-0.5">
-                <div className="text-[7px] text-black/40 flex items-center gap-1"><span className="w-2 h-2 rounded-full border border-black/20" /> O(n)</div>
-                <div className="text-[7px] text-black/40 flex items-center gap-1"><span className="w-2 h-2 rounded-full border border-black/20 bg-success" /> O(log n)</div>
-                <div className="text-[7px] text-black/40 flex items-center gap-1"><span className="w-2 h-2 rounded-full border border-black/20" /> O(n log n)</div>
-              </div>
-              <div className="mt-1.5 flex gap-1">
-                <span className="text-[7px] px-1.5 py-0.5 rounded bg-black/[0.04] text-black/40">Scoring</span>
-                <span className="text-[7px] px-1.5 py-0.5 rounded bg-black/[0.04] text-black/40">Timer</span>
-              </div>
-            </div>
-
-            {/* Question 2 */}
-            <div className="border border-black/[0.08] rounded-lg p-2 bg-white">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[8px] font-semibold">Q2: Free Response</span>
-                <span className="text-[7px] text-black/30">20 pts</span>
-              </div>
-              <div className="text-[8px] text-black/60">Explain the difference between REST and GraphQL.</div>
-              <div className="mt-1 h-6 rounded border border-dashed border-black/10 bg-gray-50/50 flex items-center justify-center text-[7px] text-black/20">Response area</div>
-            </div>
-          </div>
-
-          {/* Timer & settings bar */}
-          <div className="border-t border-black/[0.06] p-2 shrink-0">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[8px] text-black/40">
-                <span>Total: 60 min</span>
-                <span className="text-black/15">|</span>
-                <span>Per-question: Varies</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-14 h-5 rounded border border-black/10 bg-white flex items-center justify-center text-[8px] text-black/40">Preview</div>
-                <div className="w-14 h-5 rounded bg-black/80 flex items-center justify-center text-[8px] text-white">Publish</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Preview panel */}
-        <div className="w-[30%] border-l border-black/[0.06] p-2 flex flex-col gap-1 bg-gray-50/30 shrink-0 overflow-hidden">
-          <div className="text-[8px] font-semibold text-black/30 uppercase tracking-wider px-1 mb-1">Preview</div>
-          <div className="flex-1 border border-black/[0.06] rounded-lg bg-white p-2">
-            <div className="w-full mx-auto max-w-[80%]">
-              <div className="text-[8px] font-semibold mb-1">Frontend Skills Test</div>
-              <div className="text-[7px] text-black/40 mb-2">Question 1 of 12</div>
-              <div className="text-[7px] text-black/60 mb-1">What is the time complexity of binary search?</div>
-              <div className="flex flex-col gap-0.5">
-                <div className="text-[7px] text-black/40 px-1.5 py-0.5 rounded border border-black/10">O(n)</div>
-                <div className="text-[7px] text-black/40 px-1.5 py-0.5 rounded border border-black/10">O(log n)</div>
-                <div className="text-[7px] text-black/40 px-1.5 py-0.5 rounded border border-black/10">O(n log n)</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DashboardAfter() {
-  return (
-    <div className="w-full h-full flex flex-col text-[10px] leading-tight bg-white rounded-xl overflow-hidden border border-black/[0.08]">
-      {/* Nav - simplified */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-black/[0.04] shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-black/80" />
-            <span className="font-bold text-[10px]">OFM Jobs</span>
-          </div>
-          <div className="flex items-center gap-3 text-[9px]">
-            <span className="font-semibold text-black/80 border-b border-black/80 pb-0.5">Tests</span>
-            <span className="text-black/35">Candidates</span>
-          </div>
-        </div>
-        <div className="w-5 h-5 rounded-full bg-black/10" />
-      </div>
-
-      {/* Body */}
-      <div className="flex flex-1 min-h-0">
-        {/* Sidebar - collapsible rail */}
-        <div className="w-[25%] border-r border-black/[0.04] p-2 flex flex-col gap-0.5 shrink-0 overflow-hidden">
-          <div className="text-[8px] font-semibold text-black/30 uppercase tracking-wider px-2 mb-1">Tests</div>
-          {["Frontend Skills", "Backend Logic", "System Design", "Culture Fit", "AI/ML Quiz"].map(
-            (name, i) => (
-              <div
-                key={name}
-                className={`px-2 py-1.5 rounded-lg text-[9px] ${
-                  i === 0
-                    ? "bg-black/[0.04] font-semibold"
-                    : "text-black/40"
-                }`}
-              >
-                <div className="truncate">{name}</div>
-              </div>
-            )
-          )}
-        </div>
-
-        {/* Main content - streamlined builder */}
-        <div className="flex-1 flex flex-col min-h-0">
-          {/* Inline toolbar */}
-          <div className="px-3 py-2 border-b border-black/[0.04] shrink-0">
-            <div className="flex items-center gap-3 text-[9px] text-black/50">
-              <span><strong className="text-black/70">12</strong> questions</span>
-              <span className="text-black/15">·</span>
-              <span><strong className="text-black/70">60</strong> min</span>
-              <span className="text-black/15">·</span>
-              <span><strong className="text-black/70">100</strong> pts</span>
-              <span className="text-black/15">·</span>
-              <span className="text-[8px]">Draft</span>
-            </div>
-          </div>
-
-          {/* Question editor - full width */}
-          <div className="flex-1 p-3 flex flex-col gap-2 overflow-hidden">
-            {/* Question 1 */}
-            <div className="flex gap-2 items-start">
-              <div className="w-1 h-1 rounded-full bg-primary mt-1.5 shrink-0" />
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-[9px] font-medium">Q1</span>
-                  <span className="text-[7px] text-black/30 px-1 py-0.5 rounded bg-black/[0.03]">Multiple Choice</span>
-                  <span className="text-[7px] text-black/30 ml-auto">10 pts</span>
-                </div>
-                <div className="text-[9px] text-black/70">What is the time complexity of binary search?</div>
-                <div className="mt-1 flex flex-col gap-0.5 pl-2 border-l-[2.4px] border-black/[0.08]">
-                  <div className="text-[8px] text-black/40">O(n)</div>
-                  <div className="text-[8px] font-medium text-success">O(log n) ✓</div>
-                  <div className="text-[8px] text-black/40">O(n log n)</div>
-                </div>
-                <div className="mt-1 flex items-center gap-2 text-[7px] text-black/30">
-                  <span>Partial credit: Off</span>
-                  <span className="text-black/10">·</span>
-                  <span>5 min limit</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Question 2 */}
-            <div className="flex gap-2 items-start">
-              <div className="w-1 h-1 rounded-full bg-primary/60 mt-1.5 shrink-0" />
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-[9px] font-medium">Q2</span>
-                  <span className="text-[7px] text-black/30 px-1 py-0.5 rounded bg-black/[0.03]">Free Response</span>
-                  <span className="text-[7px] text-black/30 ml-auto">20 pts</span>
-                </div>
-                <div className="text-[9px] text-black/70">Explain the difference between REST and GraphQL.</div>
-                <div className="mt-1 text-[8px] text-black/30 pl-2 border-l-[2.4px] border-black/[0.08]">AI-evaluated · Rubric: clarity, depth, examples</div>
-                <div className="mt-1 flex items-center gap-2 text-[7px] text-black/30">
-                  <span>Partial credit: On</span>
-                  <span className="text-black/10">·</span>
-                  <span>10 min limit</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Question 3 */}
-            <div className="flex gap-2 items-start">
-              <div className="w-1 h-1 rounded-full bg-primary/30 mt-1.5 shrink-0" />
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-[9px] font-medium">Q3</span>
-                  <span className="text-[7px] text-black/30 px-1 py-0.5 rounded bg-black/[0.03]">Coding</span>
-                  <span className="text-[7px] text-black/30 ml-auto">30 pts</span>
-                </div>
-                <div className="text-[9px] text-black/70">Implement a debounce function in JavaScript.</div>
-                <div className="mt-1 text-[8px] text-black/30 pl-2 border-l-[2.4px] border-black/[0.08]">Auto-graded · 3 test cases</div>
-              </div>
-            </div>
-
-            {/* Inline add question */}
-            <div className="flex items-center gap-2 mt-1 pl-3">
-              <div className="flex items-center gap-1 text-[8px] text-black/25">
-                <span className="w-4 h-4 rounded-full border border-dashed border-black/15 flex items-center justify-center text-[10px]">+</span>
-                <span className="flex gap-1">
-                  <span className="px-1.5 py-0.5 rounded bg-black/[0.03] hover:bg-black/[0.06]">MC</span>
-                  <span className="px-1.5 py-0.5 rounded bg-black/[0.03] hover:bg-black/[0.06]">Free</span>
-                  <span className="px-1.5 py-0.5 rounded bg-black/[0.03] hover:bg-black/[0.06]">Code</span>
-                  <span className="px-1.5 py-0.5 rounded bg-black/[0.03] hover:bg-black/[0.06]">Video</span>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom bar - simplified */}
-          <div className="p-2 shrink-0">
-            <div className="rounded-xl border border-black/[0.08] bg-gray-50/50 p-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-[8px] text-black/30">
-                  <span className="px-1.5 py-0.5 rounded bg-black/[0.04]">Preview</span>
-                  <span className="px-1.5 py-0.5 rounded bg-black/[0.04]">Settings</span>
-                </div>
-                <div className="w-14 h-5 rounded-lg bg-black/80 flex items-center justify-center text-[8px] text-white">Publish</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  NarrativeSection component                                         */
-/* ------------------------------------------------------------------ */
-
-interface NarrativeSectionProps {
-  id: string;
-  title: string;
-  children: React.ReactNode;
-  titleSize?: "lg" | "md" | "sm";
-  onActive?: (id: string) => void;
-}
 
 function NarrativeSection({
   id,
   title,
-  children,
+  content,
+  bullets,
   titleSize = "md",
-  onActive,
-}: NarrativeSectionProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [isActive, setIsActive] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsActive(true);
-          onActive?.(id);
-        } else {
-          setIsActive(false);
-        }
-      },
-      { rootMargin: "-49% 0px -49% 0px", threshold: 0 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [id, onActive]);
-
+  serif = false,
+  active = false,
+  onNavigate,
+}: {
+  id: string;
+  title: string;
+  content: string;
+  bullets?: string[];
+  titleSize?: "lg" | "md";
+  serif?: boolean;
+  active?: boolean;
+  onNavigate?: () => void;
+}) {
   const titleClass =
     titleSize === "lg"
       ? "text-[28px] tracking-[-0.02em] leading-tight"
-      : titleSize === "sm"
-      ? "text-[22px] tracking-[-0.01em]"
       : "text-[18px]";
 
+  const handleCardClick = () => {
+    if (window.getSelection()?.toString()) return;
+    onNavigate?.();
+  };
+
   return (
-    <div ref={ref} data-section={id} className="mb-6">
+    <div data-section={id} className="mb-6">
       <div
-        className={`py-4 px-4 transition-all duration-[250ms] ease-out border-l-[2.4px] ${
-          isActive
+        onClick={onNavigate ? handleCardClick : undefined}
+        className={`group py-4 px-4 transition-all duration-[450ms] ease-[cubic-bezier(0.22,1,0.36,1)] border-l-[2.4px] ${
+          onNavigate ? "cursor-pointer" : ""
+        } ${
+          active
             ? "border-l-txt-secondary bg-surface-muted opacity-100"
-            : "border-l-transparent opacity-[0.75]"
+            : `border-l-transparent opacity-[0.75] ${
+                onNavigate ? "hover:opacity-100 hover:bg-black/[0.02]" : ""
+              }`
         }`}
       >
-        <h2 className={`font-semibold text-txt-heading mb-2 ${titleClass}`}>
+        <h2
+          className={`mb-2 text-txt-heading ${titleClass} ${
+            serif ? `${spectral.className} font-normal` : "font-semibold"
+          }`}
+        >
           {title}
         </h2>
-        <p className="text-[15px] leading-[1.7] text-txt-primary">{children}</p>
+        <p className="text-[15px] leading-[1.7] text-txt-primary">{content}</p>
+        {bullets && bullets.length > 0 && (
+          <ul className="mt-3 list-disc space-y-1.5 pl-[18px] text-[15px] leading-[1.6] text-txt-primary marker:text-txt-secondary">
+            {bullets.map((b, i) => (
+              <li key={i} className="pl-1">
+                {b}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Right-panel build briefs - what each beat's screen/illustration is */
+/* ------------------------------------------------------------------ */
+
+type Note = {
+  /** tag shown top-left, e.g. "Screen 3", "Illustration", "Diagram" */
+  kind: string;
+  headline: string;
+  what: string;
+  /** the concrete elements to build on the artboard */
+  onScreen: string[];
+  /** the motion / illustration idea */
+  motion: string;
+};
+
+const NOTES: Record<string, Note> = {
+  /* Story illustrations */
+  promise: {
+    kind: "Illustration",
+    headline: "Claims without proof",
+    what: "A hand-drawn profile whose skill claims can't be trusted.",
+    onScreen: [
+      "A candidate card with claim chips: 'Fluent English', 'Fast typist', 'Great on calls'.",
+      "Each chip stamped with a faint '?': asserted, never verified.",
+      "Loose sketch-line style, muted ink (match the Kanban story visual).",
+    ],
+    motion: "Each chip flickers between its claim and a question mark on a slow loop.",
+  },
+  late: {
+    kind: "Illustration",
+    headline: "The expensive filter",
+    what: "The interview is where the truth finally shows up, too late.",
+    onScreen: [
+      "A video-call frame: two avatars, a live call bar.",
+      "A typing meter creeping up and stalling at '22 WPM'.",
+      "A '30 min' cost tag and a dropping connection blip.",
+    ],
+    motion: "The WPM needle rises and stalls at 22; the call bars fall to one, then a 'reconnecting' flicker.",
+  },
+
+  /* Decision illustrations / diagrams */
+  d1: {
+    kind: "Diagram",
+    headline: "Five tests, one job",
+    what: "The battery as a single set, each test mapped to a real skill.",
+    onScreen: [
+      "Five labeled tiles in a row: English, Verbal, Listening, Internet speed, Typing, each with its icon.",
+      "A one-line 'why' under each (baseline / on calls / catches what's said / connection / speed).",
+      "Reads as one battery, not five forms.",
+    ],
+    motion: "Tiles stagger in left to right; the row settles as a single grouped set.",
+  },
+  d2: {
+    kind: "Screen",
+    headline: "The test is the door",
+    what: "The candidate's Find work board: you can only apply where proof clears the bar.",
+    onScreen: [
+      "A job list split into 'Ready to apply' and 'A few tests away'.",
+      "Verified skills clear the bar on several jobs at once — one-tap Apply on those.",
+      "The rest stay locked, showing exactly which tests would open them.",
+    ],
+    motion: "The job cards reveal top to bottom; the apply-ready jobs sit above the gated ones.",
+  },
+  d3: {
+    kind: "Screen",
+    headline: "A pool of graded candidates",
+    what: "The employer's applicant pool + one candidate's full detail.",
+    onScreen: [
+      "A candidate list, each already scored — no queue, everyone auto-graded.",
+      "The selected candidate's results by grading method: measured, auto-scored, AI-scored with its reasoning.",
+      "Her experience and languages alongside the scorecard.",
+    ],
+    motion: "The verbal 'why' note types out beneath its AI score.",
+  },
+  d4: {
+    kind: "Screen",
+    headline: "A score you can open",
+    what: "Explainable scores, employer-set pass marks, fair retries.",
+    onScreen: [
+      "A score chip that expands into its breakdown (how it was reached).",
+      "A pass-mark control per test.",
+      "A 'flagged for retry' row on a weak connection, not a fail.",
+    ],
+    motion: "A score expands to reveal its reasons; a flagged row surfaces a 'retry' affordance.",
+  },
+  d5: {
+    kind: "Screen",
+    headline: "Prove it once, carry it everywhere",
+    what: "The employer opens a candidate whose proof predates this job.",
+    onScreen: [
+      "A candidate profile holding verified badges: 'English 92', 'Typing 68'.",
+      "Earned before this job, already attached — no re-testing asked.",
+      "The same scores already unlocked other roles she applied to.",
+    ],
+    motion: "The verified badges stagger in, each stamped with when it was earned.",
+  },
+
+  /* Flow screens */
+  f1: {
+    kind: "Screen 1",
+    headline: "Pick the tests, send the invite",
+    what: "Employer builds the battery from the role. Kibo shell.",
+    onScreen: [
+      "DashboardShell (Kibo) with the role/applicant in view.",
+      "Five test toggles, each with a pass-mark and time-limit field.",
+      "'Copy link' / 'Invite from card' action.",
+    ],
+    motion: "Toggling a test on scaffolds its pass-mark row inline.",
+  },
+  f2: {
+    kind: "Screen 2",
+    headline: "What the candidate opens",
+    what: "The invite page: plain, honest, one button to start.",
+    onScreen: [
+      "Candidate chrome (not the employer shell): clean and calm.",
+      "The five tests listed with an honest time estimate (~10 min).",
+      "A mic + connection pre-check, then a 'Begin' CTA.",
+    ],
+    motion: "The connection check runs a quick pulse, then goes green.",
+  },
+  f3: {
+    kind: "Screen 3",
+    headline: "English",
+    what: "Reading and grammar, from real chat snippets.",
+    onScreen: [
+      "One question at a time, framed as a real chat message.",
+      "3 to 4 options; a '3 of 10' progress marker.",
+      "Auto-advance on select.",
+    ],
+    motion: "Selecting an option slides the next question in.",
+  },
+  f4: {
+    kind: "Screen 4",
+    headline: "Verbal",
+    what: "A spoken response to a scenario, recorded.",
+    onScreen: [
+      "A scenario prompt (a demanding customer message).",
+      "A record button with a live waveform; playback + submit.",
+      "'AI scores fluency & clarity' note.",
+    ],
+    motion: "The waveform animates while recording; on submit, a score and one-line reason appear.",
+  },
+  f5: {
+    kind: "Screen 5",
+    headline: "Listening",
+    what: "An audio clip, then a comprehension question.",
+    onScreen: [
+      "An audio player (play once or twice) with a scrubber.",
+      "A comprehension question below the clip.",
+      "Auto-scored, no employer time.",
+    ],
+    motion: "The scrubber plays through; the question reveals once the clip ends.",
+  },
+  f6: {
+    kind: "Screen 6",
+    headline: "Internet speed",
+    what: "A live speedometer for the connection.",
+    onScreen: [
+      "A large animated gauge with a needle; live Mbps counting up.",
+      "Download / upload / ping tiles.",
+      "A clear pass-line marker.",
+    ],
+    motion: "The needle sweeps and the numbers tick, landing above or below the pass line.",
+  },
+  f7: {
+    kind: "Screen 7",
+    headline: "Typing",
+    what: "A timed passage with live WPM and accuracy.",
+    onScreen: [
+      "A passage with a moving caret; typed characters highlighted.",
+      "Live WPM + accuracy counters and a countdown.",
+      "The same passage for everyone, so scores compare.",
+    ],
+    motion: "Words highlight as if typed; WPM ticks up while the timer counts down.",
+  },
+  f8: {
+    kind: "Screen 8",
+    headline: "The candidate's scorecard",
+    what: "All five results summed in one card.",
+    onScreen: [
+      "Five result rows: English, Verbal, Listening, Speed, Typing, each pass or flag.",
+      "The AI's verbal note in plain words.",
+      "A 'sent to the employer' confirmation.",
+    ],
+    motion: "Rows fill in one by one, ending on a 'sent' tick.",
+  },
+  f9: {
+    kind: "Screen 9",
+    headline: "The employer's view",
+    what: "Every tested candidate, ranked and comparable.",
+    onScreen: [
+      "A table: one row per candidate, five test columns plus a combined score.",
+      "Sortable columns and verified badges.",
+      "A way back to the pipeline.",
+    ],
+    motion: "Sorting by combined score reorders the rows.",
+  },
+  f10: {
+    kind: "Screen 10",
+    headline: "Back on the board",
+    what: "The verified score living on the Kanban card. Reuses PipelineBoard.",
+    onScreen: [
+      "The PipelineBoard (reused from Kanban) with a candidate card.",
+      "'English 92 · verified' on the card; match score 'evidence-based'.",
+      "Open the card and the scorecard is right there.",
+    ],
+    motion: "The card's claimed chips flip to verified; the match score updates in place.",
+  },
+
+  /* Outcome */
+  impact: {
+    kind: "Outcome",
+    headline: "The filter moved to the front",
+    what: "Fewer, better interviews; hiring stays on OFM.",
+    onScreen: [
+      "A funnel: many applicants to a verified shortlist to a small set of the right interviews.",
+      "A 'stays on OFM' loop closing on-platform.",
+      "The directional outcomes as quiet stat callouts.",
+    ],
+    motion: "The funnel narrows to a verified few; the loop closes and settles.",
+  },
+};
+
+/* Scale a fixed 1440×900 design to fit the (aspect-locked) canvas, so
+   fixed-layout screens never clip regardless of viewport. The canvas box
+   sets `container-type: size`, so 100cqw == the canvas width. */
+function ScaledStage({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      <div
+        data-stage-canvas
+        className="absolute left-0 top-0 origin-top-left"
+        style={{
+          width: 1440,
+          height: 900,
+          transform: "scale(calc(100cqw / 1440px))",
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* A beat's artifact: the built screen if it exists, else its build brief. */
+function Artifact({ id }: { id: string }) {
+  const Screen = FLOW_SCREENS[id];
+  if (Screen) {
+    return (
+      <ScaledStage>
+        <Screen />
+      </ScaledStage>
+    );
+  }
+  return <SpecNote id={id} />;
+}
+
+function SpecNote({ id }: { id: string }) {
+  const note = NOTES[id];
+  if (!note) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-white text-[14px] text-zinc-400">
+        Build note pending
+      </div>
+    );
+  }
+  return (
+    <div className="flex h-full w-full flex-col bg-white p-[7%] text-left">
+      <div className="flex items-center gap-2">
+        <span className="size-1.5 rounded-full" style={{ background: BRAND }} aria-hidden />
+        <span
+          className="text-[12px] font-semibold uppercase tracking-[0.16em]"
+          style={{ color: BRAND }}
+        >
+          {note.kind}
+        </span>
+      </div>
+      <h3 className="mt-3 text-[clamp(20px,3.4cqw,32px)] font-semibold leading-tight text-zinc-900">
+        {note.headline}
+      </h3>
+      <p className="mt-2 max-w-[60ch] text-[clamp(12px,1.6cqw,16px)] leading-relaxed text-zinc-500">
+        {note.what}
+      </p>
+
+      <div className="mt-[6%] h-px bg-zinc-100" />
+
+      <div className="mt-[6%] grid flex-1 grid-cols-2 gap-8">
+        <div>
+          <h4 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
+            On screen
+          </h4>
+          <ul className="mt-3 list-disc space-y-2 pl-4 text-[clamp(11px,1.4cqw,14px)] leading-snug text-zinc-700 marker:text-zinc-300">
+            {note.onScreen.map((b, i) => (
+              <li key={i} className="pl-1">
+                {b}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h4 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
+            Motion / illustration
+          </h4>
+          <p className="mt-3 text-[clamp(11px,1.4cqw,14px)] leading-relaxed text-zinc-700">
+            {note.motion}
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -485,34 +758,163 @@ function NarrativeSection({
 /* ------------------------------------------------------------------ */
 
 export default function OFMJobsTestsPage() {
-  const [activeSection, setActiveSection] = useState<string>("intro");
-  const [showAfter, setShowAfter] = useState(false);
+  const [activeId, setActiveId] = useState(sections[0].id);
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  const handleActive = useCallback((id: string) => {
-    setActiveSection(id);
+  const scrollToSection = (id: string) => {
+    const el = sectionRefs.current[id];
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + window.scrollY - 200;
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    window.scrollTo({ top, behavior: prefersReduced ? "auto" : "smooth" });
+  };
+
+  useEffect(() => {
+    let raf = 0;
+    const compute = () => {
+      raf = 0;
+      let current = sections[0].id;
+      for (const s of sections) {
+        const el = sectionRefs.current[s.id];
+        if (el && el.getBoundingClientRect().top <= 220) current = s.id;
+      }
+      if (
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 120
+      ) {
+        current = sections[sections.length - 1].id;
+      }
+      setActiveId(current);
+    };
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(compute);
+    };
+    compute();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
-  // Auto-switch to "after" when scrolling into refinement sections
-  useEffect(() => {
-    const section = sections.find((s) => s.id === activeSection);
-    if (section) {
-      if (section.type === "refinement" || section.type === "summary") {
-        setShowAfter(true);
-      } else if (section.type === "critique" || section.type === "intro") {
-        setShowAfter(false);
-      }
-    }
-  }, [activeSection]);
+  const active = sections.find((s) => s.id === activeId) ?? sections[0];
+
+  const groupLabelFor = (t: SectionType) =>
+    t === "story"
+      ? "The Story"
+      : t === "decision"
+      ? "The Decisions"
+      : t === "flow"
+      ? "The Full Flow"
+      : t === "closing"
+      ? "The Outcome"
+      : "";
+
+  const renderSections = (arr: typeof sections) =>
+    arr.map((section, i) => {
+      const prev = i > 0 ? arr[i - 1] : null;
+      const showGroupHeading =
+        (section.type === "story" && prev?.type !== "story") ||
+        (section.type === "decision" && prev?.type !== "decision") ||
+        (section.type === "flow" && prev?.type !== "flow") ||
+        (section.type === "closing" && prev?.type !== "closing");
+      const groupLabel = groupLabelFor(section.type);
+
+      return (
+        <div
+          key={section.id}
+          ref={(el) => {
+            sectionRefs.current[section.id] = el;
+          }}
+        >
+          {showGroupHeading && groupLabel && (
+            <div className="mt-12 mb-4 pl-4">
+              <h3
+                className={`${spectral.className} text-[24px] text-txt-heading pb-[2px] tracking-[-1px]`}
+              >
+                {groupLabel}
+              </h3>
+              <div className="border-b border-surface-border" />
+            </div>
+          )}
+          <NarrativeSection
+            id={section.id}
+            title={section.title}
+            content={section.content}
+            bullets={section.bullets}
+            serif={section.id === "open"}
+            active={section.id === activeId}
+            onNavigate={() => scrollToSection(section.id)}
+            titleSize={section.id === "open" ? "lg" : "md"}
+          />
+        </div>
+      );
+    });
+
+  const RightCanvas = () => (
+    <div
+      className="relative rounded-2xl shadow-lg overflow-hidden"
+      style={{
+        aspectRatio: "1440 / 900",
+        width: "min(100%, calc(100cqh * (1440 / 900)))",
+        containerType: "size",
+      }}
+    >
+      {/* Landing / title beat */}
+      <div
+        className={`${CROSSFADE} flex flex-col items-center justify-center ${
+          active.type === "intro"
+            ? "opacity-100"
+            : "opacity-0 pointer-events-none"
+        }`}
+        style={{ background: BRAND }}
+      >
+        <OfmLogo variant="light" gap={BRAND} className="h-[116px] w-auto" />
+        <span className="mt-4 text-[26px] font-semibold tracking-[-0.01em] text-white">
+          OFM Jobs
+        </span>
+        <span
+          className={`${spectral.className} mt-6 text-center text-[54px] leading-[1.05] text-white`}
+        >
+          Tests
+        </span>
+      </div>
+
+      {/* Every other beat - numbered screen placeholder, crossfaded */}
+      <div
+        className={`${CROSSFADE} ${
+          active.type === "intro"
+            ? "opacity-0 pointer-events-none"
+            : "opacity-100"
+        }`}
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeId}
+            className="absolute inset-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease }}
+          >
+            <Artifact id={activeId} />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Two-column layout */}
       <div className="flex max-lg:flex-col">
         {/* Left: scrolling narrative */}
         <div className="w-full md:w-[440px] lg:w-[480px] md:flex-shrink-0 bg-surface relative">
-
           <div className="px-6 py-16 md:px-10">
-            {/* Back link */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -528,76 +930,7 @@ export default function OFMJobsTestsPage() {
               </Link>
             </motion.div>
 
-            {sections.map((section, i) => {
-              const prev = i > 0 ? sections[i - 1] : null;
-              const showGroupHeading =
-                (section.type === "critique" && prev?.type !== "critique") ||
-                (section.type === "refinement" && prev?.type !== "refinement") ||
-                (section.type === "summary" && prev?.type !== "summary");
-              const groupLabel =
-                section.type === "critique"
-                  ? "Critique"
-                  : section.type === "refinement"
-                  ? "Refinement"
-                  : section.type === "summary"
-                  ? "Summary"
-                  : null;
-
-              return (
-                <div key={section.id}>
-                  {showGroupHeading && groupLabel && (
-                    <div className="mt-12 mb-4 pl-4">
-                      <h3
-                        className={`${spectral.className} text-[24px] text-txt-heading pb-[2px] tracking-[-1px]`}
-                      >
-                        {groupLabel}
-                      </h3>
-                      <div className="border-b border-surface-border" />
-                    </div>
-                  )}
-                  <NarrativeSection
-                    id={section.id}
-                    title={section.title}
-                    titleSize={
-                      section.type === "intro"
-                        ? "lg"
-                        : section.type === "summary"
-                        ? "sm"
-                        : "md"
-                    }
-                    onActive={handleActive}
-                  >
-                    {section.content}
-                    {section.type === "summary" && (
-                      <div className="mt-4">
-                        <div className="inline-flex rounded-full bg-black/[0.06] p-0.5">
-                          <button
-                            onClick={() => setShowAfter(false)}
-                            className={`px-4 py-1.5 rounded-full text-[12px] font-semibold transition-all ${
-                              !showAfter
-                                ? "bg-white text-txt-heading shadow-sm"
-                                : "text-txt-secondary"
-                            }`}
-                          >
-                            Before
-                          </button>
-                          <button
-                            onClick={() => setShowAfter(true)}
-                            className={`px-4 py-1.5 rounded-full text-[12px] font-semibold transition-all ${
-                              showAfter
-                                ? "bg-white text-txt-heading shadow-sm"
-                                : "text-txt-secondary"
-                            }`}
-                          >
-                            After
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </NarrativeSection>
-                </div>
-              );
-            })}
+            {renderSections(sections)}
 
             {/* Continue Reading */}
             <div className="mt-16">
@@ -605,6 +938,11 @@ export default function OFMJobsTestsPage() {
                 Continue Reading
               </h4>
               {[
+                {
+                  title: "Kanban and AI",
+                  descriptor: "Hiring pipeline with AI-ranked candidates.",
+                  href: "/kanban-and-ai",
+                },
                 {
                   title: "Staple Chat",
                   descriptor: "Conversational AI for document analysis.",
@@ -614,11 +952,6 @@ export default function OFMJobsTestsPage() {
                   title: "Staple Tables",
                   descriptor: "Structured data extraction from documents.",
                   href: "/staple-tables",
-                },
-                {
-                  title: "Kanban and AI",
-                  descriptor: "Hiring pipeline with AI-ranked candidates.",
-                  href: "/kanban-and-ai",
                 },
               ].map((project) => (
                 <Link
@@ -635,72 +968,32 @@ export default function OFMJobsTestsPage() {
                 </Link>
               ))}
             </div>
-
           </div>
         </div>
 
         {/* Right: sticky artifact panel */}
         <div className="flex-1 min-w-0 max-lg:hidden">
           <div className="sticky top-0 h-screen pl-2 pr-[28px] py-[28px] flex flex-col">
-            {/* Beige panel */}
-            <div className="flex-1 rounded-[32px] bg-[#f5f0eb] p-[28px] flex flex-col">
-              {/* Dashboard container - .kibo scopes the OFM palette tokens */}
-              <div className="kibo relative flex-1 min-h-0 bg-white rounded-[32px] shadow-lg overflow-hidden">
-                {/* Before/After dashboards */}
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={showAfter ? "after" : "before"}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.4, ease }}
-                    className="absolute inset-0"
-                  >
-                    {showAfter ? <DashboardAfter /> : <DashboardBefore />}
-                  </motion.div>
-                </AnimatePresence>
-
-                {/* Highlight overlays */}
-                {sections.map(
-                  (section) =>
-                    section.highlight && (
-                      <motion.div
-                        key={section.id}
-                        className="absolute pointer-events-none z-10"
-                        style={{
-                          top: `${section.highlight.top}%`,
-                          left: `${section.highlight.left}%`,
-                          width: `${section.highlight.width}%`,
-                          height: `${section.highlight.height}%`,
-                        }}
-                        animate={{
-                          opacity: activeSection === section.id ? 1 : 0,
-                        }}
-                        transition={{ duration: 0.35, ease }}
-                      >
-                        <div
-                          className={`w-full h-full rounded-lg border ${
-                            sections.find((s) => s.id === section.id)?.type ===
-                            "refinement"
-                              ? "bg-success/[0.12] border-success/30"
-                              : "bg-destructive/[0.15] border-destructive/30"
-                          }`}
-                        />
-                      </motion.div>
-                    )
-                )}
+            <div className="flex-1 rounded-3xl bg-[#f5f0eb] p-[28px] flex flex-col">
+              <div
+                className="relative flex-1 min-h-0 flex items-center justify-center"
+                style={{ containerType: "size" }}
+              >
+                <RightCanvas />
               </div>
-
             </div>
           </div>
         </div>
       </div>
 
-      {/* Mobile artifact (shown inline on small screens) */}
+      {/* Mobile artifact */}
       <div className="lg:hidden px-4 pb-10">
-        <div className="rounded-2xl bg-[#f5f0eb] p-4">
-          <div className="kibo relative aspect-[4/3] bg-white rounded-[32px] shadow-lg overflow-hidden">
-            {showAfter ? <DashboardAfter /> : <DashboardBefore />}
+        <div className="rounded-3xl bg-[#f5f0eb] p-3">
+          <div
+            className="relative aspect-[1440/900] bg-white rounded-xl shadow-lg overflow-hidden"
+            style={{ containerType: "size" }}
+          >
+            <Artifact id={activeId} />
           </div>
         </div>
       </div>
