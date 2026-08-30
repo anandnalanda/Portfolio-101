@@ -317,7 +317,7 @@ export default function JobsListScreen() {
                 {/* interviews */}
                 <span>
                   {job.interviews === null ? (
-                    <span className="text-ofm-caption text-zinc-300">—</span>
+                    <span className="text-ofm-caption text-zinc-300">–</span>
                   ) : (
                     <span className="text-ofm-label font-medium tabular-nums text-zinc-700">
                       {job.interviews}
@@ -326,7 +326,7 @@ export default function JobsListScreen() {
                 </span>
                 {/* posted */}
                 {job.posted === null ? (
-                  <span className="text-ofm-caption text-zinc-300">—</span>
+                  <span className="text-ofm-caption text-zinc-300">–</span>
                 ) : (
                   <span className="text-ofm-caption text-zinc-500">{job.posted}</span>
                 )}

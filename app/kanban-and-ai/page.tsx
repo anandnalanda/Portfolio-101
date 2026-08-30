@@ -145,6 +145,11 @@ const sections: Section[] = [
     screen: 1,
     title: `Your jobs, in one place.`,
     content: `Every role you're hiring for on one screen: who's applied, who's new, what needs you today.`,
+    bullets: [
+      `One row per role: status, applicants, interviews in progress, and who owns it.`,
+      `A quiet pulse marks what arrived since you last looked.`,
+      `Click a role and you're on its pipeline.`,
+    ],
   },
   {
     id: "f2",
@@ -152,6 +157,11 @@ const sections: Section[] = [
     screen: 2,
     title: `See the post the way applicants do.`,
     content: `Open a role and see the posting itself, the same page applicants apply from, and the one you hire from.`,
+    bullets: [
+      `A preview banner says it plainly: this is what applicants see.`,
+      `Location, type, and pay as labeled facts, not buried in prose.`,
+      `The rail keeps your side of it: live stats and the way back to the pipeline.`,
+    ],
   },
   {
     id: "f3",
@@ -242,7 +252,7 @@ function NarrativeSection({
         <div className="text-[15px] leading-[1.7] text-txt-primary">
           <p>{content}</p>
           {bullets && bullets.length > 0 && (
-            <ul className="mt-2.5 list-disc space-y-1.5 pl-[18px] marker:text-txt-secondary">
+            <ul className="list-disc space-y-1.5 pl-[18px] marker:text-txt-secondary">
               {bullets.map((b, i) => (
                 <li key={i} className="pl-1">
                   {b}
@@ -468,6 +478,19 @@ export default function KanbanAndAIPage() {
       ? "flow"
       : "impact";
 
+  /* The story illustration runs infinite loops; keep it mounted only while
+     its layer is visible or still fading out, so it doesn't burn animation
+     frames behind every other beat on the page. */
+  const [storyMounted, setStoryMounted] = useState(stage === "story");
+  useEffect(() => {
+    if (stage === "story") {
+      setStoryMounted(true);
+      return;
+    }
+    const t = setTimeout(() => setStoryMounted(false), 650);
+    return () => clearTimeout(t);
+  }, [stage]);
+
   const flowBeat = active.type === "flow" ? active : null;
 
   const renderSections = (arr: typeof sections) =>
@@ -552,7 +575,7 @@ export default function KanbanAndAIPage() {
           stage === "story" ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
-        <MessageSentVisual beat={activeId} />
+        {storyMounted && <MessageSentVisual beat={activeId} />}
       </div>
 
       {/* Decisions beat - the live product board */}

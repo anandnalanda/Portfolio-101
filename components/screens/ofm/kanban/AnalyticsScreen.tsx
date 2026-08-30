@@ -42,7 +42,7 @@ const FUNNEL = [
   { stage: "Screening", count: 38, conv: 27, days: "6d" },
   { stage: "Interview", count: 12, conv: 32, days: "9d" },
   { stage: "Offer", count: 4, conv: 33, days: "4d" },
-  { stage: "Hired", count: 1, conv: 25, days: "—" },
+  { stage: "Hired", count: 1, conv: 25, days: "–" },
 ];
 
 const MATCH = [
@@ -145,7 +145,7 @@ export default function AnalyticsScreen() {
               <h3 className="text-ofm-title font-semibold text-zinc-900">Avg time in stage</h3>
               <p className="mt-0.5 text-ofm-caption text-zinc-400">Where candidates wait</p>
               <div className="mt-4 space-y-2.5">
-                {FUNNEL.filter((f) => f.days !== "—").map((f) => (
+                {FUNNEL.filter((f) => f.days !== "–").map((f) => (
                   <div
                     key={f.stage}
                     className="flex items-center justify-between border-b border-zinc-100 pb-2.5 last:border-0 last:pb-0"

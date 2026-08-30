@@ -37,27 +37,28 @@ body {
     /* OFM Jobs product UI uses Inter (scoped here; portfolio stays Geist) */
     font-family: var(--font-inter), system-ui, sans-serif;
 
-    /* Shared OFM Jobs palette — Kanban + TSS both consume these.
+    /* Shared OFM Jobs palette — Kanban + Tests both consume these.
        All values are stock Tailwind colors, expressed as HSL triplets.
-       Brand = emerald; neutrals = slate; status = red/emerald/amber. */
+       Brand = emerald; neutrals = zinc (the screens are built in zinc, so the
+       semantic tokens must resolve to zinc too); status = red/emerald/amber. */
 
     /* Surfaces */
     --background: 0 0% 100%;         /* white */
-    --foreground: 222 47% 11%;       /* slate-900 #0f172a */
+    --foreground: 240 6% 10%;        /* zinc-900 #18181b */
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 240 6% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 240 6% 10%;
 
     /* Brand */
     --primary: 156 100% 22%;         /* OFM green — logo #006E42 (ofm-600) */
     --primary-foreground: 0 0% 100%;
 
-    /* Neutrals — slate */
-    --secondary: 210 40% 96%;        /* slate-100 #f1f5f9 */
-    --secondary-foreground: 217 33% 17%; /* slate-800 #1e293b */
-    --muted: 210 40% 96%;            /* slate-100 */
-    --muted-foreground: 215 16% 47%; /* slate-500 #64748b */
+    /* Neutrals — zinc */
+    --secondary: 240 5% 96%;         /* zinc-100 #f4f4f5 */
+    --secondary-foreground: 240 4% 16%; /* zinc-800 #27272a */
+    --muted: 240 5% 96%;             /* zinc-100 */
+    --muted-foreground: 240 4% 46%;  /* zinc-500 #71717a */
 
     /* Accent — emerald-50 tint for hover / selected rows */
     --accent: 153 34% 95%;           /* OFM green tint — ofm-50 #ECF6F1 */
@@ -72,8 +73,8 @@ body {
     --warning-foreground: 0 0% 100%;
 
     /* Lines & focus */
-    --border: 214 32% 91%;           /* slate-200 #e2e8f0 */
-    --input: 214 32% 91%;
+    --border: 240 5% 90%;            /* zinc-200 #e4e4e7 */
+    --input: 240 5% 90%;
     --ring: 156 100% 22%;            /* focus ring = OFM green ofm-600 */
   }
   .kibo * {
