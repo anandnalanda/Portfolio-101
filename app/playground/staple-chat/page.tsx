@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import StapleChatScreen from "@/components/screens/staple-chat/StapleChatScreen";
 
 export const metadata: Metadata = {
-  title: "Staple Chat — Playground",
+  title: "Staple Chat Playground",
   description: "A demo screen of the Staple Chat data-analysis interface.",
 };
 
