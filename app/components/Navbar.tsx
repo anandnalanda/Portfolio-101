@@ -1,17 +1,142 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
-const projects = [
-  { name: "Staple Chat", href: "/staple-chat" },
-  { name: "Staple Tables", href: "/staple-tables" },
-  { name: "Kanban and AI", href: "/kanban-and-ai" },
-  { name: "OFM Jobs", href: "/ofm-jobs-tests" },
+type Project = {
+  name: string;
+  href: string;
+  accent: string;
+  icon: ReactNode;
+};
+
+const projects: Project[] = [
+  {
+    name: "Staple Chat",
+    href: "/staple-chat",
+    accent: "#0B7A4E",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
+        <path
+          d="M2.5 6.4C2.5 4.52 4.02 3 5.9 3h4.2C11.98 3 13.5 4.52 13.5 6.4v1.5c0 1.88-1.52 3.4-3.4 3.4H6.6l-2.8 2.2c-.33.26-.8.02-.8-.4v-1.9C2.02 10.9 2.5 9.7 2.5 8.4V6.4Z"
+          fill="currentColor"
+          fillOpacity="0.14"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinejoin="round"
+        />
+      </svg>
+    ),
+  },
+  {
+    name: "Staple Tables",
+    href: "/staple-tables",
+    accent: "#0E5C6B",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
+        <rect x="2.5" y="3" width="11" height="10" rx="1.6" stroke="currentColor" strokeWidth="1.4" />
+        <path d="M2.5 6.3h11M6.1 6.3V13" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    name: "Kanban and AI",
+    href: "/kanban-and-ai",
+    accent: "#006E42",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
+        <rect x="2.4" y="3" width="3.5" height="10" rx="1.1" stroke="currentColor" strokeWidth="1.4" />
+        <rect x="10.1" y="3" width="3.5" height="6.4" rx="1.1" stroke="currentColor" strokeWidth="1.4" />
+      </svg>
+    ),
+  },
+  {
+    name: "OFM Jobs",
+    href: "/ofm-jobs-tests",
+    accent: "#0B885A",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
+        <rect x="2.3" y="5" width="11.4" height="8.2" rx="1.6" stroke="currentColor" strokeWidth="1.4" />
+        <path
+          d="M5.8 5V4.3c0-.72.58-1.3 1.3-1.3h1.8c.72 0 1.3.58 1.3 1.3V5"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinecap="round"
+        />
+      </svg>
+    ),
+  },
 ];
+
+const menuVariants = {
+  hidden: {
+    opacity: 0,
+    y: -6,
+    scale: 0.98,
+    // exit is quick and all-at-once — no staggered children, no afterChildren
+    transition: { duration: 0.1, ease: [0.4, 0, 1, 1] as const },
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 460,
+      damping: 32,
+      mass: 0.8,
+      when: "beforeChildren" as const,
+      delayChildren: 0.04,
+      staggerChildren: 0.045,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: {
+    opacity: 0,
+    y: -4,
+    filter: "blur(1px)",
+    transition: { duration: 0.08 }, // snap out fast on close
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const },
+  },
+};
 
 export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [hovered, setHovered] = useState<number | null>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const openDropdown = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setDropdownOpen(true);
+  };
+
+  // Cancel a pending close without opening — used when the cursor re-enters the
+  // wrapper (pill → bridge → panel) so a near-miss doesn't snap it shut. It must
+  // NOT open the menu; opening is scoped to the pill itself.
+  const cancelClose = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+  };
+
+  // Small grace period so moving the cursor from the pill into the panel
+  // (across the gap) doesn't snap it shut before you can click a row.
+  const scheduleClose = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => {
+      setDropdownOpen(false);
+      setHovered(null);
+    }, 70);
+  };
+
+  useEffect(() => () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+  }, []);
 
   return (
     <motion.nav
@@ -48,13 +173,14 @@ export default function Navbar() {
 
         <div
           className="relative z-50"
-          onMouseEnter={() => setDropdownOpen(true)}
-          onMouseLeave={() => setDropdownOpen(false)}
+          onMouseEnter={cancelClose}
+          onMouseLeave={scheduleClose}
         >
           <motion.div
             className="flex items-center gap-2 px-4 h-10 rounded-full shadow-[0_0_0_2px_rgba(0,0,0,0.1)] bg-transparent cursor-pointer hover:bg-black/[0.03] transition-colors"
             whileHover="hover"
             initial="rest"
+            onMouseEnter={openDropdown}
           >
             <motion.svg
               width="24"
@@ -132,30 +258,58 @@ export default function Navbar() {
             </motion.span>
           </motion.div>
 
-          <AnimatePresence>
-            {dropdownOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 4, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 4, scale: 0.96 }}
-                transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-white border border-surface-border rounded-2xl p-2 min-w-[180px] shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
-              >
+          {/* Invisible bridge over the pill→panel gap so the hover region stays
+              continuous; only present while open so it can't trigger open on its own. */}
+          {dropdownOpen && <div className="absolute inset-x-0 top-full h-3" aria-hidden="true" />}
+
+          {/* Positioning wrapper — panel matches the pill's width exactly. */}
+          <div className="absolute left-0 top-full mt-2 w-full">
+            <AnimatePresence>
+              {dropdownOpen && (
+                <motion.div
+                  variants={menuVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  style={{ transformOrigin: "top center" }}
+                  className="flex flex-col gap-1.5 rounded-xl p-1.5 bg-white/[0.96] backdrop-blur-md shadow-[0px_1px_0px_0px_rgba(117,129,138,0.16),0px_0px_0px_1px_rgba(0,0,0,0.08),0px_2px_2px_-1px_rgba(0,58,102,0.04),0px_4px_4px_-2px_rgba(0,58,102,0.04),0px_8px_8px_-4px_rgba(0,58,102,0.04),0px_16px_16px_-8px_rgba(0,58,102,0.04),0px_24px_24px_-12px_rgba(0,58,102,0.04)]"
+                >
                 {projects.map((project, i) => (
                   <motion.a
                     key={project.name}
                     href={project.href}
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="block px-3 py-2 rounded-[10px] text-sm font-semibold text-txt-primary hover:bg-black/[0.04] transition-colors"
+                    variants={itemVariants}
+                    onHoverStart={() => setHovered(i)}
+                    className="relative flex min-w-0 items-center gap-2.5 rounded-lg p-2"
                   >
-                    {project.name}
+                    {hovered === i && (
+                      <motion.span
+                        layoutId="dropdown-hover"
+                        className="pointer-events-none absolute inset-0 rounded-lg bg-black/[0.04] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]"
+                        transition={{ type: "spring", stiffness: 520, damping: 42, mass: 0.7 }}
+                      />
+                    )}
+                    <span
+                      className="relative flex-none grid place-items-center w-8 h-8 rounded-[10px] bg-[linear-gradient(180deg,rgba(255,255,255,0.9)_0%,rgba(3,23,38,0.01)_100%)] shadow-[0px_1px_0px_0px_rgba(117,129,138,0.16),0px_0px_0px_1px_rgba(0,0,0,0.08),inset_0px_-1px_0px_0px_rgba(255,255,255,0.6),0px_2px_2px_-1px_rgba(0,22,38,0.04),0px_4px_4px_-2px_rgba(0,22,38,0.04),inset_0px_-1px_2px_0px_rgba(0,22,38,0.16),inset_0px_1px_2px_0px_rgb(255,255,255)]"
+                      style={{ color: project.accent }}
+                    >
+                      <motion.span
+                        className="grid place-items-center"
+                        animate={hovered === i ? { scale: 1.15, rotate: -8 } : { scale: 1, rotate: 0 }}
+                        transition={{ type: "spring", stiffness: 480, damping: 16, mass: 0.6 }}
+                      >
+                        {project.icon}
+                      </motion.span>
+                    </span>
+                    <span className="relative min-w-0 flex-1 truncate text-[13px] font-semibold leading-none text-[rgba(37,36,41,0.8)] [text-shadow:0px_1px_0px_rgba(255,255,255,0.7)]">
+                      {project.name}
+                    </span>
                   </motion.a>
                 ))}
               </motion.div>
             )}
-          </AnimatePresence>
+            </AnimatePresence>
+          </div>
         </div>
 
         <motion.a

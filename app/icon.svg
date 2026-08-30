@@ -1,6 +1,30 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="512" height="512" rx="96" fill="#146EF5"/>
-<g transform="translate(96 96) scale(16)">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M12.2911 4.73456C12.705 5.53167 13.7546 5.53854 14.1772 4.74691L15.7024 1.89055C16.12 1.10848 17.153 1.10339 17.5771 1.88132L19.8469 6.04564C20.0453 6.40963 20.0513 6.86144 19.8625 7.23151L16.9436 12.9544C16.7516 13.3309 16.3879 13.5643 15.9932 13.5643H11.8112C10.9781 13.5643 10.4542 14.545 10.8641 15.3371L12.3599 18.2273C12.7699 19.0193 12.2459 20 11.4128 20H6.93119C6.53894 20 6.17707 19.7694 5.98406 19.3965L0.142407 8.10941C-0.267508 7.31739 0.256454 6.33668 1.08953 6.33668H4.27443C5.10822 6.33668 5.6321 5.35445 5.22075 4.56241L3.7727 1.77427C3.36135 0.98223 3.88523 0 4.71903 0H9.19854C9.59021 0 9.95165 0.229916 10.1449 0.601975L12.2911 4.73456ZM8.77922 11.3089C9.19246 12.1074 10.2431 12.1151 10.6662 11.3228L12.216 8.42026C12.6389 7.6282 12.1157 6.63367 11.2761 6.63367H8.22414C7.39107 6.63367 6.86711 7.61436 7.27702 8.40639L8.77922 11.3089Z" fill="white"/>
-</g>
-</svg>
+<defs>
+<linearGradient id="tile" x1="256" y1="0" x2="256" y2="512" gradientUnits="userSpaceOnUse">
+<stop offset="0" stop-color="#4E97FF"/>
+<stop offset="0.5" stop-color="#146EF5"/>
+<stop offset="1" stop-color="#0B4FC4"/>
+</linearGradient>
+<radialGradient id="glow" cx="0.5" cy="0.12" r="0.9">
+<stop offset="0" stop-color="#FFFFFF" stop-opacity="0.16"/>
+<stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0"/>
+</radialGradient>
+<linearGradient id="bevel" x1="256" y1="0" x2="256" y2="512" gradientUnits="userSpaceOnUse">
+<stop offset="0" stop-color="#FFFFFF" stop-opacity="0.35"/>
+<stop offset="0.25" stop-color="#FFFFFF" stop-opacity="0.08"/>
+<stop offset="1" stop-color="#001E5C" stop-opacity="0.22"/>
+</linearGradient>
+<linearGradient id="mark" x1="256" y1="96" x2="256" y2="416" gradientUnits="userSpaceOnUse">
+<stop offset="0" stop-color="#FFFFFF"/>
+<stop offset="1" stop-color="#D6E6FF"/>
+</linearGradient>
+<filter id="lift" x="-20%" y="-20%" width="140%" height="140%">
+<feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#042C74" flood-opacity="0.4"/>
+</filter>
+</defs>
+<circle cx="256" cy="256" r="256" fill="url(#tile)"/>
+<circle cx="256" cy="256" r="256" fill="url(#glow)"/>
+<circle cx="256" cy="256" r="252" stroke="url(#bevel)" stroke-width="8" fill="none"/>
+<g transform="translate(96 96) scale(16)" filter="url(#lift)">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M12.2911 4.73456C12.705 5.53167 13.7546 5.53854 14.1772 4.74691L15.7024 1.89055C16.12 1.10848 17.153 1.10339 17.5771 1.88132L19.8469 6.04564C20.0453 6.40963 20.0513 6.86144 19.8625 7.23151L16.9436 12.9544C16.7516 13.3309 16.3879 13.5643 15.9932 13.5643H11.8112C10.9781 13.5643 10.4542 14.545 10.8641 15.3371L12.3599 18.2273C12.7699 19.0193 12.2459 20 11.4128 20H6.93119C6.53894 20 6.17707 19.7694 5.98406 19.3965L0.142407 8.10941C-0.267508 7.31739 0.256454 6.33668 1.08953 6.33668H4.27443C5.10822 6.33668 5.6321 5.35445 5.22075 4.56241L3.7727 1.77427C3.36135 0.98223 3.88523 0 4.71903 0H9.19854C9.59021 0 9.95165 0.229916 10.1449 0.601975L12.2911 4.73456ZM8.77922 11.3089C9.19246 12.1074 10.2431 12.1151 10.6662 11.3228L12.216 8.42026C12.6389 7.6282 12.1157 6.63367 11.2761 6.63367H8.22414C7.39107 6.63367 6.86711 7.61436 7.27702 8.40639L8.77922 11.3089Z" fill="url(#mark)"/>
+</g></svg>

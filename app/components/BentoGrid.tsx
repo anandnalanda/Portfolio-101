@@ -9,6 +9,8 @@ import SocialCard from "./cards/SocialCard";
 import LaptopCard from "./cards/LaptopCard";
 import VisualDirectionCard from "./cards/VisualDirectionCard";
 import ExperimentsCard from "./cards/ExperimentsCard";
+import KanbanCaseCard from "@/components/bento/kanban-case-card";
+import LogoCard from "@/components/LogoCard/LogoCard";
 import BentoTile from "./BentoTile";
 
 export default function BentoGrid() {
@@ -25,19 +27,19 @@ export default function BentoGrid() {
 
         <StickerCard />
 
-        <BentoTile
-          variant="wide"
-          title="Kanban and AI"
-          descriptor="Hiring pipeline with AI-ranked candidates."
-          artifactLabel=""
+        <KanbanCaseCard
+          fill
           href="/kanban-and-ai"
+          title="Kanban and AI"
+          caption="Kanban in OFM Jobs: from a flat list to a board people actually work in."
+          pillCaption="A board people actually work in."
+          className="col-span-2"
         />
 
-        <BentoTile
-          title="OFM Jobs Tests"
-          descriptor="Assessment system with AI-powered hiring."
-          artifactLabel=""
+        <LogoCard
           href="/ofm-jobs-tests"
+          label="OFM Jobs Tests"
+          descriptor="AI-powered hiring assessments."
         />
 
         <SocialCard />

@@ -225,7 +225,7 @@ export default function ArcCarousel({
   useEffect(() => {
     const id = window.setTimeout(() => {
       const i = wrap(center, slides.length);
-      setAnnounce(`${slides[i]?.label ?? ""} — ${i + 1} of ${slides.length}`);
+      setAnnounce(`${slides[i]?.label ?? ""}, ${i + 1} of ${slides.length}`);
     }, 400);
     return () => window.clearTimeout(id);
   }, [center, slides]);
