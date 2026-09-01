@@ -144,7 +144,7 @@ const sections: Section[] = [
       `Required skills are chosen when the job is posted, not bolted on later.`,
       `Roles a candidate has already proven are one-click apply; the rest stay locked until they take the test.`,
       `Proof sits at the very front of the funnel, where the leak used to start.`,
-      `Clearing the bar opens the door, not the job — the employer still chooses among everyone who qualifies.`,
+      `Clearing the bar opens the door, not the job. The employer still chooses among everyone who qualifies.`,
     ],
   },
   {
@@ -499,7 +499,7 @@ const NOTES: Record<string, Note> = {
     what: "The candidate's Find work board: you can only apply where proof clears the bar.",
     onScreen: [
       "A job list split into 'Ready to apply' and 'A few tests away'.",
-      "Verified skills clear the bar on several jobs at once — one-tap Apply on those.",
+      "Verified skills clear the bar on several jobs at once. One-tap Apply on those.",
       "The rest stay locked, showing exactly which tests would open them.",
     ],
     motion: "The job cards reveal top to bottom; the apply-ready jobs sit above the gated ones.",
@@ -509,7 +509,7 @@ const NOTES: Record<string, Note> = {
     headline: "A pool of graded candidates",
     what: "The employer's applicant pool + one candidate's full detail.",
     onScreen: [
-      "A candidate list, each already scored — no queue, everyone auto-graded.",
+      "A candidate list, each already scored. No queue, everyone auto-graded.",
       "The selected candidate's results by grading method: measured, auto-scored, AI-scored with its reasoning.",
       "Her experience and languages alongside the scorecard.",
     ],
@@ -532,7 +532,7 @@ const NOTES: Record<string, Note> = {
     what: "The employer opens a candidate whose proof predates this job.",
     onScreen: [
       "A candidate profile holding verified badges: 'English 92', 'Typing 68'.",
-      "Earned before this job, already attached — no re-testing asked.",
+      "Earned before this job, already attached. No re-testing asked.",
       "The same scores already unlocked other roles she applied to.",
     ],
     motion: "The verified badges stagger in, each stamped with when it was earned.",

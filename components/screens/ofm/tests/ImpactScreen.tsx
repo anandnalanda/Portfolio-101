@@ -167,14 +167,14 @@ export default function ImpactScreen() {
 
               <div className="mt-5 grid grid-cols-2 gap-6">
                 <Funnel
-                  title="Before — filter at the interview"
+                  title="Before: filter at the interview"
                   note="too late"
                   rows={BEFORE}
                   grown={grown}
                   delayBase={0}
                 />
                 <Funnel
-                  title="After — filter at the application"
+                  title="After: filter at the application"
                   note="up front"
                   rows={AFTER}
                   grown={grown}
@@ -244,7 +244,7 @@ export default function ImpactScreen() {
             </span>
             <p className="text-ofm-label text-zinc-700">
               From open post to signed offer, hiring now runs start to finish on
-              OFM — so the platform earns a seat at every hire.
+              OFM, so the platform earns a seat at every hire.
             </p>
           </div>
         </div>

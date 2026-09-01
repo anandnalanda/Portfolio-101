@@ -145,7 +145,7 @@ export default function VerifiedProfile() {
                   Add {TODO.label} to your profile
                 </span>
                 <span className="block text-ofm-caption leading-tight text-zinc-400">
-                  Take it now, on your own time — no invite needed.
+                  Take it now, on your own time, no invite needed.
                 </span>
               </span>
               <button className="flex items-center gap-1.5 rounded-lg border border-ofm-300 bg-white px-3 py-2 text-ofm-label font-medium text-ofm-700 hover:bg-ofm-50">

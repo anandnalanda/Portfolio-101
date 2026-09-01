@@ -232,6 +232,7 @@ export default function DocumentStackAnimation({
         const el = doc(i);
         if (!el) return;
         await wait(i * CONFIG.flyStagger);
+        if (!alive()) return; // hover left mid-stagger — don't re-show this doc
         const p = pileAt(i);
         animate(el, { opacity: 1 }, { duration: d(CONFIG.entryFadeIn), ease: "linear" });
         await animate(
@@ -248,6 +249,7 @@ export default function DocumentStackAnimation({
         if (!el) return;
         const ring = Math.round(Math.abs(i - (N - 1) / 2)); // 0 = centre
         await wait(ring * CONFIG.spreadStagger);
+        if (!alive()) return; // superseded by hover-out — abort the spread
         // straighten to 0° AND travel together, both awaited so the row is
         // guaranteed flat (no residual tilt) before the flip beat runs
         await Promise.all([
@@ -269,6 +271,7 @@ export default function DocumentStackAnimation({
         const el = doc(i);
         if (!el) return;
         await wait(i * CONFIG.flipStagger);
+        if (!alive()) return; // superseded by hover-out — abort the flip
         const sweep = sweepRefs.current[i];
         if (sweep) {
           animate(

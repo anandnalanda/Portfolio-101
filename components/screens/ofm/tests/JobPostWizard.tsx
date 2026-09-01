@@ -558,7 +558,7 @@ function TestsStep({
     <div className="mx-auto max-w-[720px]">
       <StepHead
         title="Require what a chat role needs"
-        sub="OFM recommends three tests for this role — reading, typing and connection. Keep what fits; each becomes a requirement candidates must clear."
+        sub="OFM recommends three tests for this role: reading, typing and connection. Keep what fits; each becomes a requirement candidates must clear."
       />
       <Card className="mt-5 overflow-hidden border-zinc-200/70 p-0 shadow-none">
         {TESTS.map((t, i) => (

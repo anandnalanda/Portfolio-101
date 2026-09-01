@@ -331,7 +331,7 @@ export default function LateVisual() {
         className="h-full w-full"
         preserveAspectRatio="xMidYMid meet"
         role="img"
-        aria-label="A video-call interview: the employer on one side, the candidate on the other. Live, his typing meter stalls at 22 WPM, his 'fast typist' claim strikes through, and his connection drops — the truth, found out too late in the most expensive filter in the funnel."
+        aria-label="A video-call interview: the employer on one side, the candidate on the other. Live, his typing meter stalls at 22 WPM, his 'fast typist' claim strikes through, and his connection drops: the truth, found out too late in the most expensive filter in the funnel."
       >
         <defs>
           <RoughFilter id="ofm-late-rough" baseFrequency={0.013} scale={5} seed={9} />

@@ -106,7 +106,7 @@ export default function InviteScreen() {
           </h1>
           <p className="mt-2 text-ofm-body text-zinc-500">
             Five short tests for the Virtual Chatter role. Everything runs here
-            in the browser — no account, nothing to install.
+            in the browser, no account, nothing to install.
           </p>
         </div>
 

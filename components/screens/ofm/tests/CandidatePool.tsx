@@ -250,7 +250,7 @@ export default function CandidatePool() {
                   Verified test results
                 </h3>
                 <span className="text-ofm-caption text-zinc-400">
-                  Graded the moment she finished — no queue
+                  Graded the moment she finished, no queue
                 </span>
               </div>
 

@@ -124,7 +124,7 @@ export default function DecisionBattery() {
             </div>
 
             <p className="mt-3 pl-1 text-ofm-caption text-zinc-400">
-              No brain-teasers, no trivia — only what a chat shift actually
+              No brain-teasers, no trivia, only what a chat shift actually
               asks of someone.
             </p>
           </div>

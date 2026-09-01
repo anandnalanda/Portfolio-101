@@ -125,7 +125,7 @@ export default function SwooshCard() {
   return (
     <Link
       href="/staple-chat"
-      aria-label="Staple Chat — conversational AI for document analysis"
+      aria-label="Staple Chat: conversational AI for document analysis"
       className="group/card relative z-0 block h-full cursor-pointer hover:z-30 focus-within:z-30"
     >
       <motion.div
