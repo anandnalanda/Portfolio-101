@@ -128,16 +128,38 @@ export default function SelectedWorkMenu({ items, label, icon, align = "left", o
     }
   };
 
+  // Panel + rows animate as a parent/child pair. The panel snaps in on a crisp
+  // spring; rows cascade on a tight stagger so the first options are visible
+  // almost immediately instead of the whole block fading in as one slow unit.
   const panel = reducedMotion
     ? {
-        initial: { opacity: 0 },
-        animate: { opacity: 1, transition: { duration: 0.16 } },
-        exit: { opacity: 0, transition: { duration: 0.12 } },
+        hidden: { opacity: 0 },
+        visible: { opacity: 1, transition: { duration: 0.1 } },
+        exit: { opacity: 0, transition: { duration: 0.08 } },
       }
     : {
-        initial: { opacity: 0, y: -4, scale: 0.98 },
-        animate: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.16, ease: [0.16, 1, 0.3, 1] } },
-        exit: { opacity: 0, y: -4, scale: 0.98, transition: { duration: 0.12 } },
+        hidden: { opacity: 0, y: -6, scale: 0.96 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          transition: {
+            type: "spring",
+            stiffness: 560,
+            damping: 34,
+            mass: 0.7,
+            staggerChildren: 0.02,
+            delayChildren: 0.015,
+          },
+        },
+        exit: { opacity: 0, y: -4, scale: 0.98, transition: { duration: 0.09, ease: "easeIn" } },
+      };
+
+  const row = reducedMotion
+    ? undefined
+    : {
+        hidden: { opacity: 0, y: -5 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.12, ease: [0.22, 1, 0.36, 1] } },
       };
 
   return (
@@ -180,9 +202,10 @@ export default function SelectedWorkMenu({ items, label, icon, align = "left", o
             role="menu"
             aria-label={label}
             onKeyDown={onMenuKeyDown}
-            initial={panel.initial}
-            animate={panel.animate}
-            exit={panel.exit}
+            variants={panel}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
             style={{ transformOrigin: align === "right" ? "top right" : "top left" }}
             className={
               "absolute top-full z-50 mt-2 min-w-[180px] rounded-xl border border-neutral-200/80 bg-white p-1.5 shadow-[0_8px_24px_rgba(0,0,0,.08),0_2px_6px_rgba(0,0,0,.04)] " +
@@ -190,18 +213,19 @@ export default function SelectedWorkMenu({ items, label, icon, align = "left", o
             }
           >
             {items.map((item, i) => (
-              <MenuItem
-                key={item.slug}
-                ref={(el: HTMLElement | null) => {
-                  itemRefs.current[i] = el;
-                }}
-                item={item}
-                active={i === activeIndex}
-                onSelect={(it) => {
-                  onSelect?.(it);
-                  closeMenu();
-                }}
-              />
+              <motion.div key={item.slug} variants={row}>
+                <MenuItem
+                  ref={(el: HTMLElement | null) => {
+                    itemRefs.current[i] = el;
+                  }}
+                  item={item}
+                  active={i === activeIndex}
+                  onSelect={(it) => {
+                    onSelect?.(it);
+                    closeMenu();
+                  }}
+                />
+              </motion.div>
             ))}
           </motion.div>
         )}

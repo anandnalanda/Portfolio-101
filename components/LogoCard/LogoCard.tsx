@@ -102,7 +102,7 @@ export default function LogoCard({
   // the ↗ badge + expanding pill — OUTSIDE the clipped card so the pill escapes
   const badge = (
     <motion.div
-      className="group/arrow pointer-events-none absolute bottom-4 left-4 z-40 flex items-center gap-2"
+      className="group/arrow pointer-events-none absolute bottom-2 left-2 z-40 flex items-center gap-2"
       initial={false}
       animate={
         engaged

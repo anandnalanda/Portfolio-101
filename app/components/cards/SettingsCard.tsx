@@ -293,7 +293,7 @@ export default function SettingsCard() {
                 initial="hidden"
                 animate="show"
                 exit="exit"
-                className="group/arrow absolute bottom-4 left-4 z-50 flex items-center gap-2"
+                className="group/arrow absolute bottom-2 left-2 z-50 flex items-center gap-2"
               >
                 <Link
                   href="/staple-chat"

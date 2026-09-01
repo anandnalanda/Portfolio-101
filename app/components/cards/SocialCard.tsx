@@ -28,7 +28,7 @@ export default function SocialCard() {
       <div>
         <div className="flex items-center gap-3 mb-4">
           <img
-            src="/avatar.jpeg"
+            src="/profile.jpeg"
             alt="Anand"
             className="w-[52px] h-[52px] rounded-full object-cover transition-all duration-300"
             style={{
@@ -40,7 +40,7 @@ export default function SocialCard() {
           <div className="flex flex-col gap-[2px]">
             <div className="flex items-center gap-1.5">
               <span
-                className="text-[13px] font-semibold transition-colors duration-300"
+                className="text-[16px] font-semibold transition-colors duration-300"
                 style={{ color: hovered ? "#ffffff" : "rgb(37, 36, 41)" }}
               >
                 Anand
@@ -56,16 +56,15 @@ export default function SocialCard() {
         </div>
 
         <p
-          className="text-[20px] transition-colors duration-300"
+          className="text-[18px] transition-colors duration-300"
           style={{
             lineHeight: 1.28,
             marginTop: -2,
             color: hovered ? "rgba(255,255,255,0.85)" : "rgba(37, 36, 41, 0.8)",
           }}
         >
-          designengineer/figma
-          expert/productbuilder/
-          systemthinker
+          designengineer/ productdesigner/
+          builder/ systemthinker
         </p>
       </div>
 
