@@ -58,7 +58,7 @@ export default function ScorecardScreen() {
         <div className="rounded-xl border border-zinc-200/70 bg-white shadow-sm">
           <div className="px-8 pb-5 pt-8">
             <h1 className="text-ofm-hero font-semibold text-zinc-900">
-              All five done — here&apos;s your card
+              All five done, here&apos;s your card
             </h1>
             <p className="mt-1.5 text-ofm-body text-zinc-500">
               Scored the moment you finished. This is exactly what Acme Studio
@@ -134,7 +134,7 @@ export default function ScorecardScreen() {
                 sent ? "text-zinc-700 opacity-100" : "opacity-0"
               }`}
             >
-              Sent to Acme Studio — nothing else for you to do.
+              Sent to Acme Studio. Nothing else for you to do.
             </span>
           </div>
         </div>

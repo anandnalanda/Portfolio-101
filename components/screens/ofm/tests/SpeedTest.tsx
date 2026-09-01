@@ -74,7 +74,7 @@ export default function SpeedTest() {
     {
       icon: Activity,
       label: "Ping",
-      value: pct > 0 ? `${Math.max(38, Math.round(120 - pct * 94))}` : "—",
+      value: pct > 0 ? `${Math.max(38, Math.round(120 - pct * 94))}` : "-",
       unit: "ms",
     },
   ];

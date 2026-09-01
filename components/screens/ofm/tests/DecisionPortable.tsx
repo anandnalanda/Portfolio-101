@@ -88,7 +88,7 @@ export default function DecisionPortable() {
               {/* the portable badges */}
               <div className="border-t border-zinc-100 bg-zinc-50/50 px-6 py-4">
                 <span className="text-ofm-caption font-medium uppercase tracking-[0.08em] text-zinc-400">
-                  Verified skills — earned before this job
+                  Verified skills, earned before this job
                 </span>
                 <div className="mt-3 grid grid-cols-2 gap-2.5">
                   {BADGES.map((b, i) => (

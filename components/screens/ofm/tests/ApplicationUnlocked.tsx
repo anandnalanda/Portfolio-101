@@ -185,7 +185,7 @@ export default function ApplicationUnlocked() {
                     className="flex items-center gap-2 text-ofm-label font-medium text-ofm-700"
                   >
                     <LockOpen className="size-4" strokeWidth={2} />
-                    Bar cleared — every skill verified.
+                    Bar cleared. Every skill verified.
                   </motion.span>
                 ) : (
                   <motion.span

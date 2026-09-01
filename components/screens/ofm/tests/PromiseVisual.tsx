@@ -424,7 +424,7 @@ export default function PromiseVisual() {
         className="h-full w-full"
         preserveAspectRatio="xMidYMid meet"
         role="img"
-        aria-label="A proud candidate beside an oversized résumé with a gold seal; a queue of other candidates waits behind him holding identical sheets; an employer squints at the page with a question-mark bubble; the claims — fluent English, fast typist, great on calls — each flicker into a question mark: asserted, never verified."
+        aria-label="A proud candidate beside an oversized résumé with a gold seal; a queue of other candidates waits behind him holding identical sheets; an employer squints at the page with a question-mark bubble; the claims (fluent English, fast typist, great on calls) each flicker into a question mark: asserted, never verified."
       >
         <defs>
           <RoughFilter id="ofm-promise-rough" baseFrequency={0.013} scale={5} seed={7} />

@@ -251,7 +251,7 @@ export default function DecisionLibrary() {
                 {/* footer: what it proves + require */}
                 <div className="flex items-center justify-between border-t border-zinc-100 bg-zinc-50/40 px-6 py-3.5">
                   <span className="text-ofm-caption text-zinc-500">
-                    Exactly what the candidate sees on shift — no brain-teasers.
+                    Exactly what the candidate sees on shift, no brain-teasers.
                   </span>
                   <button className="flex items-center gap-1.5 rounded-lg bg-ofm-600 px-3.5 py-2 text-ofm-label font-medium text-white hover:bg-ofm-700">
                     <Plus className="size-4" strokeWidth={2.2} />

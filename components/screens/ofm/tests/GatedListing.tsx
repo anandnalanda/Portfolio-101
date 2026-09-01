@@ -135,7 +135,7 @@ export default function GatedListing() {
                 <span className="font-medium text-zinc-700">$4–6 / hr</span>
               </div>
               <p className="mt-4 max-w-[52ch] text-ofm-body leading-relaxed text-zinc-600">
-                Handle live customer chats for a growing DTC brand — up to three
+                Handle live customer chats for a growing DTC brand, up to three
                 conversations at once, in clear, friendly English. Fully remote,
                 flexible hours.
               </p>
@@ -221,7 +221,7 @@ export default function GatedListing() {
                 Apply to Acme
               </h2>
               <p className="mt-0.5 text-ofm-caption text-zinc-500">
-                Proof clears before you apply — not after a shortlist.
+                Proof clears before you apply, not after a shortlist.
               </p>
 
               {/* progress toward the bar */}

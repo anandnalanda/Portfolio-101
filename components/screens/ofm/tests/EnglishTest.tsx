@@ -22,7 +22,7 @@ const QUESTIONS = [
   {
     n: 4,
     snippet:
-      "No worries at all, thanks for sorting that out so quickly — you've been really helpful!",
+      "No worries at all, thanks for sorting that out so quickly, you've been really helpful!",
     prompt: "What is the customer's tone?",
     options: ["Frustrated", "Satisfied", "Confused", "Impatient"],
     answer: 1,
