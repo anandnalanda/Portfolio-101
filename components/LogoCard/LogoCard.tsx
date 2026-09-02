@@ -104,14 +104,8 @@ export default function LogoCard({
     <motion.div
       className="group/arrow pointer-events-none absolute bottom-2 left-2 z-40 flex items-center gap-2"
       initial={false}
-      animate={
-        engaged
-          ? { opacity: 1, scale: 1, y: 0 }
-          : { opacity: 0, scale: 0.6, y: 6 }
-      }
-      transition={
-        reduce ? { duration: 0.15 } : { type: "spring", stiffness: 440, damping: 20 }
-      }
+      animate={engaged ? { opacity: 1 } : { opacity: 0 }}
+      transition={{ duration: reduce ? 0.15 : 0.2, ease: "easeOut" }}
     >
       <div
         className="pointer-events-auto relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-white transition-shadow duration-300"
