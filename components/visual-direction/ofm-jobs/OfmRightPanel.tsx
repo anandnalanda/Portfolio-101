@@ -239,9 +239,14 @@ function AttributesView() {
             <SmilingMan x={402} y={338} s={3.7} />
           </motion.g>
 
-          {/* verified seal - static */}
+          {/* verified seal - gentle bob, out of phase with the people */}
           <g transform="translate(310 168)">
-            <VerifiedSeal />
+            <motion.g
+              animate={{ y: [0, -4, 0] }}
+              transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+            >
+              <VerifiedSeal />
+            </motion.g>
           </g>
         </g>
       </svg>
@@ -646,10 +651,25 @@ const VIEWS: Record<string, () => React.ReactElement> = {
   "ofm-pages-2": () => <DualScreens front={OFM_SCREENS.compare} back={OFM_SCREENS.insights} />,
 };
 
+// backdrop per beat, so the crossfade gap shows the incoming beat's base
+// colour instead of the white page (no flash). Emerald beats vs near-white specs.
+const BEAT_BG: Record<string, string> = {
+  "ofm-open": LANDING,
+  "ofm-attrs": OFM.surface,
+  "ofm-color": OFM.surface,
+  "ofm-type": OFM.surface,
+  "ofm-hero-video": LANDING,
+  "ofm-pages-1": LANDING,
+  "ofm-pages-2": LANDING,
+};
+
 export default function OfmRightPanel({ activeId }: { activeId: string }) {
   const View = VIEWS[activeId] ?? Hero;
   return (
-    <div className={`${hanken.variable} h-full w-full`} style={{ fontFamily: "var(--font-ofm), sans-serif" }}>
+    <div
+      className={`${hanken.variable} h-full w-full overflow-hidden rounded-[28px]`}
+      style={{ fontFamily: "var(--font-ofm), sans-serif", backgroundColor: BEAT_BG[activeId] ?? OFM.surface }}
+    >
       <AnimatePresence mode="wait">
         <motion.div
           key={activeId}
