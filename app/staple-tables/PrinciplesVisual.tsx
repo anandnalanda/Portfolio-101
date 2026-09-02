@@ -48,15 +48,16 @@ function Squiggle({ className = "" }: { className?: string }) {
   );
 }
 
-/** The pen arrow from the current screen to the wireframe, tagged "sketch". */
-function SketchArrow() {
+/** The pen arrow from the current screen to the wireframe, tagged "sketch".
+    Rendered once per rule row, so the filter id must be unique per instance. */
+function SketchArrow({ id }: { id: string }) {
   return (
     <div className="flex shrink-0 flex-col items-center gap-1 self-center">
       <svg width="44" height="24" viewBox="0 0 44 24" fill="none" aria-hidden>
         <defs>
-          <RoughFilter id="pv-arrow" baseFrequency={0.06} scale={1.4} />
+          <RoughFilter id={id} baseFrequency={0.06} scale={1.4} />
         </defs>
-        <g filter="url(#pv-arrow)" stroke={INK} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none">
+        <g filter={`url(#${id})`} stroke={INK} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none">
           <path d="M 4 12 H 36" />
           <path d="M 28 5 L 39 12 L 28 19" />
         </g>
@@ -260,7 +261,7 @@ function RuleRow({ n, title, note, Before, Wire }: (typeof RULES)[number]) {
         <Panel label="Before · current screen">
           <Before />
         </Panel>
-        <SketchArrow />
+        <SketchArrow id={`pv-arrow-${n}`} />
         <Panel label="After · wireframe" wire>
           <Wire />
         </Panel>

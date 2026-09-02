@@ -425,6 +425,18 @@ export default function KanbanAndAIPage() {
   const [activeId, setActiveId] = useState(sections[0].id);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
+  // The mobile artifact is hidden with lg:hidden on desktop, but CSS alone
+  // keeps its timers and animation loops running behind display:none — so
+  // unmount it entirely once we know the viewport is desktop-sized.
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
   const scrollToSection = (id: string) => {
     const el = sectionRefs.current[id];
     if (!el) return;
@@ -708,7 +720,10 @@ export default function KanbanAndAIPage() {
                 className="relative flex-1 min-h-0 flex items-center justify-center"
                 style={{ containerType: "size" }}
               >
-                <RightCanvas />
+                {/* Called as a function, not <RightCanvas />: an inline component
+                    gets a new identity every render, which would remount the
+                    whole panel on each scroll tick and kill the crossfades. */}
+                {RightCanvas()}
               </div>
             </div>
           </div>
@@ -716,16 +731,18 @@ export default function KanbanAndAIPage() {
       </div>
 
       {/* Mobile artifact */}
-      <div className="lg:hidden px-4 pb-10">
-        <div className="rounded-3xl bg-[#f5f0eb] p-3">
-          <div
-            className="relative aspect-[1440/900] bg-white rounded-xl shadow-lg overflow-hidden"
-            style={{ containerType: "size" }}
-          >
-            <BoardStage />
+      {!isDesktop && (
+        <div className="lg:hidden px-4 pb-10">
+          <div className="rounded-3xl bg-[#f5f0eb] p-3">
+            <div
+              className="relative aspect-[1440/900] bg-white rounded-xl shadow-lg overflow-hidden"
+              style={{ containerType: "size" }}
+            >
+              <BoardStage />
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

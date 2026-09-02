@@ -503,6 +503,18 @@ export default function StapleChatPage() {
   const [activeId, setActiveId] = useState(sections[0].id);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
+  // The mobile artifact is hidden with lg:hidden on desktop, but CSS alone
+  // keeps its animations mounted behind display:none — so unmount it entirely
+  // once we know the viewport is desktop-sized.
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
   // Jump-to-section: smooth-scroll the target just above the spy line (220)
   // so it becomes active; the scroll-spy then drives the right-hand screen
   // with its normal cross-fade/flight transitions. Respects reduced motion.
@@ -663,7 +675,7 @@ export default function StapleChatPage() {
       {/* Two-column layout */}
       <div className="flex max-lg:flex-col">
         {/* Left: scrolling narrative */}
-        <div className="w-full md:w-[440px] lg:w-[480px] md:flex-shrink-0 bg-surface relative">
+        <div className="w-full lg:w-[480px] lg:flex-shrink-0 bg-surface relative">
 
           <div className="px-6 py-16 md:px-10">
             {/* Back link */}
@@ -787,7 +799,18 @@ export default function StapleChatPage() {
                   }`}
                 >
                   <AnimatePresence initial={false}>
-                    {screen === "impact" && <ImpactVisual key="impact-scene" />}
+                    {screen === "impact" && (
+                      <motion.div
+                        key="impact-scene"
+                        className="absolute inset-0"
+                        initial={false}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <ImpactVisual />
+                      </motion.div>
+                    )}
                   </AnimatePresence>
                 </div>
                 {/* Voice beat: the same product in a new input mode — the
@@ -827,13 +850,15 @@ export default function StapleChatPage() {
       </div>
 
       {/* Mobile artifact (shown inline on small screens) */}
-      <div className="lg:hidden px-4 pb-10">
-        <div className="rounded-3xl bg-[#f5f0eb] p-3">
-          <div className="relative aspect-[1440/900] bg-white rounded-xl shadow-lg overflow-hidden">
-            <StapleArtifact restingPanel />
+      {!isDesktop && (
+        <div className="lg:hidden px-4 pb-10">
+          <div className="rounded-3xl bg-[#f5f0eb] p-3">
+            <div className="relative aspect-[1440/900] bg-white rounded-xl shadow-lg overflow-hidden">
+              <StapleArtifact restingPanel />
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

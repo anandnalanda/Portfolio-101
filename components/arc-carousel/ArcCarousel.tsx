@@ -164,9 +164,9 @@ function StepButton({
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       aria-label={ariaLabel}
-      className={`relative flex h-[42px] w-[38px] items-center justify-center border-2 border-black/[0.1] bg-white transition-colors duration-150 active:scale-[0.97] ${
+      className={`relative flex h-[42px] w-[38px] items-center justify-center border-2 border-black/[0.1] transition-colors duration-150 active:scale-[0.97] ${
         half === "top" ? "rounded-t-full rounded-b-md" : "rounded-b-full rounded-t-md"
-      } ${hover ? "bg-black/[0.03] text-black/85" : "text-black/30"}`}
+      } ${hover ? "bg-[#f7f7f7] text-black/85" : "bg-white text-black/30"}`}
     >
       <Arrow up={up} />
     </button>
@@ -320,7 +320,7 @@ export default function ArcCarousel({
     const d = dragRef.current;
     if (!d?.active) return;
     const dy = e.clientY - d.startY;
-    const pos = d.startPos - dy / ARC.stepY; // drag up → advance to next
+    const pos = d.startPos - dy / cfg.stepY; // drag up → advance to next
     target.jump(pos);
     position.jump(pos); // keep them equal so the spring doesn't fight the finger
     const now = performance.now();
@@ -335,10 +335,12 @@ export default function ArcCarousel({
     if (!d?.active) return;
     d.active = false;
     (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
-    const indexVel = (-d.vel / ARC.stepY) * 1000; // index units / second
+    const indexVel = (-d.vel / cfg.stepY) * 1000; // index units / second
     const projected = position.get() + indexVel * 0.12;
     target.set(Math.round(projected)); // spring settles from current position
   };
+
+  if (slides.length === 0) return null; // after all hooks — nothing to render
 
   return (
     <div className={className}>

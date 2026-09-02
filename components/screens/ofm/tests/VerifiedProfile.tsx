@@ -27,7 +27,7 @@ type Badge = { icon: typeof Mic; label: string; score: string; when: string };
 const HELD: Badge[] = [
   { icon: BookOpenText, label: "English", score: "92 / 100", when: "verified 3 wks ago" },
   { icon: Keyboard, label: "Typing", score: "68 WPM · 97%", when: "verified 3 wks ago" },
-  { icon: Gauge, label: "Internet speed", score: "87 Mbps", when: "verified 1 wk ago" },
+  { icon: Gauge, label: "Internet speed", score: "87 Mbps", when: "verified today" },
 ];
 const FRESH: Badge = { icon: Mic, label: "Verbal", score: "88 / 100", when: "verified just now" };
 

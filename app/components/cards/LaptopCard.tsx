@@ -73,13 +73,18 @@ function Variant1({ c, reduce, hovered, lift }: SceneProps) {
       <motion.circle
         cx="374"
         cy="269"
+        r={9}
+        opacity={0}
         fill="none"
         stroke={c.soft}
         strokeWidth="2"
+        /* explicit initial seeds framer's SVG attr values — without it the
+           first hydration render writes r="undefined" (console error) */
+        initial={{ r: 9, opacity: 0 }}
         animate={on ? { r: [9, 16, 9], opacity: [0.8, 0, 0.8] } : { r: 9, opacity: 0 }}
         transition={on ? { duration: 1.1, repeat: Infinity, ease: "easeOut" } : { duration: 0.2 }}
       />
-      <motion.circle cx="374" cy="269" r={9} fill={c.strong} animate={{ r: on ? 11.5 : 9 }} transition={lift} />
+      <motion.circle cx="374" cy="269" r={9} fill={c.strong} initial={{ r: 9 }} animate={{ r: on ? 11.5 : 9 }} transition={lift} />
       <rect x="370.5" y="266" width="7" height="6" rx="1.5" fill="white" />
       {/* 2×2 starter chips (accent dot + two lines) — lift with stagger on hover */}
       {[0, 1, 2, 3].map((i) => {
@@ -173,7 +178,9 @@ function Variant2({ c, reduce, hovered, lift }: SceneProps) {
       <motion.circle
         cx="440"
         cy="357.5"
+        r={7}
         fill={c.strong}
+        initial={{ r: 7 }}
         animate={on ? { r: [7, 9.5, 8.5] } : { r: 7 }}
         transition={on ? { duration: 0.5, ease: "easeOut" } : lift}
       />
@@ -273,7 +280,7 @@ function Variant4({ c, reduce, hovered, lift }: SceneProps) {
       {/* footer: N selected + Connect */}
       <line x1="80" y1="352" x2="460" y2="352" stroke="#eef0f2" strokeWidth="1" />
       <rect x="94" y="357" width="70" height="4.5" rx="2.25" fill={GREY_LITE} />
-      <motion.rect x="374" width="74" height="14" rx="7" fill={c.strong} animate={{ y: on ? 350 : 355, width: on ? 80 : 74, x: on ? 368 : 374 }} transition={lift} />
+      <motion.rect x="374" y={355} width="74" height="14" rx="7" fill={c.strong} initial={{ y: 355, width: 74, x: 374 }} animate={{ y: on ? 350 : 355, width: on ? 80 : 74, x: on ? 368 : 374 }} transition={lift} />
     </motion.g>
   );
 }
@@ -294,7 +301,7 @@ function Variant5({ c, reduce, hovered, lift }: SceneProps) {
       <rect x="94" y="244" width="130" height="4.5" rx="2.25" fill={GREY_LITE} />
       {/* listening composer */}
       <rect x="94" y="264" width="354" height="58" rx="14" fill="#f7f8f9" stroke="#e9ebee" strokeWidth="1" />
-      <motion.circle cx="120" cy="293" r={11} fill={c.tint} animate={{ r: on ? 13 : 11 }} transition={lift} />
+      <motion.circle cx="120" cy="293" r={11} fill={c.tint} initial={{ r: 11 }} animate={{ r: on ? 13 : 11 }} transition={lift} />
       <circle cx="120" cy="293" r="6.5" fill={c.soft} />
       <circle cx="120" cy="293" r="3" fill={c.strong} />
       {bars.map((i) => {
@@ -305,9 +312,12 @@ function Variant5({ c, reduce, hovered, lift }: SceneProps) {
           <motion.rect
             key={i}
             x={150 + i * 9.4}
+            y={293 - h / 2}
             width="3.4"
+            height={h}
             rx="1.7"
             fill={i % 2 ? c.soft : c.strong}
+            initial={{ height: h, y: 293 - h / 2 }}
             animate={
               on
                 ? { height: [h, h3, h2, h], y: [293 - h / 2, 293 - h3 / 2, 293 - h2 / 2, 293 - h / 2] }
@@ -412,10 +422,13 @@ function Variant7({ c, reduce, hovered, lift }: SceneProps) {
             <rect x="393" y={y - 0.5} width="5" height="5" rx="1.5" fill={up ? c.strong : c.soft} />
             {/* grows leftward on hover — right edge stays fixed inside the card */}
             <motion.rect
+              x={412}
               y={y}
+              width={24}
               height="4"
               rx="2"
               fill={up ? c.strong : c.soft}
+              initial={{ x: 412, width: 24 }}
               animate={{ x: on ? 404 : 412, width: on ? 32 : 24 }}
               transition={{ ...lift, delay: r * 0.07 }}
             />
@@ -475,7 +488,7 @@ function Variant8({ c, reduce, hovered, lift }: SceneProps) {
         {[[112, 318], [250, 294]].map(([x, y], i) => (
           <circle key={i} cx={x} cy={y} r="3" fill={c.strong} stroke="white" strokeWidth="1.5" />
         ))}
-        <motion.circle cx="426" cy="276" r={3} fill={c.strong} stroke="white" strokeWidth="1.5" animate={{ r: on ? 5 : 3 }} transition={{ ...lift, delay: 0.85 }} />
+        <motion.circle cx="426" cy="276" r={3} fill={c.strong} stroke="white" strokeWidth="1.5" initial={{ r: 3 }} animate={{ r: on ? 5 : 3 }} transition={{ ...lift, delay: 0.85 }} />
       </motion.g>
       {/* x-axis labels */}
       {[0, 1, 2, 3, 4, 5].map((i) => (
@@ -501,7 +514,7 @@ function Variant9({ c, reduce, hovered, lift }: SceneProps) {
       {chrome(c)}
       {/* title + new */}
       <rect x="124" y="204" width="80" height="6" rx="3" fill={c.strong} />
-      <motion.rect x="396" width="52" height="13" rx="6.5" fill={c.strong} animate={{ y: on ? 198 : 202, width: on ? 58 : 52, x: on ? 390 : 396 }} transition={lift} />
+      <motion.rect x="396" y={202} width="52" height="13" rx="6.5" fill={c.strong} initial={{ y: 202, width: 52, x: 396 }} animate={{ y: on ? 198 : 202, width: on ? 58 : 52, x: on ? 390 : 396 }} transition={lift} />
       {/* search + segmented toggle */}
       <rect x="124" y="218" width="150" height="14" rx="7" fill="#f2f3f5" />
       <rect x="132" y="223" width="54" height="4" rx="2" fill={GREY_LITE} />

@@ -33,7 +33,7 @@ const Crumbs = (
 );
 
 const STATS = [
-  { icon: Users, label: "Verified applicants", value: "142", sub: "every one cleared the bar" },
+  { icon: Users, label: "Verified applicants", value: "38", sub: "every one cleared the bar" },
   { icon: BadgeCheck, label: "Proof before apply", value: "100%", sub: "gated at post time" },
   { icon: TrendingDown, label: "Skill surprises", value: "0", sub: "caught at the gate, not the call" },
   { icon: Repeat, label: "Hiring on OFM", value: "1 flow", sub: "post to offer, on-platform" },

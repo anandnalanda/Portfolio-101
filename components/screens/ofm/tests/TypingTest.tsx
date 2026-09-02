@@ -40,8 +40,8 @@ export default function TypingTest() {
   }, [reduceMotion]);
 
   const frac = typed / STOP_AT;
-  const wpm = typed === 0 ? 0 : Math.round(46 + frac * 26); // settles at 72
-  const accuracy = typed === 0 ? 100 : Math.round(100 - frac * 2); // ~98
+  const wpm = typed === 0 ? 0 : Math.round(46 + frac * 22); // settles at 68
+  const accuracy = typed === 0 ? 100 : Math.round(100 - frac * 3); // ~97
   const secondsLeft = 60 - Math.round(frac * 22);
 
   const stats = [
@@ -49,7 +49,10 @@ export default function TypingTest() {
     { label: "Accuracy", value: `${accuracy}%`, strong: false },
     {
       label: "Time left",
-      value: `0:${String(secondsLeft).padStart(2, "0")}`,
+      value:
+        secondsLeft >= 60
+          ? "1:00"
+          : `0:${String(secondsLeft).padStart(2, "0")}`,
       strong: false,
     },
   ];

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { Spectral } from "next/font/google";
 import { StapleWordmark } from "../staple-chat/StapleWordmark";
@@ -118,7 +118,7 @@ const sections: Section[] = [
     bullets: [
       `Usage analytics across 150+ daily users and 10,000+ monthly documents.`,
       `Task observation sessions documenting the real extraction workflow and where it failed.`,
-      `A competitive teardown of Google Vision, Nanonets, and eight enterprise alternatives.`,
+      `A competitive teardown of Google Vision, Nanonets, and three enterprise alternatives.`,
     ],
     highlight: null,
   },
@@ -270,24 +270,6 @@ const WORKSPACE_BEATS: Record<
    what the highlight focuses on. The real Staple Tables screens (extraction
    workspace + fields panel + line-item table) slot into these states; until
    then the panel previews the plan so every beat drives a distinct right side. */
-const BEAT_PANEL: Record<string, { surface: string; focus: string }> = {
-  open: { surface: "The extraction workspace", focus: "Document, fields, and table in one view" },
-  scale: { surface: "The workspace at scale", focus: "Where 10,000 documents land each month" },
-  "problem-fields": { surface: "Extracted fields, before", focus: "A flat list, no hierarchy or cues" },
-  "problem-table": { surface: "Extracted table, before", focus: "Cramped rows, no colour" },
-  "problem-toolbar": { surface: "The toolbar, before", focus: "Everything crammed into one row" },
-  "research-methods": { surface: "The research", focus: "Analytics, observation, teardown" },
-  principles: { surface: "The design principles", focus: "Hierarchy, colour, breathing room" },
-  "fields-groups": { surface: "Extracted fields, redesigned", focus: "Grouped, colour-coded, scannable" },
-  "fields-locate": { surface: "Click to locate", focus: "Bounding box on the source + inline edit" },
-  "table-grid": { surface: "Extracted table, redesigned", focus: "A clean, aligned grid with zebra striping" },
-  "table-headers": { surface: "Extracted table, redesigned", focus: "Remap a column header in one click" },
-  "toolbar-fix": { surface: "The toolbar, redesigned", focus: "Global chrome up top, actions where the work is" },
-  "doc-switch": { surface: "The batch queue", focus: "Every document a click away, in a thumbnail rail" },
-  results: { surface: "The outcome", focus: "Faster, more accurate review" },
-  testimonials: { surface: "In their words", focus: "Feedback from the field" },
-};
-
 /* Group label shown above the first section of each type (mirrors the Staple
    Chat case study's "The Story / The Decisions / The Outcome" rhythm). */
 function groupLabelFor(type: SectionType): string | null {
@@ -468,6 +450,29 @@ export default function StapleTablesPage() {
   const activeSection =
     sections.find((s) => s.id === activeId) ?? sections[0];
 
+  // Keep the outgoing beat's visual mounted while its wrapper fades out, so
+  // beat changes actually crossfade instead of hard-cutting to an empty layer.
+  const [fadingId, setFadingId] = useState<string | null>(null);
+  const prevIdRef = useRef(activeId);
+  useEffect(() => {
+    if (prevIdRef.current === activeId) return;
+    setFadingId(prevIdRef.current);
+    prevIdRef.current = activeId;
+    const t = setTimeout(() => setFadingId(null), 600);
+    return () => clearTimeout(t);
+  }, [activeId]);
+
+  const workspaceId = WORKSPACE_BEATS[activeSection.id]
+    ? activeSection.id
+    : fadingId && WORKSPACE_BEATS[fadingId]
+      ? fadingId
+      : null;
+  const outcomeId = ["results", "testimonials"].includes(activeSection.id)
+    ? activeSection.id
+    : fadingId && ["results", "testimonials"].includes(fadingId)
+      ? fadingId
+      : null;
+
   const renderSections = () =>
     sections.map((section, i) => {
       const prev = i > 0 ? sections[i - 1] : null;
@@ -549,7 +554,7 @@ export default function StapleTablesPage() {
     <div className="min-h-screen bg-white">
       <div className="flex max-lg:flex-col">
         {/* Left: scrolling narrative */}
-        <div className="w-full md:w-[440px] lg:w-[480px] md:flex-shrink-0 bg-surface relative">
+        <div className="w-full lg:w-[480px] lg:flex-shrink-0 bg-surface relative">
           <div className="px-6 py-16 md:px-10">
             {/* Back link */}
             <motion.div
@@ -573,7 +578,7 @@ export default function StapleTablesPage() {
           </div>
         </div>
 
-        {/* Right: sticky artifact panel (placeholder — real product screens TBD) */}
+        {/* Right: sticky artifact panel */}
         <div className="flex-1 min-w-0 max-lg:hidden">
           <div className="sticky top-0 h-screen pl-2 pr-[28px] py-[28px] flex flex-col">
             <div className="flex-1 rounded-3xl bg-[#f5f0eb] p-[28px] flex flex-col">
@@ -608,7 +613,7 @@ export default function StapleTablesPage() {
                         : "opacity-0 pointer-events-none"
                     }`}
                   >
-                    {activeSection.id === "scale" && <ScaleVisual />}
+                    {(activeSection.id === "scale" || fadingId === "scale") && <ScaleVisual />}
                   </div>
                   {/* Research beat: the three-method evidence triptych. */}
                   <div
@@ -618,7 +623,7 @@ export default function StapleTablesPage() {
                         : "opacity-0 pointer-events-none"
                     }`}
                   >
-                    {activeSection.id === "research-methods" && (
+                    {(activeSection.id === "research-methods" || fadingId === "research-methods") && (
                       <ScaledCanvas>
                         <ResearchVisual />
                       </ScaledCanvas>
@@ -632,7 +637,7 @@ export default function StapleTablesPage() {
                         : "opacity-0 pointer-events-none"
                     }`}
                   >
-                    {activeSection.id === "principles" && (
+                    {(activeSection.id === "principles" || fadingId === "principles") && (
                       <ScaledCanvas>
                         <PrinciplesVisual />
                       </ScaledCanvas>
@@ -646,33 +651,33 @@ export default function StapleTablesPage() {
                         : "opacity-0 pointer-events-none"
                     }`}
                   >
-                    {WORKSPACE_BEATS[activeSection.id] && (
+                    {workspaceId && (
                       <ScaledCanvas>
                         <StapleTablesScreen
-                          fieldsVariant={WORKSPACE_BEATS[activeSection.id].fields}
+                          fieldsVariant={WORKSPACE_BEATS[workspaceId].fields}
                           /* Feature 1 (the redesigned fields) docks the panel on
                              the right, document on the left, like the product. */
                           /* All Redesign features share the product's real
                              layout: fields docked right of the document. */
                           fieldsSide={
-                            activeSection.id.startsWith("fields-") ||
-                            activeSection.id.startsWith("table-") ||
-                            activeSection.id === "toolbar-fix" ||
-                            activeSection.id === "doc-switch"
+                            workspaceId.startsWith("fields-") ||
+                            workspaceId.startsWith("table-") ||
+                            workspaceId === "toolbar-fix" ||
+                            workspaceId === "doc-switch"
                               ? "right"
                               : "left"
                           }
                           /* The click-to-locate beat auto-selects a field so the
                              bounding box + editor demonstrate themselves. */
-                          demoField={activeSection.id === "fields-locate" ? "Merchant_Address" : undefined}
+                          demoField={workspaceId === "fields-locate" ? "Merchant_Address" : undefined}
                           /* The remap beat auto-opens a column header dropdown so
                              the re-mapping affordance demonstrates itself. */
-                          demoHeader={activeSection.id === "table-headers" ? "Unit price" : undefined}
+                          demoHeader={workspaceId === "table-headers" ? "Unit price" : undefined}
                           /* The quick-switch beat shows the document thumbnail rail. */
-                          docRail={activeSection.id === "doc-switch"}
-                          toolbarVariant={WORKSPACE_BEATS[activeSection.id].toolbar}
-                          tableVariant={WORKSPACE_BEATS[activeSection.id].table}
-                          highlight={WORKSPACE_BEATS[activeSection.id].highlight}
+                          docRail={workspaceId === "doc-switch"}
+                          toolbarVariant={WORKSPACE_BEATS[workspaceId].toolbar}
+                          tableVariant={WORKSPACE_BEATS[workspaceId].table}
+                          highlight={WORKSPACE_BEATS[workspaceId].highlight}
                         />
                       </ScaledCanvas>
                     )}
@@ -686,35 +691,12 @@ export default function StapleTablesPage() {
                         : "opacity-0 pointer-events-none"
                     }`}
                   >
-                    {["results", "testimonials"].includes(activeSection.id) && (
+                    {outcomeId && (
                       <ScaledCanvas>
-                        <OutcomeVisual beat={activeSection.id} />
+                        <OutcomeVisual beat={outcomeId} />
                       </ScaledCanvas>
                     )}
                   </div>
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={activeSection.id}
-                      className="absolute inset-0 flex flex-col items-center justify-center px-[10%] text-center"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.4, ease }}
-                    >
-                      <div className="text-[12px] uppercase tracking-[0.16em] text-txt-secondary">
-                        {BEAT_PANEL[activeSection.id]?.surface ?? "Staple Tables"}
-                      </div>
-                      <div
-                        className={`${spectral.className} mt-3 text-[28px] leading-tight text-txt-heading`}
-                      >
-                        {BEAT_PANEL[activeSection.id]?.focus ?? activeSection.title}
-                      </div>
-                      <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-surface-border px-3 py-1 text-[12px] text-txt-secondary">
-                        <span className="size-1.5 rounded-full bg-txt-secondary/50" />
-                        Screen in progress
-                      </div>
-                    </motion.div>
-                  </AnimatePresence>
                 </div>
               </div>
             </div>

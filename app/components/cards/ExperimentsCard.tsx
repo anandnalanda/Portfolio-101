@@ -24,7 +24,7 @@ const BOOKS: Book[][] = [
   [
     { label: "OFM\nJobs", from: "#FF6E8E", to: "#E23E63", href: "/ofm-jobs-tests" },
     { label: "Arc\nCarousel", from: "#33C7D6", to: "#159BAB", href: "/arc-carousel-demo" },
-    { label: "Play\nground", from: "#A879FF", to: "#7A3FE0", href: "/playground" },
+    { label: "Play\nground", from: "#A879FF", to: "#7A3FE0" },
   ],
   [
     { label: "In\nProgress", from: "#8E97A6", to: "#5B6472" },

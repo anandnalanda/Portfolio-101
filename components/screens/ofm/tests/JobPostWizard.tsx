@@ -457,11 +457,11 @@ type Test = {
   recommended: boolean;
 };
 const TESTS: Test[] = [
-  { id: "eng", icon: BookOpenText, title: "Intermediate English B1", desc: "Reading & grammar from real chat snippets.", mins: 8, bar: 80, unit: "/ 100", recommended: true },
-  { id: "typ", icon: Keyboard, title: "Typing Test", desc: "Speed and accuracy on a timed passage.", mins: 6, bar: 60, unit: "WPM", recommended: true },
-  { id: "spd", icon: Gauge, title: "Internet Speed Test", desc: "Live download, upload and ping.", mins: 2, bar: 25, unit: "Mbps", recommended: true },
-  { id: "vrb", icon: Mic, title: "Verbal Test", desc: "A spoken answer to a scenario, AI-scored.", mins: 4, bar: 75, unit: "/ 100", recommended: false },
-  { id: "lst", icon: Headphones, title: "Listening Test", desc: "Audio comprehension: catch what's said.", mins: 4, bar: 70, unit: "/ 100", recommended: false },
+  { id: "eng", icon: BookOpenText, title: "Intermediate English B1", desc: "Reading & grammar from real chat snippets.", mins: 3, bar: 80, unit: "/ 100", recommended: true },
+  { id: "typ", icon: Keyboard, title: "Typing Test", desc: "Speed and accuracy on a timed passage.", mins: 2, bar: 60, unit: "WPM", recommended: true },
+  { id: "spd", icon: Gauge, title: "Internet Speed Test", desc: "Live download, upload and ping.", mins: 1, bar: 25, unit: "Mbps", recommended: true },
+  { id: "vrb", icon: Mic, title: "Verbal Test", desc: "A spoken answer to a scenario, AI-scored.", mins: 2, bar: 75, unit: "/ 100", recommended: false },
+  { id: "lst", icon: Headphones, title: "Listening Test", desc: "Audio comprehension: catch what's said.", mins: 2, bar: 70, unit: "/ 100", recommended: false },
 ];
 
 function PassMark({ t }: { t: Test }) {
@@ -511,7 +511,7 @@ function TestRow({
           )}
         </div>
         <p className="mt-0.5 text-ofm-caption text-muted-foreground">
-          {t.desc} · ±{t.mins} min
+          {t.desc} · ~{t.mins} min
         </p>
       </div>
       {/* fixed-width slot so toggling never reflows the row — the field just
@@ -663,7 +663,12 @@ function ReviewStep({
           </p>
         </ReviewRow>
 
-        <ReviewRow icon={Lock} label={`Required to apply · ${enabledTests.length} tests`}>
+        <ReviewRow
+          icon={Lock}
+          label={`Required to apply · ${enabledTests.length} ${
+            enabledTests.length === 1 ? "test" : "tests"
+          }`}
+        >
           <div className="flex flex-wrap gap-1.5">
             {enabledTests.length === 0 ? (
               <span className="text-ofm-caption text-muted-foreground">No tests enabled yet.</span>

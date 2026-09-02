@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Hanken_Grotesk, Spectral } from "next/font/google";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { OFM_SCREENS, type SitePage } from "./pages";
 import OfmLogo from "@/components/screens/ofm/OfmLogo";
 import {
@@ -256,10 +256,15 @@ function AttributesView() {
 
 function ColourView() {
   const [copied, setCopied] = useState<string | null>(null);
+  const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (copiedTimer.current) clearTimeout(copiedTimer.current);
+  }, []);
   const copy = (hex: string) => {
     navigator.clipboard?.writeText(hex);
     setCopied(hex);
-    setTimeout(() => setCopied((c) => (c === hex ? null : c)), 1000);
+    if (copiedTimer.current) clearTimeout(copiedTimer.current);
+    copiedTimer.current = setTimeout(() => setCopied((c) => (c === hex ? null : c)), 1000);
   };
 
   // big block (name + hex + rgb) for the primary hero

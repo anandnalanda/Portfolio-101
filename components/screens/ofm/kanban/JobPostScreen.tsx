@@ -131,7 +131,7 @@ export default function JobPostScreen() {
                   ["Location", "Remote · Worldwide"],
                   ["Type", "Full-time"],
                   ["Posted", "2 weeks ago"],
-                  ["Pay", "$1.5k – $2.5k/mo + bonus"],
+                  ["Pay", "$4–6 / hr + bonus"],
                 ].map(([k, v], i) => (
                   <div
                     key={k}
@@ -210,7 +210,7 @@ export default function JobPostScreen() {
                   {[
                     ["Applicants", "142"],
                     ["New this week", "12"],
-                    ["Top AI match", "92"],
+                    ["Top AI match", "97"],
                     ["Interviewing", "8"],
                   ].map(([k, v], i) => (
                     <div

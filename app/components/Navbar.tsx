@@ -1,7 +1,10 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+
+const MotionLink = motion.create(Link);
 
 type Project = {
   name: string;
@@ -275,7 +278,7 @@ export default function Navbar() {
                   className="flex flex-col gap-1.5 rounded-xl p-1.5 bg-white/[0.96] backdrop-blur-md shadow-[0px_1px_0px_0px_rgba(117,129,138,0.16),0px_0px_0px_1px_rgba(0,0,0,0.08),0px_2px_2px_-1px_rgba(0,58,102,0.04),0px_4px_4px_-2px_rgba(0,58,102,0.04),0px_8px_8px_-4px_rgba(0,58,102,0.04),0px_16px_16px_-8px_rgba(0,58,102,0.04),0px_24px_24px_-12px_rgba(0,58,102,0.04)]"
                 >
                 {projects.map((project, i) => (
-                  <motion.a
+                  <MotionLink
                     key={project.name}
                     href={project.href}
                     variants={itemVariants}
@@ -304,7 +307,7 @@ export default function Navbar() {
                     <span className="relative min-w-0 flex-1 truncate text-[13px] font-semibold leading-none text-[rgba(37,36,41,0.8)] [text-shadow:0px_1px_0px_rgba(255,255,255,0.7)]">
                       {project.name}
                     </span>
-                  </motion.a>
+                  </MotionLink>
                 ))}
               </motion.div>
             )}
@@ -327,12 +330,22 @@ export default function Navbar() {
           <motion.span
             className="text-[15px] font-medium whitespace-nowrap"
             variants={{
-              rest: { opacity: 0, color: "rgba(0,0,0,0.35)", filter: "blur(4px)", width: 0, marginRight: 0 },
-              hover: { opacity: 1, color: "rgba(0,0,0,0.8)", filter: "blur(0px)", width: "auto", marginRight: 8 },
-            }}
-            transition={{
-              hover: { type: "spring", visualDuration: 0.35, bounce: 0.15 },
-              rest: { duration: 0.15, ease: "easeOut" },
+              rest: {
+                opacity: 0,
+                color: "rgba(0,0,0,0.35)",
+                filter: "blur(4px)",
+                width: 0,
+                marginRight: 0,
+                transition: { duration: 0.15, ease: "easeOut" },
+              },
+              hover: {
+                opacity: 1,
+                color: "rgba(0,0,0,0.8)",
+                filter: "blur(0px)",
+                width: "auto",
+                marginRight: 8,
+                transition: { type: "spring", visualDuration: 0.35, bounce: 0.15 },
+              },
             }}
           >
             Let&apos;s chat

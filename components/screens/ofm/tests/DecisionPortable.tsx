@@ -23,7 +23,7 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 const BADGES = [
   { icon: BookOpenText, label: "English", score: "92", when: "verified 3 wks ago" },
   { icon: Keyboard, label: "Typing", score: "68 WPM", when: "verified 3 wks ago" },
-  { icon: Gauge, label: "Internet speed", score: "87 Mbps", when: "verified 1 wk ago" },
+  { icon: Gauge, label: "Internet speed", score: "87 Mbps", when: "verified 2 days ago" },
   { icon: Mic, label: "Verbal", score: "88", when: "verified 2 days ago" },
 ];
 

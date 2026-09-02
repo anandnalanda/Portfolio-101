@@ -12,8 +12,8 @@ export type CaseStudy = {
 };
 
 export const caseStudies: CaseStudy[] = [
-  { slug: "staple-chat", name: "Staple Chat", brand: "#2E7CF6", href: "/work/staple-chat", logo: StapleLogo, status: "live" },
-  { slug: "ofm-jobs-tests", name: "Tests in OFM Jobs", brand: "#1FA2A0", href: "/work/ofm-jobs-tests", logo: OfmLogo, status: "live" },
-  { slug: "ofm-jobs-kanban", name: "Kanban in OFM Jobs", brand: "#E0328A", href: "/work/ofm-jobs-kanban", logo: OfmLogo, status: "live" },
-  { slug: "staple-tables", name: "Tables in Staple AI", brand: "#F28C28", href: "/work/staple-tables", logo: StapleLogo, status: "coming-soon", caption: "Coming soon" },
+  { slug: "staple-chat", name: "Staple Chat", brand: "#2E7CF6", href: "/staple-chat", logo: StapleLogo, status: "live" },
+  { slug: "ofm-jobs-tests", name: "Tests in OFM Jobs", brand: "#1FA2A0", href: "/ofm-jobs-tests", logo: OfmLogo, status: "live" },
+  { slug: "ofm-jobs-kanban", name: "Kanban in OFM Jobs", brand: "#E0328A", href: "/kanban-and-ai", logo: OfmLogo, status: "live" },
+  { slug: "staple-tables", name: "Tables in Staple AI", brand: "#F28C28", href: "/staple-tables", logo: StapleLogo, status: "live" },
 ];

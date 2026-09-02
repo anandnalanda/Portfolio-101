@@ -11,7 +11,6 @@ import VisualDirectionCard from "./cards/VisualDirectionCard";
 import ExperimentsCard from "./cards/ExperimentsCard";
 import KanbanCaseCard from "@/components/bento/kanban-case-card";
 import LogoCard from "@/components/LogoCard/LogoCard";
-import BentoTile from "./BentoTile";
 
 export default function BentoGrid() {
   return (

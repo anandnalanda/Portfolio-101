@@ -93,13 +93,13 @@ const CONTENT: Record<BrandId, BrandContent> = {
       {
         id: "ofm-pages-1",
         group: "The shipped site",
-        title: "Sneak Peak 1",
+        title: "Sneak Peek 1",
         body: "The system in production: the marketing homepage and the pricing table. The same tokens, type and gradients carry from a photographic hero to a dense plan grid.",
       },
       {
         id: "ofm-pages-2",
         group: "The shipped site",
-        title: "Sneak Peak 2",
+        title: "Sneak Peek 2",
         body: "And across the rest of the site, from the comparison page to the blog, the language holds up on busy, content-heavy layouts.",
       },
     ],
@@ -112,7 +112,7 @@ const CONTENT: Record<BrandId, BrandContent> = {
         id: "jobsly-open",
         title: "Jobsly",
         meta: [
-          { label: "Role", value: "Design & Build" },
+          { label: "Role", value: "Design & build" },
           { label: "Status", value: "Live" },
         ],
         body: "An AI hiring platform that runs the whole pipeline through one conversational agent, so a team can hire without a hiring team. I owned the product surface: the interaction model, the design system, and the shipped screens.",
@@ -150,14 +150,14 @@ const CONTENT: Record<BrandId, BrandContent> = {
       {
         id: "jobsly-pages-1",
         group: "The shipped site",
-        title: "Sneak Peak 1",
-        body: "The shipped surface: the landing and the product tour, where the six-stage pipeline is walked through as real conversations rather than feature bullets.",
+        title: "Sneak Peek 1",
+        body: "The shipped surface: the landing and the pricing page, where the six-stage pipeline is walked through as real conversations rather than feature bullets.",
       },
       {
         id: "jobsly-pages-2",
         group: "The shipped site",
-        title: "Sneak Peak 2",
-        body: "And across the rest of the site, from pricing to the deeper stage pages, the same dark system and accent hold up on busy, data-first layouts.",
+        title: "Sneak Peek 2",
+        body: "And across the deeper stage pages, from hire to interview, the same dark system and accent hold up on busy, data-first layouts.",
       },
     ],
   },
@@ -366,6 +366,8 @@ export default function VisualDirectionPage() {
       ) {
         current = beats[beats.length - 1].id;
       }
+      const i = beats.findIndex((b) => b.id === current);
+      if (i >= 0) idxRef.current = i; // keep the beat-stepper in sync with native scrolling
       setActiveId(current);
     };
     const onScroll = () => {

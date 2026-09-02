@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Inter, Spectral } from "next/font/google";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RoughFilter } from "@/components/screens/ofm/chibi";
 
 /**
@@ -121,7 +121,7 @@ function Hero() {
     >
       <img src="/vd/jobsly-logo.svg" alt="Jobsly" className="h-[74px] w-auto select-none" draggable={false} />
       <span className={`${spectral.className} mt-7 whitespace-nowrap text-[38px] leading-[1.06]`} style={{ color: JB.inkMuted }}>
-        Website design + Build
+        Website design + build
       </span>
     </div>
   );
@@ -390,10 +390,15 @@ function AttributesView() {
 
 function ColourView() {
   const [copied, setCopied] = useState<string | null>(null);
+  const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (copiedTimer.current) clearTimeout(copiedTimer.current);
+  }, []);
   const copy = (hex: string) => {
     navigator.clipboard?.writeText(hex);
     setCopied(hex);
-    setTimeout(() => setCopied((c) => (c === hex ? null : c)), 1000);
+    if (copiedTimer.current) clearTimeout(copiedTimer.current);
+    copiedTimer.current = setTimeout(() => setCopied((c) => (c === hex ? null : c)), 1000);
   };
   const chip = (s: Swatch, cls = "") => (
     <button
@@ -560,7 +565,7 @@ function AgentView() {
           <div className="px-7 pt-7">
             <h3 className="text-[24px] font-medium tracking-[-0.5px]" style={{ color: JB.ink }}>Good morning, Sophie.</h3>
             <p className="mt-1.5 text-[13px]" style={{ color: JB.inkSubtle }}>
-              Screened 47 applicants for Customer Support overnight · 2 interviews today
+              Screened 247 applicants for Customer Support overnight · 2 interviews today
             </p>
           </div>
           <motion.div className="flex-1 space-y-1.5 px-7 py-6" variants={ROLES_WRAP} initial="hidden" animate="show">

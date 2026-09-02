@@ -135,14 +135,18 @@ export default function CandidatePool() {
     if (reduced) return;
     setTyped(0);
     let i = 0;
+    let iv: ReturnType<typeof setInterval> | undefined;
     const start = setTimeout(() => {
-      const iv = setInterval(() => {
+      iv = setInterval(() => {
         i += 2;
         setTyped(i);
         if (i >= VERBAL_NOTE.length) clearInterval(iv);
       }, 22);
     }, 900);
-    return () => clearTimeout(start);
+    return () => {
+      clearTimeout(start);
+      if (iv) clearInterval(iv);
+    };
   }, [reduced]);
 
   const selected = POOL[0];

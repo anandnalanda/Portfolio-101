@@ -30,7 +30,7 @@ const RESULTS = [
   },
   { icon: Headphones, label: "Listening", value: "95", unit: "/ 100" },
   { icon: Gauge, label: "Internet speed", value: "87", unit: "Mbps" },
-  { icon: Keyboard, label: "Typing", value: "72", unit: "WPM · 98%" },
+  { icon: Keyboard, label: "Typing", value: "68", unit: "WPM · 97%" },
 ];
 
 export default function ScorecardScreen() {
