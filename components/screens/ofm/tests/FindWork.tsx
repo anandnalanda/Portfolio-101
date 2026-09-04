@@ -88,13 +88,13 @@ function JobCard({ job }: { job: Job }) {
           {job.title}
         </h3>
         {ready ? (
-          <span className="flex shrink-0 items-center gap-1 rounded-full bg-ofm-50/60 px-2 py-0.5 text-ofm-micro font-medium text-ofm-700">
-            <Check className="size-3" strokeWidth={3} />
+          <span className="flex h-5 shrink-0 items-center gap-1 rounded-full bg-ofm-50/60 px-2 text-ofm-micro font-medium leading-none text-ofm-700">
+            <Check className="size-3 -translate-y-[0.5px]" strokeWidth={3} />
             1-click apply
           </span>
         ) : (
-          <span className="flex shrink-0 items-center gap-1 rounded-full bg-amber-50/60 px-2 py-0.5 text-ofm-micro font-medium text-amber-700">
-            <Lock className="size-3" strokeWidth={2.5} />
+          <span className="flex h-5 shrink-0 items-center gap-1 rounded-full bg-zinc-100 px-2 text-ofm-micro font-medium leading-none text-zinc-600">
+            <Lock className="size-3 -translate-y-[0.5px]" strokeWidth={2.5} />
             {missing.length} test{missing.length > 1 ? "s" : ""}
           </span>
         )}

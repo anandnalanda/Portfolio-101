@@ -6,25 +6,17 @@ import Link from "next/link";
 import { Spectral } from "next/font/google";
 import OfmLogo from "@/components/screens/ofm/OfmLogo";
 import JobPostRequire from "@/components/screens/ofm/tests/JobPostRequire";
-import TestLibrary from "@/components/screens/ofm/tests/TestLibrary";
 import GatedJob from "@/components/screens/ofm/tests/GatedJob";
-import VerifiedProfile from "@/components/screens/ofm/tests/VerifiedProfile";
-import InviteScreen from "@/components/screens/ofm/tests/InviteScreen";
 import EnglishTest from "@/components/screens/ofm/tests/EnglishTest";
 import VerbalTest from "@/components/screens/ofm/tests/VerbalTest";
 import ListeningTest from "@/components/screens/ofm/tests/ListeningTest";
 import SpeedTest from "@/components/screens/ofm/tests/SpeedTest";
 import TypingTest from "@/components/screens/ofm/tests/TypingTest";
-import ScorecardScreen from "@/components/screens/ofm/tests/ScorecardScreen";
 import ApplicationUnlocked from "@/components/screens/ofm/tests/ApplicationUnlocked";
-import ResultsTable from "@/components/screens/ofm/tests/ResultsTable";
-import BoardReturn from "@/components/screens/ofm/tests/BoardReturn";
 import PromiseVisual from "@/components/screens/ofm/tests/PromiseVisual";
 import LateVisual from "@/components/screens/ofm/tests/LateVisual";
 import JobPostWizard from "@/components/screens/ofm/tests/JobPostWizard";
-import DecisionPortable from "@/components/screens/ofm/tests/DecisionPortable";
-import CandidatePool from "@/components/screens/ofm/tests/CandidatePool";
-import DecisionTrust from "@/components/screens/ofm/tests/DecisionTrust";
+import DiscoverMarket from "@/components/screens/ofm/tests/DiscoverMarket";
 import FindWork from "@/components/screens/ofm/tests/FindWork";
 import ImpactScreen from "@/components/screens/ofm/tests/ImpactScreen";
 
@@ -37,6 +29,21 @@ function JobPostTestsBeat() {
   return <JobPostWizard autoplay />;
 }
 
+/* d3–d5 are one continuous scene: the Discover marketplace + candidate overlay,
+   driven by `phase` — feed (d3), the trust layer (d4), the portable layer (d5). */
+function GradeBeat() {
+  return <DiscoverMarket phase="feed" />;
+}
+function TrustBeat() {
+  return <DiscoverMarket phase="trust" />;
+}
+function ExperienceBeat() {
+  return <DiscoverMarket phase="experience" />;
+}
+function PortableBeat() {
+  return <DiscoverMarket phase="portable" />;
+}
+
 /* Beats whose right-panel artifact is built. Others fall back to the
    SpecNote build brief. */
 const FLOW_SCREENS: Record<string, React.ComponentType> = {
@@ -44,23 +51,18 @@ const FLOW_SCREENS: Record<string, React.ComponentType> = {
   late: LateVisual,
   d1: JobPostTestsBeat,    // test the job, not trivia — the job-post wizard, autoplayed
   d2: FindWork,            // proof to apply, not proof to shortlist — the Find work board, gated by proof
-  d3: CandidatePool,       // grade it the moment it's done — the employer's graded candidate pool
-  d4: DecisionTrust,       // a score you can trust
-  d5: DecisionPortable,    // prove it once, carry it everywhere — employer sees the portable profile
+  d3: GradeBeat,           // grade it the moment it's done — Discover, the verified marketplace
+  d4: TrustBeat,           // a score you can trust — overlay opens on the Overview
+  dexp: ExperienceBeat,    // a number, and the person behind it — cursor clicks the Experience tab
+  d5: PortableBeat,        // prove it once, carry it everywhere — cursor clicks the Test result tab
   f1: JobPostRequire,      // set the bar when you post
-  f2: TestLibrary,         // a library, not a quiz you build
   f3: GatedJob,            // the job, with a gate
-  f4: VerifiedProfile,     // prove it once, on your own time
-  f5: InviteScreen,        // what the candidate opens
   f6: EnglishTest,
   f7: VerbalTest,
   f8: ListeningTest,
   f9: SpeedTest,
   f10: TypingTest,
-  f11: ScorecardScreen,    // scored, saved to the profile
   f12: ApplicationUnlocked,// application unlocked
-  f13: ResultsTable,       // a pre-qualified pool
-  f14: BoardReturn,        // verified, from column one
   impact: ImpactScreen,    // the filter moved to the front — outcome dashboard
 };
 
@@ -161,12 +163,23 @@ const sections: Section[] = [
     id: "d4",
     type: "decision",
     title: `A score you can trust.`,
-    content: `A result nobody understands is a result nobody acts on, and a test that punishes a bad day tests the wrong thing.`,
+    content: `Open a candidate and the claim is already settled. Every number on the profile was earned on a test, not typed into a bio, so a glance is enough to act on.`,
     bullets: [
-      `Every score opens into how it was reached.`,
-      `Pass marks are the employer's to set, per test and per role.`,
-      `A weak connection or a shaky first take is flagged for a retry, not scored as a fail.`,
-      `Retakes and flags stay visible, not buried in an average.`,
+      `A verified number in place of a vague claim: not "good typist," but "68 WPM," measured live.`,
+      `Typing and connection are measured; English, listening, and verbal are scored against a key. Nothing here is self-reported.`,
+      `The profile reads "fully verified" only once every skill has cleared its own test.`,
+      `Each score sits beside real roles and real tenure, so a number is never just a number.`,
+    ],
+  },
+  {
+    id: "dexp",
+    type: "decision",
+    title: `A number is only half the story.`,
+    content: `A verified score says they can; a track record says they have. So the same overlay carries the work behind the scores, one tab over, and a strong number reads as a strong hire instead of a lucky test day.`,
+    bullets: [
+      `The same candidate, one tab over: roles, tenure, and languages.`,
+      `Verified scores sitting beside a real history, not a page of claims.`,
+      `Tenure on the surface, so "reliable" is something you can see.`,
     ],
   },
   {
@@ -195,21 +208,9 @@ const sections: Section[] = [
     ],
   },
   {
-    id: "f2",
-    type: "flow",
-    screen: 2,
-    title: `A library, not a quiz you build.`,
-    content: `Nobody writes their own typing test. The tests are standardized and shared, so the same skill means the same thing on every job across OFM.`,
-    bullets: [
-      `Pick from a catalog of ready, chat-work tests.`,
-      `Same test, same scale, every employer, so scores compare.`,
-      `Choose it, set the bar, and it's attached to the role.`,
-    ],
-  },
-  {
     id: "f3",
     type: "flow",
-    screen: 3,
+    screen: 2,
     title: `The job, with a gate.`,
     content: `On the candidate's side, the listing is honest about what it takes. The required skills sit right up top, and Apply is locked until they're met.`,
     bullets: [
@@ -219,33 +220,9 @@ const sections: Section[] = [
     ],
   },
   {
-    id: "f4",
-    type: "flow",
-    screen: 4,
-    title: `Prove it once, on your own time.`,
-    content: `A candidate doesn't have to wait for an invite. They can take any test proactively and build a verified profile that opens doors before they even knock.`,
-    bullets: [
-      `Take a test whenever, not only when an employer asks.`,
-      `Verified scores live on the profile, ready to reuse.`,
-      `One good result unlocks every job that needs it.`,
-    ],
-  },
-  {
-    id: "f5",
-    type: "flow",
-    screen: 5,
-    title: `What the candidate opens.`,
-    content: `Whether it's to clear a gate or top up a profile, the battery opens as a plain, unintimidating page: here's what you'll do, here's how long it takes.`,
-    bullets: [
-      `The set laid out up front, with an honest time estimate.`,
-      `A mic and connection check before anything counts.`,
-      `One button to begin; the battery runs itself from there.`,
-    ],
-  },
-  {
     id: "f6",
     type: "flow",
-    screen: 6,
+    screen: 3,
     title: `English.`,
     content: `A short reading-and-grammar set that mirrors the messages they'd actually send.`,
     bullets: [
@@ -257,7 +234,7 @@ const sections: Section[] = [
   {
     id: "f7",
     type: "flow",
-    screen: 7,
+    screen: 4,
     title: `Verbal.`,
     content: `A prompt on screen, a recorder underneath: say your answer out loud.`,
     bullets: [
@@ -269,7 +246,7 @@ const sections: Section[] = [
   {
     id: "f8",
     type: "flow",
-    screen: 8,
+    screen: 5,
     title: `Listening.`,
     content: `Play a clip, answer what it asked, the half of the job that isn't typing.`,
     bullets: [
@@ -281,7 +258,7 @@ const sections: Section[] = [
   {
     id: "f9",
     type: "flow",
-    screen: 9,
+    screen: 6,
     title: `Internet speed.`,
     content: `A live test of the thing that silently decides whether someone can do chat work at all.`,
     bullets: [
@@ -293,7 +270,7 @@ const sections: Section[] = [
   {
     id: "f10",
     type: "flow",
-    screen: 10,
+    screen: 7,
     title: `Typing.`,
     content: `A timed passage with words-per-minute and accuracy ticking up as they type.`,
     bullets: [
@@ -303,51 +280,15 @@ const sections: Section[] = [
     ],
   },
   {
-    id: "f11",
-    type: "flow",
-    screen: 11,
-    title: `Scored, and saved to the profile.`,
-    content: `The moment they finish, one card sums the battery, and the results don't just vanish into one employer's inbox.`,
-    bullets: [
-      `Five results in a row, each with a pass or a flag.`,
-      `The AI's notes on the verbal answer, in plain words.`,
-      `Saved to the profile, not sent once and gone.`,
-    ],
-  },
-  {
     id: "f12",
     type: "flow",
-    screen: 12,
+    screen: 8,
     title: `Application unlocked.`,
     content: `Back on the gated job, the proof does its work: every required skill turns green, the lock falls away, and applying takes one tap.`,
     bullets: [
       `Cleared the bar, so Apply lights up.`,
       `The verified scores attach to the application automatically.`,
       `You apply already proven, not just hopeful.`,
-    ],
-  },
-  {
-    id: "f13",
-    type: "flow",
-    screen: 13,
-    title: `A pre-qualified pool.`,
-    content: `On the employer's side, the applicant list looks different now: everyone in it has already cleared the bar. There's nothing to weed out, only the best to find.`,
-    bullets: [
-      `Every applicant already meets the required skills.`,
-      `Sort among the qualified, not sift through the claimed.`,
-      `Verified badges on every row, comparable at a glance.`,
-    ],
-  },
-  {
-    id: "f14",
-    type: "flow",
-    screen: 14,
-    title: `Verified, from column one.`,
-    content: `The pipeline starts where it used to end. The very first column is already proven, and the AI match score rests on evidence, not a résumé's word.`,
-    bullets: [
-      `The first Kanban column is verified, not hopeful.`,
-      `Open a card and the full scorecard is right there.`,
-      `Testing and pipeline, the two halves of OFM Jobs, become one flow.`,
     ],
   },
 
@@ -524,6 +465,17 @@ const NOTES: Record<string, Note> = {
       "A 'flagged for retry' row on a weak connection, not a fail.",
     ],
     motion: "A score expands to reveal its reasons; a flagged row surfaces a 'retry' affordance.",
+  },
+  dexp: {
+    kind: "Screen",
+    headline: "A number, and the person behind it",
+    what: "The same overlay, one tab over: the candidate's work history.",
+    onScreen: [
+      "Roles and dates, a real track record beside the verified scores.",
+      "Tenure surfaced up top: average, current, and total.",
+      "Languages, the rest of what the work needs.",
+    ],
+    motion: "The cursor clicks the Experience tab; the overlay slides to the work history.",
   },
   d5: {
     kind: "Screen",
@@ -772,10 +724,22 @@ export default function OFMJobsTestsPage() {
     return () => mq.removeEventListener("change", update);
   }, []);
 
+  // Gentle scroll-snap so each beat settles with its heading at the screen's
+  // top line (proximity = only snaps when you stop near a beat; never fights
+  // the scroll). Scoped to this page via mount/unmount.
+  useEffect(() => {
+    const html = document.documentElement;
+    const prev = html.style.scrollSnapType;
+    html.style.scrollSnapType = "y proximity";
+    return () => {
+      html.style.scrollSnapType = prev;
+    };
+  }, []);
+
   const scrollToSection = (id: string) => {
     const el = sectionRefs.current[id];
     if (!el) return;
-    const top = el.getBoundingClientRect().top + window.scrollY - 200;
+    const top = el.getBoundingClientRect().top + window.scrollY - 48;
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -842,6 +806,7 @@ export default function OFMJobsTestsPage() {
           ref={(el) => {
             sectionRefs.current[section.id] = el;
           }}
+          className="snap-start scroll-mt-12"
         >
           {showGroupHeading && groupLabel && (
             <div className="mt-12 mb-4 pl-4">
