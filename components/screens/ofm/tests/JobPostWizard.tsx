@@ -798,22 +798,36 @@ export default function JobPostWizard({
       }
     };
 
-    const run = async () => {
-      const t = target();
-      /* start a little up-left of the button, invisible, then fade in */
-      await cursor.start({ x: t.x - 190, y: t.y - 150, opacity: 0, scale: 1, transition: { duration: 0 } });
-      await sleep(620);
-      if (cancelled) return;
-      await cursor.start({ opacity: 1, transition: { duration: 0.3 } });
+    /* f1 lands here already (Save & Continue done) — skip the Details hand-off
+       and go straight to selecting tests. d1 walks the whole journey. */
+    const startOnTests =
+      Math.min(Math.max(initialStep, 0), N - 1) === TESTS_STEP;
 
-      /* Details → Tests (once) */
-      await clickAt(t.x, t.y);
-      if (cancelled) return;
-      setDir(1);
-      setStep(TESTS_STEP);
-      /* let the step transition settle so the switch positions are stable */
-      await sleep(850);
-      if (cancelled) return;
+    const run = async () => {
+      if (startOnTests) {
+        /* fade in beside the first toggle, ready to pick tests */
+        const first = centerOf(switchRefs.current["eng"]);
+        await cursor.start({ x: first.x - 44, y: first.y - 30, opacity: 0, scale: 1, transition: { duration: 0 } });
+        await sleep(620);
+        if (cancelled) return;
+        await cursor.start({ opacity: 1, transition: { duration: 0.3 } });
+      } else {
+        const t = target();
+        /* start a little up-left of the button, invisible, then fade in */
+        await cursor.start({ x: t.x - 190, y: t.y - 150, opacity: 0, scale: 1, transition: { duration: 0 } });
+        await sleep(620);
+        if (cancelled) return;
+        await cursor.start({ opacity: 1, transition: { duration: 0.3 } });
+
+        /* Details → Tests (once) */
+        await clickAt(t.x, t.y);
+        if (cancelled) return;
+        setDir(1);
+        setStep(TESTS_STEP);
+        /* let the step transition settle so the switch positions are stable */
+        await sleep(850);
+        if (cancelled) return;
+      }
 
       /* Subtle replay: assemble the recommended set, rest on it, then quietly
          clear it (cursor hidden) and do it again, so a mid-dwell arrival still
