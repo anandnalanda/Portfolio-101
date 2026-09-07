@@ -1,12 +1,15 @@
 "use client";
 
-/* f12 — "Application unlocked." Back on the gated job, the proof does its
-   work: the last required skills flip to verified, the lock falls away, Apply
-   turns live, and one tap files an application that's already proven. OFM
-   candidate system. */
+/* f12 — "Application unlocked." The same job Maria opened in f3, now after the
+   tests: the two skills she just proved (Verbal, Internet speed) flip to
+   verified, the gate reads 4 of 4, the lock falls away, and Apply turns live —
+   one tap files an application that's already proven.
+
+   Mirrors GatedJob (f3): candidate shell, the full posting, the gate in the
+   right rail. Only the rail's state changes. OFM (Kibo) candidate system. */
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   BookOpenText,
   Mic,
@@ -14,24 +17,48 @@ import {
   Keyboard,
   Check,
   Lock,
-  LockOpen,
-  MapPin,
-  Clock,
+  Bookmark,
+  ChevronRight,
+  Loader2,
   BadgeCheck,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import CandidateShell from "./CandidateShell";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
+
+const Crumbs = (
+  <div className="flex min-w-0 items-center gap-1.5">
+    <button className="shrink-0 text-ofm-body font-normal text-zinc-400 hover:text-zinc-600">
+      Find work
+    </button>
+    <ChevronRight className="size-4 shrink-0 text-zinc-300" strokeWidth={2} />
+    <span className="truncate text-ofm-display font-semibold text-zinc-900">
+      Virtual Chatter
+    </span>
+  </div>
+);
+
+const DO = [
+  "Run live fan conversations across your shift, always in the creator's voice.",
+  "Calm refund and delivery threads without over-promising a timeline.",
+  "Keep several chats moving at once without dropping a single one.",
+];
+
+const LOOK = [
+  "Excellent written English and fast, accurate typing.",
+  "A clear, steady spoken manner for the occasional voice reply.",
+  "A stable connection and reliable availability across shifts.",
+];
 
 type Req = {
   icon: typeof Mic;
   label: string;
   bar: string;
   score: string;
-  /** already held before this beat; the rest flip during it */
+  /** already verified before this beat; the other two flip during it */
   preheld?: boolean;
 };
-
 const REQS: Req[] = [
   { icon: BookOpenText, label: "English", bar: "≥ 80", score: "92 · verified", preheld: true },
   { icon: Keyboard, label: "Typing", bar: "≥ 60 WPM", score: "68 WPM · verified", preheld: true },
@@ -39,13 +66,30 @@ const REQS: Req[] = [
   { icon: Gauge, label: "Internet speed", bar: "≥ 25 Mbps", score: "87 Mbps · verified" },
 ];
 
+function Section({ title, items }: { title: string; items: string[] }) {
+  return (
+    <div className="mt-7">
+      <h3 className="text-ofm-title font-semibold text-zinc-900">{title}</h3>
+      <ul className="mt-3 space-y-2.5">
+        {items.map((t) => (
+          <li
+            key={t}
+            className="flex gap-2.5 text-ofm-body leading-relaxed text-zinc-600"
+          >
+            <Check className="mt-1 size-4 shrink-0 text-ofm-500" strokeWidth={2.4} />
+            <span>{t}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function ApplicationUnlocked() {
   const reduced = useReducedMotion();
-  /* how many of the not-preheld reqs have flipped to verified */
-  const [flipped, setFlipped] = useState(0);
-  const [applied, setApplied] = useState(false);
-
   const pending = REQS.filter((r) => !r.preheld);
+  const [flipped, setFlipped] = useState(0); // how many pending skills verified
+  const [applied, setApplied] = useState(false);
 
   useEffect(() => {
     if (reduced) {
@@ -53,197 +97,214 @@ export default function ApplicationUnlocked() {
       setApplied(true);
       return;
     }
-    const t: ReturnType<typeof setTimeout>[] = [];
-    pending.forEach((_, i) => t.push(setTimeout(() => setFlipped(i + 1), 800 + i * 700)));
-    t.push(setTimeout(() => setApplied(true), 800 + pending.length * 700 + 700));
+    const t = [
+      setTimeout(() => setFlipped(1), 1000),
+      setTimeout(() => setFlipped(2), 1900),
+      setTimeout(() => setApplied(true), 3200),
+    ];
     return () => t.forEach(clearTimeout);
   }, [reduced, pending.length]);
 
   let pIdx = -1;
-  const isVerified = (r: Req) => {
+  const isMet = (r: Req) => {
     if (r.preheld) return true;
     pIdx += 1;
     return pIdx < flipped;
   };
-  const unlocked = flipped >= pending.length;
+  const allMet = flipped >= pending.length;
   const metCount = REQS.filter((r) => r.preheld).length + flipped;
 
   return (
-    <CandidateShell activeTab="Find work">
-      <div className="flex h-full items-start justify-center overflow-hidden px-5 py-5">
-        <div className="w-[640px]">
-          <div className="overflow-hidden rounded-xl border border-zinc-200/70 bg-white shadow-sm">
-            {/* job header */}
-            <div className="px-7 pb-5 pt-6">
-              <div className="flex items-center gap-3.5">
-                <span
-                  className="flex size-12 shrink-0 items-center justify-center rounded-xl shadow-sm ring-1 ring-black/5"
-                  style={{
-                    backgroundImage:
-                      "radial-gradient(at 20% 20%, #818cf8 0, transparent 55%), radial-gradient(at 85% 15%, #f0abfc 0, transparent 50%), radial-gradient(at 85% 90%, #22d3ee 0, transparent 55%)",
-                    backgroundColor: "#7c3aed",
-                  }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-                    <circle cx="12" cy="12" r="8" stroke="#fff" strokeWidth="2.4" />
-                    <circle cx="12" cy="12" r="2.6" fill="#fff" />
-                  </svg>
-                </span>
-                <div>
-                  <h1 className="text-ofm-hero font-semibold text-zinc-900">
-                    Virtual Chatter
-                  </h1>
-                  <p className="mt-0.5 text-ofm-body text-zinc-500">Acme Studio</p>
-                </div>
-              </div>
-              <div className="mt-3 flex items-center gap-4 text-ofm-label text-zinc-500">
-                <span className="flex items-center gap-1.5">
-                  <MapPin className="size-4 text-zinc-400" strokeWidth={1.75} />
-                  Remote
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Clock className="size-4 text-zinc-400" strokeWidth={1.75} />
-                  Full-time
-                </span>
-                <span className="font-medium text-zinc-700">$4–6 / hr</span>
-              </div>
+    <CandidateShell activeTab="Find work" headerLeft={Crumbs}>
+      <div className="h-full overflow-y-auto [scrollbar-width:thin]">
+        <div className="mx-auto flex max-w-[1040px] gap-10 px-5 py-4">
+          {/* ── the posting ── */}
+          <article className="min-w-0 flex-1">
+            <div className="mt-4 flex items-center gap-2.5">
+              <span
+                className="flex size-8 shrink-0 items-center justify-center rounded-lg shadow-sm ring-1 ring-black/5"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(at 18% 18%, #818cf8 0px, transparent 55%), radial-gradient(at 82% 12%, #f0abfc 0px, transparent 50%), radial-gradient(at 85% 88%, #22d3ee 0px, transparent 55%), radial-gradient(at 15% 90%, #fb7185 0px, transparent 55%)",
+                  backgroundColor: "#7c3aed",
+                }}
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="8" stroke="#fff" strokeWidth="2.4" />
+                  <circle cx="12" cy="12" r="2.6" fill="#fff" />
+                </svg>
+              </span>
+              <span className="text-ofm-label font-medium text-zinc-500">
+                Acme Studio
+              </span>
             </div>
 
-            {/* required verified skills — flipping to met */}
-            <div className="border-t border-zinc-200/70 bg-zinc-50/60 px-7 py-5">
-              <div className="flex items-center justify-between">
+            <h1 className="mt-4 text-ofm-hero font-semibold text-zinc-900">
+              Virtual Chatter
+            </h1>
+
+            <div className="mt-5 flex overflow-hidden rounded-xl border border-zinc-200/70">
+              {[
+                ["Location", "Remote · Worldwide"],
+                ["Type", "Full-time"],
+                ["Posted", "2 weeks ago"],
+                ["Pay", "$4–6 / hr + bonus"],
+              ].map(([k, v], i) => (
+                <div
+                  key={k}
+                  className={`flex-1 px-4 py-3 ${
+                    i > 0 ? "border-l border-zinc-200/70" : ""
+                  }`}
+                >
+                  <p className="text-ofm-micro font-medium uppercase tracking-[0.06em] text-zinc-400">
+                    {k}
+                  </p>
+                  <p className="mt-1 whitespace-nowrap text-ofm-label font-semibold text-zinc-900">
+                    {v}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-7 border-t border-zinc-200/70" />
+
+            <div className="mt-7">
+              <h3 className="text-ofm-title font-semibold text-zinc-900">
+                About the role
+              </h3>
+              <p className="mt-3 text-ofm-body leading-relaxed text-zinc-600">
+                Acme Studio is hiring chat operators to run live fan
+                conversations for the creators we manage. You&apos;ll keep each
+                creator&apos;s voice, calm the tense threads, and juggle several
+                chats at once, all in fast, clean English. A high-ownership seat
+                on a small chat team that cares about quality.
+              </p>
+            </div>
+
+            <Section title="What you'll do" items={DO} />
+            <Section title="What we're looking for" items={LOOK} />
+
+            <div className="mt-7 flex flex-wrap gap-2">
+              {["Written English", "Chat support", "De-escalation", "Typing", "Night shifts"].map(
+                (t) => (
+                  <span
+                    key={t}
+                    className="rounded-md bg-zinc-100 px-2 py-1 text-ofm-label font-medium text-zinc-600"
+                  >
+                    {t}
+                  </span>
+                ),
+              )}
+            </div>
+
+            <div className="mt-7 rounded-xl border border-zinc-200/70 bg-zinc-50/60 p-4">
+              <p className="text-ofm-label font-semibold text-zinc-900">
+                About Acme Studio
+              </p>
+              <p className="mt-1.5 text-ofm-label leading-relaxed text-zinc-600">
+                Acme Studio is a creator management agency running chat, content,
+                and marketing for the creators it represents. Small remote team,
+                high standards, and a chat operation that never sleeps.
+              </p>
+            </div>
+          </article>
+
+          {/* ── the gate, now cleared (right rail) ── */}
+          <aside className="w-[320px] shrink-0">
+            <div className="sticky top-4 mt-4 overflow-hidden rounded-xl border border-zinc-200/70 bg-white shadow-sm">
+              <div className="flex items-center justify-between border-b border-zinc-200/70 bg-zinc-50/60 px-4 py-3">
                 <span className="flex items-center gap-1.5 text-ofm-label font-semibold text-zinc-800">
                   <BadgeCheck className="size-4 text-ofm-600" strokeWidth={2} />
                   Verified skills required
                 </span>
-                <span className="text-ofm-caption font-medium tabular-nums text-zinc-500">
+                <span
+                  className={`text-ofm-caption font-medium tabular-nums transition-colors duration-300 ${
+                    allMet ? "text-ofm-700" : "text-zinc-500"
+                  }`}
+                >
                   {metCount} of {REQS.length} met
                 </span>
               </div>
 
-              <div className="mt-3 grid grid-cols-2 gap-2.5">
-                {REQS.map((r) => {
-                  const met = isVerified(r);
+              <div>
+                {REQS.map((r, i) => {
+                  const met = isMet(r);
                   return (
                     <motion.div
                       key={r.label}
                       initial={false}
-                      animate={met ? { scale: reduced ? 1 : [1, 1.03, 1] } : {}}
+                      animate={met && !r.preheld ? { scale: reduced ? 1 : [1, 1.02, 1] } : {}}
                       transition={{ duration: 0.35, ease: EASE }}
-                      className={`flex items-center gap-2.5 rounded-lg border px-3 py-2.5 transition-colors duration-300 ${
-                        met ? "border-ofm-200 bg-ofm-50" : "border-zinc-200/70 bg-white"
-                      }`}
+                      className={`flex items-center gap-3 px-4 py-3 transition-colors duration-300 ${
+                        i > 0 ? "border-t border-zinc-100" : ""
+                      } ${met ? "bg-ofm-50/40" : ""}`}
                     >
                       <span
-                        className={`flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-300 ${
+                        className={`flex size-9 shrink-0 items-center justify-center rounded-lg transition-colors duration-300 ${
                           met ? "bg-ofm-100" : "bg-zinc-100"
                         }`}
                       >
                         <r.icon
-                          className={`size-4 ${met ? "text-ofm-700" : "text-zinc-400"}`}
+                          className={`size-5 ${met ? "text-ofm-700" : "text-zinc-400"}`}
                           strokeWidth={1.75}
                         />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block text-ofm-label font-medium leading-tight text-zinc-800">
-                          {r.label}{" "}
-                          <span className="font-normal text-zinc-400">{r.bar}</span>
+                        <span className="block truncate text-ofm-label font-medium leading-tight text-zinc-800">
+                          {r.label}
                         </span>
                         <span
-                          className={`block truncate text-ofm-caption leading-tight transition-colors duration-300 ${
+                          className={`mt-0.5 block truncate text-ofm-caption leading-tight transition-colors duration-300 ${
                             met ? "text-ofm-700" : "text-zinc-400"
                           }`}
                         >
-                          {met ? r.score : "Not proven yet"}
+                          {met ? r.score : "Verifying…"}
                         </span>
                       </span>
-                      <span
-                        className={`flex size-5 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ${
-                          met ? "bg-ofm-600" : "bg-zinc-200"
-                        }`}
-                      >
-                        {met ? (
+                      {met ? (
+                        <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-ofm-600">
                           <Check className="size-3 text-white" strokeWidth={3} />
-                        ) : (
-                          <Lock className="size-3 text-zinc-500" strokeWidth={2.5} />
-                        )}
-                      </span>
+                        </span>
+                      ) : (
+                        <Loader2 className="size-4 shrink-0 animate-spin text-zinc-300" strokeWidth={2.5} />
+                      )}
                     </motion.div>
                   );
                 })}
               </div>
-            </div>
 
-            {/* the gate — opens */}
-            <div className="flex items-center justify-between gap-4 px-7 py-5">
-              <AnimatePresence mode="wait">
-                {unlocked ? (
-                  <motion.span
-                    key="open"
-                    initial={reduced ? false : { opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="flex items-center gap-2 text-ofm-label font-medium text-ofm-700"
-                  >
-                    <LockOpen className="size-4" strokeWidth={2} />
-                    Bar cleared. Every skill verified.
-                  </motion.span>
-                ) : (
-                  <motion.span
-                    key="shut"
-                    exit={{ opacity: 0 }}
-                    className="flex items-center gap-2 text-ofm-label text-zinc-500"
-                  >
-                    <Lock className="size-4 text-zinc-400" strokeWidth={2} />
-                    Verifying your skills…
-                  </motion.span>
-                )}
-              </AnimatePresence>
-
-              <motion.button
-                initial={false}
-                animate={{ scale: applied ? 1 : unlocked && !reduced ? [1, 1.04, 1] : 1 }}
-                transition={{ duration: 0.4, ease: EASE }}
-                className={`flex items-center gap-2 rounded-lg px-5 py-2.5 text-ofm-body font-medium transition-colors duration-300 ${
-                  applied
-                    ? "bg-ofm-50 text-ofm-700 ring-1 ring-ofm-200"
-                    : unlocked
-                    ? "bg-ofm-600 text-white"
-                    : "bg-zinc-200 text-zinc-400"
-                }`}
-              >
-                {applied ? (
-                  <>
-                    <Check className="size-4" strokeWidth={2.5} />
-                    Applied
-                  </>
-                ) : unlocked ? (
-                  "Apply"
-                ) : (
-                  <>
-                    <Lock className="size-4" strokeWidth={2} />
-                    Apply
-                  </>
-                )}
-              </motion.button>
-            </div>
-
-            {/* proof attached */}
-            <AnimatePresence>
-              {applied && (
+              <div className="flex items-center gap-2 border-t border-zinc-200/70 p-4">
                 <motion.div
-                  initial={reduced ? false : { height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  transition={{ duration: 0.35, ease: EASE }}
-                  className="overflow-hidden border-t border-zinc-200/70 bg-ofm-50/50"
+                  className="flex-1"
+                  initial={false}
+                  animate={
+                    allMet && !applied && !reduced ? { scale: [1, 1.03, 1] } : {}
+                  }
+                  transition={{ duration: 0.4, ease: EASE }}
                 >
-                  <p className="px-7 py-3 text-ofm-caption text-ofm-700">
-                    Your four verified scores were attached automatically. You
-                    applied already proven.
-                  </p>
+                  <Button disabled={!allMet} className="w-full">
+                    {applied ? (
+                      <>
+                        <Check strokeWidth={2.5} />
+                        Applied
+                      </>
+                    ) : allMet ? (
+                      "Apply"
+                    ) : (
+                      <>
+                        <Lock strokeWidth={2} />
+                        Apply
+                      </>
+                    )}
+                  </Button>
                 </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                <Button variant="outline">
+                  <Bookmark strokeWidth={2} />
+                  Save
+                </Button>
+              </div>
+            </div>
+          </aside>
         </div>
       </div>
     </CandidateShell>
