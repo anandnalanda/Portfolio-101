@@ -91,7 +91,6 @@ export default function InviteScreen() {
 
   return (
     <TestChrome
-      step={0}
       topRight={
         <span className="rounded-full border border-zinc-200/70 bg-white px-2.5 py-1 text-ofm-caption font-medium text-zinc-500">
           About 10 minutes

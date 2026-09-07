@@ -53,7 +53,7 @@ export default function ScorecardScreen() {
   }, [reduceMotion]);
 
   return (
-    <TestChrome step={6}>
+    <TestChrome>
       <div className="w-[620px]">
         <div className="rounded-xl border border-zinc-200/70 bg-white shadow-sm">
           <div className="px-8 pb-5 pt-8">
