@@ -9,3 +9,9 @@ next-env.d.ts
 __pycache__/
 *.pyc
 .vercel
+
+# local env (Gemini key lives here)
+.env*.local
+
+# nested scratch copy of the OFM Jobs repo — never commit
+Jobs Website copy/
