@@ -81,3 +81,63 @@ body {
     border-color: hsl(var(--border));
   }
 }
+
+/* ── Experiments card artwork ────────────────────────────────────────────
+   --ink is the colour every artwork element draws in. Registering it as a
+   <color> lets the FRAME transition it as a single value; the two hundred odd
+   strokes and cells referencing it simply follow. Unregistered, a custom
+   property snaps. */
+@property --ink {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #d4d4d8;
+}
+
+/* The four generative patterns animate only while the deck is slid open.
+   `animation-play-state` doesn't inherit, so the running/paused switch rides
+   a custom property (which does) set on the stack container — the animations
+   are declared once and simply stop ticking at rest, costing nothing. */
+.exp-anim {
+  animation-play-state: var(--exp-play, paused);
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+/* price ticks grow and shrink from the top edge they hang off */
+@keyframes exp-tick {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(var(--s, 1.3));
+  }
+}
+
+/* dither cells re-roll their tone */
+@keyframes exp-dither {
+  0%,
+  100% {
+    opacity: var(--o0, 0.4);
+  }
+  50% {
+    opacity: var(--o1, 0.9);
+  }
+}
+
+/* transport bars behave like level meters */
+@keyframes exp-level {
+  0%,
+  100% {
+    transform: scaleX(var(--a, 0.4));
+  }
+  50% {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exp-anim {
+    animation: none !important;
+  }
+}

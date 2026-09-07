@@ -83,14 +83,12 @@ const menuVariants = {
     opacity: 1,
     y: 0,
     scale: 1,
+    // items ride in WITH the panel — no beforeChildren gate, no delay
     transition: {
       type: "spring" as const,
       stiffness: 460,
       damping: 32,
       mass: 0.8,
-      when: "beforeChildren" as const,
-      delayChildren: 0.04,
-      staggerChildren: 0.045,
     },
   },
 };
@@ -106,7 +104,7 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const },
+    transition: { duration: 0.12, ease: [0.22, 1, 0.36, 1] as const },
   },
 };
 
