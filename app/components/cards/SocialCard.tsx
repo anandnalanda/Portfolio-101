@@ -18,7 +18,7 @@ export default function SocialCard() {
       transition={{ duration: 0.45, ease }}
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
-      className="rounded-card border-2 overflow-hidden relative cursor-pointer p-6 flex flex-col justify-between transition-all duration-300"
+      className="rounded-card border-2 overflow-hidden relative cursor-pointer p-6 flex flex-col justify-between transition-all duration-300 max-md:h-[75cqw]"
       style={{
         backgroundColor: hovered ? "#1c1c1e" : "#ffffff",
         borderColor: hovered ? "rgba(0,0,0,0.8)" : "rgba(0,0,0,0.04)",

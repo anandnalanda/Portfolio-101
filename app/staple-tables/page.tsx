@@ -403,10 +403,19 @@ export default function StapleTablesPage() {
   const [activeId, setActiveId] = useState(sections[0].id);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
+  // Below lg the artifact panel is pinned to the top of the viewport, so the
+  // scroll-spy line (and the jump-to-section offset) sit just under it rather
+  // than at the desktop's fixed 220px.
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const spyLine = () => {
+    if (window.innerWidth >= 1024) return 220;
+    return (panelRef.current?.getBoundingClientRect().height ?? 0) + 72;
+  };
+
   const scrollToSection = (id: string) => {
     const el = sectionRefs.current[id];
     if (!el) return;
-    const top = el.getBoundingClientRect().top + window.scrollY - 200;
+    const top = el.getBoundingClientRect().top + window.scrollY - (spyLine() - 20);
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -423,7 +432,7 @@ export default function StapleTablesPage() {
       let current = sections[0].id;
       for (const s of sections) {
         const el = sectionRefs.current[s.id];
-        if (el && el.getBoundingClientRect().top <= 220) current = s.id;
+        if (el && el.getBoundingClientRect().top <= spyLine()) current = s.id;
       }
       if (
         window.innerHeight + window.scrollY >=
@@ -555,7 +564,7 @@ export default function StapleTablesPage() {
       <div className="flex max-lg:flex-col">
         {/* Left: scrolling narrative */}
         <div className="w-full lg:w-[480px] lg:flex-shrink-0 bg-surface relative">
-          <div className="px-6 py-16 md:px-10">
+          <div className="px-6 py-16 md:px-10 max-lg:pt-8">
             {/* Back link */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -579,15 +588,17 @@ export default function StapleTablesPage() {
         </div>
 
         {/* Right: sticky artifact panel */}
-        <div className="flex-1 min-w-0 max-lg:hidden">
-          <div className="sticky top-0 h-screen pl-2 pr-[28px] py-[28px] flex flex-col">
-            <div className="flex-1 rounded-3xl bg-[#f5f0eb] p-[28px] flex flex-col">
+        <div
+          ref={panelRef}
+          className="flex-1 min-w-0 max-lg:order-first max-lg:sticky max-lg:top-0 max-lg:z-30 max-lg:bg-white"
+        >
+          <div className="sticky top-0 h-screen pl-2 pr-[28px] py-[28px] flex flex-col max-lg:static max-lg:h-auto max-lg:px-3 max-lg:pt-3 max-lg:pb-2">
+            <div className="flex-1 rounded-3xl bg-[#f5f0eb] p-[28px] flex flex-col max-lg:p-3">
               <div
-                className="relative flex-1 min-h-0 flex items-center justify-center"
-                style={{ containerType: "size" }}
+                className="relative flex-1 min-h-0 flex items-center justify-center [container-type:size] max-lg:[container-type:inline-size]"
               >
                 <div
-                  className="relative rounded-2xl bg-white shadow-lg overflow-hidden"
+                  className="relative rounded-2xl bg-white shadow-lg overflow-hidden max-lg:!w-[min(100%,calc(44svh_*_1.6))]"
                   style={{
                     aspectRatio: "1440 / 900",
                     width: "min(100%, calc(100cqh * (1440 / 900)))",

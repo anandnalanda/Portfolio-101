@@ -37,7 +37,7 @@ const PLAY = {
 
 export default function StapleTablesCard() {
   return (
-    <Link href="/staple-tables" className="col-span-2">
+    <Link href="/staple-tables" className="col-span-2 max-md:col-span-1 max-md:h-[75cqw]">
     <motion.div
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
@@ -49,12 +49,17 @@ export default function StapleTablesCard() {
       <div className="bg-white rounded-card border-2 border-surface-border overflow-hidden relative cursor-pointer flex flex-col justify-center h-full">
         {/* Stage — zooms into the selected block as the drag completes */}
         <motion.div
-          className="relative w-full"
+          className="relative w-full [container-type:inline-size]"
           style={{ transformOrigin: "34% 48%" }}
           variants={{
             rest: { scale: 1, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
             hover: { scale: [1, 1, 1, 1.05, 1.1], transition: PLAY },
           }}
+        >
+        {/* the 560px table shrinks to fit narrower cards (phone) instead of clipping */}
+        <div
+          className="origin-left"
+          style={{ transform: "scale(min(1, calc(100cqw / 560px)))" }}
         >
         <table className="w-full min-w-[560px] text-left text-[16px] table-fixed">
           <thead>
@@ -86,6 +91,7 @@ export default function StapleTablesCard() {
             ))}
           </tbody>
         </table>
+        </div>
 
         {/* Range selection drawn by the teammate (anchored top-left, grows to cursor) */}
         <motion.div

@@ -503,17 +503,15 @@ export default function StapleChatPage() {
   const [activeId, setActiveId] = useState(sections[0].id);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // The mobile artifact is hidden with lg:hidden on desktop, but CSS alone
-  // keeps its animations mounted behind display:none — so unmount it entirely
-  // once we know the viewport is desktop-sized.
-  const [isDesktop, setIsDesktop] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const update = () => setIsDesktop(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
+  // Below lg the artifact panel is pinned to the top of the viewport, so the
+  // scroll-spy line (and the jump-to-section offset) sit just under it rather
+  // than at the desktop's fixed 220px.
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const spyLine = () => {
+    if (window.innerWidth >= 1024) return 220;
+    return (panelRef.current?.getBoundingClientRect().height ?? 0) + 72;
+  };
+
 
   // Jump-to-section: smooth-scroll the target just above the spy line (220)
   // so it becomes active; the scroll-spy then drives the right-hand screen
@@ -521,7 +519,7 @@ export default function StapleChatPage() {
   const scrollToSection = (id: string) => {
     const el = sectionRefs.current[id];
     if (!el) return;
-    const top = el.getBoundingClientRect().top + window.scrollY - 200;
+    const top = el.getBoundingClientRect().top + window.scrollY - (spyLine() - 20);
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -535,7 +533,7 @@ export default function StapleChatPage() {
       let current = sections[0].id;
       for (const s of sections) {
         const el = sectionRefs.current[s.id];
-        if (el && el.getBoundingClientRect().top <= 220) current = s.id;
+        if (el && el.getBoundingClientRect().top <= spyLine()) current = s.id;
       }
       /* The last beat sits too close to the page bottom for its top to ever
          cross the spy line on shorter viewports — approaching the end of
@@ -677,7 +675,7 @@ export default function StapleChatPage() {
         {/* Left: scrolling narrative */}
         <div className="w-full lg:w-[480px] lg:flex-shrink-0 bg-surface relative">
 
-          <div className="px-6 py-16 md:px-10">
+          <div className="px-6 py-16 md:px-10 max-lg:pt-8">
             {/* Back link */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -702,21 +700,23 @@ export default function StapleChatPage() {
         </div>
 
         {/* Right: sticky artifact panel */}
-        <div className="flex-1 min-w-0 max-lg:hidden">
-          <div className="sticky top-0 h-screen pl-2 pr-[28px] py-[28px] flex flex-col">
+        <div
+          ref={panelRef}
+          className="flex-1 min-w-0 max-lg:order-first max-lg:sticky max-lg:top-0 max-lg:z-30 max-lg:bg-white"
+        >
+          <div className="sticky top-0 h-screen pl-2 pr-[28px] py-[28px] flex flex-col max-lg:static max-lg:h-auto max-lg:px-3 max-lg:pt-3 max-lg:pb-2">
             {/* Beige panel — design-system radii: frame rounded-3xl (24px),
                 white panel rounded-2xl (16px) to match the product's cards. */}
-            <div className="flex-1 rounded-3xl bg-[#f5f0eb] p-[28px] flex flex-col">
+            <div className="flex-1 rounded-3xl bg-[#f5f0eb] p-[28px] flex flex-col max-lg:p-3">
               {/* Dashboard container — pinned to a fixed 1440×900 desktop
                   canvas so every viewer sees the IDENTICAL screen (same
                   layout, wraps, and choreography); only the zoom differs.
                   Contain-fit and centered in the beige mat. */}
               <div
-                className="relative flex-1 min-h-0 flex items-center justify-center"
-                style={{ containerType: "size" }}
+                className="relative flex-1 min-h-0 flex items-center justify-center [container-type:size] max-lg:[container-type:inline-size]"
               >
               <div
-                className="relative rounded-2xl shadow-lg overflow-hidden"
+                className="relative rounded-2xl shadow-lg overflow-hidden max-lg:!w-[min(100%,calc(44svh_*_1.6))]"
                 style={{
                   aspectRatio: "1440 / 900",
                   width: "min(100%, calc(100cqh * (1440 / 900)))",
@@ -848,17 +848,6 @@ export default function StapleChatPage() {
           </div>
         </div>
       </div>
-
-      {/* Mobile artifact (shown inline on small screens) */}
-      {!isDesktop && (
-        <div className="lg:hidden px-4 pb-10">
-          <div className="rounded-3xl bg-[#f5f0eb] p-3">
-            <div className="relative aspect-[1440/900] bg-white rounded-xl shadow-lg overflow-hidden">
-              <StapleArtifact restingPanel />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -666,6 +666,20 @@ export default function LaptopCard() {
   const reduce = useReducedMotion();
   const router = useRouter();
   const [hovered, setHovered] = useState(false);
+  // the slides are laid out in px (384×240); below ~408px of cell width
+  // (phones) scale the geometry down so a slide never clips at the sides
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [k, setK] = useState(1);
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const w = entry.contentRect.width;
+      setK(w > 0 ? Math.min(1, (w - 24) / 384) : 1);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   // Track pointer-down position so a drag on the carousel doesn't count as a click.
   const down = useRef<{ x: number; y: number } | null>(null);
 
@@ -722,7 +736,8 @@ export default function LaptopCard() {
 
   return (
     <div
-      className="group/card relative col-span-2 row-span-2 cursor-pointer"
+      ref={rootRef}
+      className="group/card relative col-span-2 row-span-2 max-md:col-span-1 max-md:row-span-1 max-md:h-[100cqw] cursor-pointer"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onPointerDownCapture={onCardPointerDown}
@@ -733,9 +748,9 @@ export default function LaptopCard() {
         bare
         wheelNav={false}
         showExpand={false}
-        cardWidth={384}
-        cardHeight={240}
-        arc={{ bulgeX: 70, stepY: 270, rotStep: 0, fade: 0.54 }}
+        cardWidth={Math.round(384 * k)}
+        cardHeight={Math.round(240 * k)}
+        arc={{ bulgeX: 70 * k, stepY: 270 * k, rotStep: 0, fade: 0.54 }}
         autoplayMs={1700}
         autoplayStep={-1}
         background={background}

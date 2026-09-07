@@ -69,7 +69,7 @@ export default function LogoCard({
         delayChildren: 0.02,
       }}
       style={{ ["--brand" as string]: brand } as React.CSSProperties}
-      className="relative aspect-square w-full overflow-hidden rounded-card border-2 border-surface-border bg-white"
+      className="relative aspect-square w-full overflow-hidden rounded-card border-2 border-surface-border bg-white max-lg:aspect-auto max-lg:h-full"
     >
       {/* brand flood — subtle gradient derived from the brand colour */}
       <motion.div
@@ -176,7 +176,7 @@ export default function LogoCard({
       <Link
         href={href}
         aria-label={label}
-        className="relative z-0 block rounded-card outline-none hover:z-30 focus-within:z-30 focus-visible:ring-2 focus-visible:ring-black/20"
+        className="relative z-0 block rounded-card outline-none hover:z-30 focus-within:z-30 focus-visible:ring-2 focus-visible:ring-black/20 max-md:h-[75cqw]"
         {...wrapperProps}
       >
         {card}
@@ -190,7 +190,7 @@ export default function LogoCard({
       tabIndex={0}
       role="button"
       aria-label={label}
-      className="relative z-0 rounded-card outline-none hover:z-30 focus-within:z-30 focus-visible:ring-2 focus-visible:ring-black/20"
+      className="relative z-0 rounded-card outline-none hover:z-30 focus-within:z-30 focus-visible:ring-2 focus-visible:ring-black/20 max-md:h-[75cqw]"
       {...wrapperProps}
     >
       {card}

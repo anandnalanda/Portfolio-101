@@ -184,6 +184,8 @@ export default function Navbar() {
             whileHover="hover"
             initial="rest"
             onMouseEnter={openDropdown}
+            // touch has no hover: a tap toggles the menu
+            onClick={() => (dropdownOpen ? scheduleClose() : openDropdown())}
           >
             <motion.svg
               width="24"

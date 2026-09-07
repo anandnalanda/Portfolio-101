@@ -126,7 +126,7 @@ export default function SwooshCard() {
     <Link
       href="/staple-chat"
       aria-label="Staple Chat: conversational AI for document analysis"
-      className="group/card relative z-0 block h-full cursor-pointer hover:z-30 focus-within:z-30"
+      className="group/card relative z-0 block h-full cursor-pointer hover:z-30 focus-within:z-30 max-md:h-[75cqw]"
     >
       <motion.div
         onHoverStart={onEnter}

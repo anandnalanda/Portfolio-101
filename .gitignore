@@ -8,3 +8,4 @@ next-env.d.ts
 # python caches (from installed .claude skills)
 __pycache__/
 *.pyc
+.vercel

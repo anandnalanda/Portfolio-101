@@ -8,7 +8,7 @@ export default function VisualDirectionCard() {
   const [hovered, setHovered] = useState(false);
 
   return (
-    <Link href="/visual-direction" className="relative hover:z-[500]">
+    <Link href="/visual-direction" className="relative hover:z-[500] max-md:h-[75cqw]">
       <motion.div
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-40px" }}

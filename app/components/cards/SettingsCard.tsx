@@ -28,7 +28,9 @@ import DoorIllustration from "./DoorIllustration";
  * col 3. It expands LEFT only, covering the Staple Chat card (col 2). */
 const CELL = 258;
 const GAP = 24;
-const EXPAND_LEFT = -(CELL + GAP); // -282 — over the Staple Chat card
+const EXPAND_LEFT = -(CELL + GAP); // -282 — over the Staple Chat card (at 1200px+)
+/* the lg grid is fluid below 1200px, so the real cell width is measured on
+ * hover and the expansion covers exactly one column + gap */
 const ILLO_LEFT_PCT = 45; // illustration centre, % of expanded card (540px)
 /* documents must be fully dissolved BEFORE the chip's right edge (~65.7%),
  * so no page ever appears past the door — only data comes out */
@@ -71,6 +73,8 @@ export default function SettingsCard() {
   const reduced = useReducedMotion() ?? false;
 
   const [expanded, setExpanded] = useState(false);
+  const [expandLeft, setExpandLeft] = useState(EXPAND_LEFT);
+  const cellRef = useRef<HTMLDivElement>(null);
   const [doorsOpen, setDoorsOpen] = useState(false);
   const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -87,6 +91,8 @@ export default function SettingsCard() {
     // simultaneous: the doors slide open WHILE the card expands (their springs
     // overlap). Below lg there is no expansion — hover just opens the doors.
     if (window.matchMedia("(min-width: 1024px)").matches) {
+      const cell = cellRef.current?.offsetWidth ?? CELL;
+      setExpandLeft(-(cell + GAP));
       setExpanded(true);
       wasExpanded.current = true;
     }
@@ -111,11 +117,12 @@ export default function SettingsCard() {
   return (
     /* the grid cell — keeps its slot while the overlay floats above the row */
     <motion.div
+      ref={cellRef}
       initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      className="relative"
+      className="relative max-md:h-[75cqw]"
       style={{ zIndex: expanded ? 40 : undefined }}
     >
       <motion.div
@@ -126,7 +133,7 @@ export default function SettingsCard() {
         className="absolute inset-y-0 cursor-pointer overflow-hidden border-2 border-surface-border bg-white"
         style={{
           borderRadius: RADIUS,
-          left: expanded ? EXPAND_LEFT : 0,
+          left: expanded ? expandLeft : 0,
           right: 0,
         }}
       >

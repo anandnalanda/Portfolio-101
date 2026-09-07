@@ -75,7 +75,7 @@ export default function BioCard() {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="col-span-2 row-span-2 bg-white rounded-card border-2 border-surface-border overflow-hidden p-6 flex flex-col justify-center"
+      className="col-span-2 row-span-2 max-md:col-span-1 max-md:row-span-1 bg-white rounded-card border-2 border-surface-border overflow-hidden p-6 flex flex-col justify-center"
     >
       <div>
         <h1 className="text-[22px] leading-[1.3] text-txt-secondary mb-4">

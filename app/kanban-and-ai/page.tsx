@@ -425,22 +425,20 @@ export default function KanbanAndAIPage() {
   const [activeId, setActiveId] = useState(sections[0].id);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // The mobile artifact is hidden with lg:hidden on desktop, but CSS alone
-  // keeps its timers and animation loops running behind display:none — so
-  // unmount it entirely once we know the viewport is desktop-sized.
-  const [isDesktop, setIsDesktop] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const update = () => setIsDesktop(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
+  // Below lg the artifact panel is pinned to the top of the viewport, so the
+  // scroll-spy line (and the jump-to-section offset) sit just under it rather
+  // than at the desktop's fixed 220px.
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const spyLine = () => {
+    if (window.innerWidth >= 1024) return 220;
+    return (panelRef.current?.getBoundingClientRect().height ?? 0) + 72;
+  };
+
 
   const scrollToSection = (id: string) => {
     const el = sectionRefs.current[id];
     if (!el) return;
-    const top = el.getBoundingClientRect().top + window.scrollY - 200;
+    const top = el.getBoundingClientRect().top + window.scrollY - (spyLine() - 20);
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -454,7 +452,7 @@ export default function KanbanAndAIPage() {
       let current = sections[0].id;
       for (const s of sections) {
         const el = sectionRefs.current[s.id];
-        if (el && el.getBoundingClientRect().top <= 220) current = s.id;
+        if (el && el.getBoundingClientRect().top <= spyLine()) current = s.id;
       }
       if (
         window.innerHeight + window.scrollY >=
@@ -556,7 +554,7 @@ export default function KanbanAndAIPage() {
 
   const RightCanvas = () => (
     <div
-      className="relative rounded-2xl shadow-lg overflow-hidden"
+      className="relative rounded-2xl shadow-lg overflow-hidden max-lg:!w-[min(100%,calc(44svh_*_1.6))]"
       style={{
         aspectRatio: "1440 / 900",
         width: "min(100%, calc(100cqh * (1440 / 900)))",
@@ -570,12 +568,12 @@ export default function KanbanAndAIPage() {
         }`}
         style={{ background: BRAND }}
       >
-        <OfmLogo variant="light" gap={BRAND} className="h-[116px] w-auto" />
-        <span className="mt-4 text-[26px] font-semibold tracking-[-0.01em] text-white">
+        <OfmLogo variant="light" gap={BRAND} className="h-[clamp(40px,8cqw,116px)] w-auto" />
+        <span className="mt-4 text-[clamp(13px,1.8cqw,26px)] font-semibold tracking-[-0.01em] text-white">
           OFM Jobs
         </span>
         <span
-          className={`${spectral.className} mt-6 text-center text-[54px] leading-[1.05] text-white`}
+          className={`${spectral.className} mt-6 text-center text-[clamp(24px,3.75cqw,54px)] leading-[1.05] text-white`}
         >
           Kanban &amp; AI Scoring
         </span>
@@ -654,8 +652,8 @@ export default function KanbanAndAIPage() {
     <div className="min-h-screen bg-white">
       <div className="flex max-lg:flex-col">
         {/* Left: scrolling narrative */}
-        <div className="w-full md:w-[440px] lg:w-[480px] md:flex-shrink-0 bg-surface relative">
-          <div className="px-6 py-16 md:px-10">
+        <div className="w-full lg:w-[480px] lg:flex-shrink-0 bg-surface relative">
+          <div className="px-6 py-16 md:px-10 max-lg:pt-8">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -713,12 +711,14 @@ export default function KanbanAndAIPage() {
         </div>
 
         {/* Right: sticky artifact panel */}
-        <div className="flex-1 min-w-0 max-lg:hidden">
-          <div className="sticky top-0 h-screen pl-2 pr-[28px] py-[28px] flex flex-col">
-            <div className="flex-1 rounded-3xl bg-[#f5f0eb] p-[28px] flex flex-col">
+        <div
+          ref={panelRef}
+          className="flex-1 min-w-0 max-lg:order-first max-lg:sticky max-lg:top-0 max-lg:z-30 max-lg:bg-white"
+        >
+          <div className="sticky top-0 h-screen pl-2 pr-[28px] py-[28px] flex flex-col max-lg:static max-lg:h-auto max-lg:px-3 max-lg:pt-3 max-lg:pb-2">
+            <div className="flex-1 rounded-3xl bg-[#f5f0eb] p-[28px] flex flex-col max-lg:p-3">
               <div
-                className="relative flex-1 min-h-0 flex items-center justify-center"
-                style={{ containerType: "size" }}
+                className="relative flex-1 min-h-0 flex items-center justify-center [container-type:size] max-lg:[container-type:inline-size]"
               >
                 {/* Called as a function, not <RightCanvas />: an inline component
                     gets a new identity every render, which would remount the
@@ -729,20 +729,6 @@ export default function KanbanAndAIPage() {
           </div>
         </div>
       </div>
-
-      {/* Mobile artifact */}
-      {!isDesktop && (
-        <div className="lg:hidden px-4 pb-10">
-          <div className="rounded-3xl bg-[#f5f0eb] p-3">
-            <div
-              className="relative aspect-[1440/900] bg-white rounded-xl shadow-lg overflow-hidden"
-              style={{ containerType: "size" }}
-            >
-              <BoardStage />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
