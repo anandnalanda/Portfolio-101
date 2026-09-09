@@ -196,6 +196,9 @@ export default function ArcCarousel({
   const cardH = cardHeight ?? cfg.cardH;
   const [panelHover, setPanelHover] = useState(false);
   const [panelFocus, setPanelFocus] = useState(false);
+  /* Defaults to true so that if IntersectionObserver is unavailable the
+     carousel behaves exactly as it did before. */
+  const [panelVisible, setPanelVisible] = useState(true);
   const [announce, setAnnounce] = useState("");
   // `target` is the discrete destination the buttons/keys write to.
   // `position` is the spring that chases it — every card's transform reads THIS.
@@ -233,10 +236,10 @@ export default function ArcCarousel({
   // Autoplay — off unless autoplayMs is set; disabled under reduced motion;
   // pauses while the panel is hovered or focused.
   useEffect(() => {
-    if (!autoplayMs || reduced || panelHover || panelFocus) return;
+    if (!autoplayMs || reduced || panelHover || panelFocus || !panelVisible) return;
     const id = window.setInterval(() => target.set(target.get() + autoplayStep), autoplayMs);
     return () => window.clearInterval(id);
-  }, [autoplayMs, autoplayStep, reduced, panelHover, panelFocus, target]);
+  }, [autoplayMs, autoplayStep, reduced, panelHover, panelFocus, panelVisible, target]);
 
   const visible = range(center - cfg.window, center + cfg.window);
   const slideFor = (v: number) => slides[wrap(v, slides.length)];
@@ -250,6 +253,20 @@ export default function ArcCarousel({
   const step = (dir: number) => target.set(target.get() + dir);
 
   const panelRef = useRef<HTMLDivElement>(null);
+
+  /* Pause autoplay while the panel is off screen. Without this the spring runs
+     every `autoplayMs` for the whole life of the page, so the carousel animates
+     precisely when nobody is looking at it and stops when they are. */
+  useEffect(() => {
+    const el = panelRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      ([entry]) => setPanelVisible(entry.isIntersecting),
+      { threshold: 0 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   // Keyboard — ↑/↓ and PageUp/PageDown when the panel has focus.
   const onKeyDown = (e: React.KeyboardEvent) => {

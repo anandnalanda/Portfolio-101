@@ -52,7 +52,9 @@ export default function ParticleCanvas({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const dpr = window.devicePixelRatio || 1;
+    /* capped at 2 — an uncapped 3x phone allocates a 9x pixel buffer for a
+       decorative canvas. InteractiveGlobe caps the same way. */
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
     const W = canvas.offsetWidth;
     const H = canvas.offsetHeight;
     canvas.width = W * dpr;

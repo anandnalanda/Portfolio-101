@@ -7,7 +7,11 @@ import "./globals.css";
 
 // Inter is scoped to the OFM Jobs product UI (`.kibo`) via globals.css;
 // the rest of the portfolio keeps Geist.
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+// preload:false — Inter is only ever drawn inside the `.kibo` scope (the OFM
+// Jobs product UI). Preloading it put a ~47KB font on the critical path of
+// every route that never renders a single Inter glyph, the home page included.
+// The @font-face still ships, so .kibo routes fetch it on demand.
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap", preload: false });
 
 // Editorial serif, used for the display titles on the Experiments cards.
 const newsreader = Newsreader({
