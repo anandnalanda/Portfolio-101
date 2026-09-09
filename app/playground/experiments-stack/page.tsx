@@ -64,6 +64,13 @@ const CONFIG = {
     baseTop: dial(STACK.baseTop, -60, 220, 1),
     stackBottom: dial(STACK.stackBottom, 0, 260, 1),
   },
+  /* the tucked rest pose — how much of the deck peeks before you hover, and
+     how far it travels right-to-left on the way in */
+  tuck: {
+    tuckX: dial(STACK.tuckX, 0, 260, 1),
+    tuckStepX: dial(STACK.tuckStepX, -20, 40, 0.5),
+    tuckStepY: dial(STACK.tuckStepY, 0, 44, 0.5),
+  },
   fan: {
     fanGap: dial(STACK.fanGap, 0, 56, 0.5),
     fanShiftY: dial(STACK.fanShiftY, -100, 100, 1),
@@ -93,6 +100,7 @@ export default function ExperimentsStackPlayground() {
     ...d.title,
     ...d.art,
     ...d.rest,
+    ...d.tuck,
     ...d.fan,
     ...d.spring,
   };
@@ -104,6 +112,21 @@ export default function ExperimentsStackPlayground() {
     (geometry.titleTop / 100) * geometry.frameH +
     geometry.titleSize * geometry.titleLeading;
   const titleClears = titleEnd <= reveal;
+  /* A frame sits `x` px right of its anchor, and the 258px cell clips it, so
+     the strip still on show at rest is `253 - x`. Front frame = highest slot. */
+  const n = 4;
+  const strip = (slot: number) =>
+    253 - (geometry.tuckStepX * slot + geometry.tuckX);
+  const frontStrip = strip(n - 1);
+  const backStrip = strip(0);
+  /* how far the front frame slides left when the deck opens */
+  const travel =
+    geometry.tuckStepX * (n - 1) + geometry.tuckX - geometry.stepX * (n - 1);
+  const stripOk = frontStrip > 2 && backStrip < 253;
+  /* the title starts titleLeft% in from the frame's left edge, so it only
+     stays hidden at rest while the strip is narrower than that */
+  const titleInset = (geometry.titleLeft / 100) * geometry.frameW;
+  const titleHiddenAtRest = backStrip <= titleInset;
 
   const snippet =
     "export const STACK: StackGeometry = {\n" +
@@ -121,7 +144,7 @@ export default function ExperimentsStackPlayground() {
           Experiments stack
         </h1>
         <p className="mt-1 max-w-[560px] text-sm text-neutral-500">
-          Cells are 258 × 540 — the card&apos;s real size in the bento at the
+          Cells are 258 × 540, the card&apos;s real size in the bento at the
           1200px max width. Open the panel top-right to size the frames and move
           them; idle (outline) and hover (filled) are pinned side by side so you can
           tune both without chasing the cursor.
@@ -134,7 +157,7 @@ export default function ExperimentsStackPlayground() {
           <Cell label="Hover / focus">
             <ExperimentsCard geometry={geometry} state="fanned" />
           </Cell>
-          <Cell label="Live — hover me">
+          <Cell label="Live, hover me">
             <ExperimentsCard geometry={geometry} />
           </Cell>
         </div>
@@ -150,8 +173,30 @@ export default function ExperimentsStackPlayground() {
               {`sliver ${geometry.stepY}px shut -> ${reveal}px open (${(
                 reveal / Math.max(geometry.stepY, 0.5)
               ).toFixed(1)}x) · title line ends ${titleEnd.toFixed(0)}px ${
-                titleClears ? "· clears" : "— CLIPPED when open"
+                titleClears ? "· clears" : "CLIPPED when open"
               }`}
+            </span>
+          </div>
+          <div className="mt-2">
+            <span
+              className={`text-xs font-medium ${
+                stripOk ? "text-neutral-400" : "text-amber-600"
+              }`}
+            >
+              {`tucked: back frame shows ${backStrip.toFixed(0)}px, front ${frontStrip.toFixed(
+                0,
+              )}px · slides ${travel.toFixed(0)}px right-to-left on hover${
+                stripOk ? "" : ". Nothing peeks, raise tuckX or lower it"
+              }`}
+            </span>
+            <span
+              className={`ml-2 text-xs font-medium ${
+                titleHiddenAtRest ? "text-neutral-400" : "text-amber-600"
+              }`}
+            >
+              {titleHiddenAtRest
+                ? "· titles hidden at rest"
+                : `· titles peek (need a strip under ${titleInset.toFixed(0)}px)`}
             </span>
           </div>
           <pre className="mt-4 overflow-x-auto rounded-lg border border-neutral-200 bg-white p-4 text-[11px] leading-relaxed text-neutral-600">

@@ -10,7 +10,7 @@ import {
   type MouseEvent,
   type ReactNode,
 } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 import Link from "next/link";
 
 /**
@@ -344,20 +344,20 @@ const EXPERIMENTS: Experiment[] = [
     art: <WireframeArt />,
   },
   {
-    name: "Gold Price Calculator",
-    href: "https://www.goldpricecalculate.com/",
-    ground: "#A8401F",
-    ink: "#F5E7CA",
-    status: "shipped",
-    art: <TickArt />,
-  },
-  {
     name: "AI Content Machine",
     href: "/experiments/ai-content-machine",
     ground: "#5B3FD9",
     ink: "#EFEAFF",
     status: "shipped",
     art: <ReelsArt />,
+  },
+  {
+    name: "Gold Price Calculator",
+    href: "/experiments/gold-calculator",
+    ground: "#A8401F",
+    ink: "#F5E7CA",
+    status: "shipped",
+    art: <TickArt />,
   },
   {
     name: "Interactive Globe",
@@ -385,6 +385,17 @@ export type StackGeometry = {
   stepX: number;
   stepY: number;
   overhang: number;
+  /* tuck — the REST pose. The deck is parked off the card's right edge and
+     only a strip of each frame shows; hovering slides it back left into the
+     open pose above. `tuckX` is how far right the whole deck is pushed (bigger
+     = more hidden), `tuckStepX`/`tuckStepY` are the rest steps between frames,
+     kept separate from stepX/stepY so the open pose can stay as it is.
+     Set tuckX to 0 and the tuck steps equal to stepX/stepY to get the old
+     always-open-at-rest behaviour back. A frame shows `253 - x` px at a 258px
+     card, so the front frame's strip is 253 - (tuckStepX * 3 + tuckX). */
+  tuckX: number;
+  tuckStepX: number;
+  tuckStepY: number;
   baseTop: number;
   stackBottom: number;
   /* fan — how far each frame slides out of the case. `fanGap` is the EXTRA
@@ -438,11 +449,20 @@ export type StackGeometry = {
 
 export const STACK: StackGeometry = {
   frameW: 222,
-  frameH: 311,
+  frameH: 400,
   headerH: 35,
   stepX: 18,
   stepY: 24.5,
   overhang: 23,
+  /* Strips of ~100/94/88/82px. tuckStepX is POSITIVE so the deck leans the
+     same way it does when open: the back frame sits furthest left and each
+     frame forward steps right and down. A negative value mirrors the cascade
+     and makes the tucked deck lean the opposite way to the open one. The
+     titles are hidden at rest (see the title block), so the strips are free to
+     be wider than the 24px text inset. */
+  tuckX: 153,
+  tuckStepX: 6,
+  tuckStepY: 14,
   baseTop: 76,
   stackBottom: 92,
   fanGap: 22,
@@ -454,15 +474,15 @@ export const STACK: StackGeometry = {
   restGround: "#FFFFFF",
   restInk: "#D4D4D8",
   restTitle: "#71717A",
-  restBorder: 0.12,
+  restBorder: 0.2,
   colorFade: 600,
   titleSize: 20,
-  titleTop: 7,
+  titleTop: 5,
   titleLeft: 11,
   titleRight: 7,
   titleLeading: 1.08,
   titleTracking: -0.01,
-  artTop: 17,
+  artTop: 13.5,
   artBottom: 9,
   artInset: 11,
   growDown: false,
@@ -508,11 +528,14 @@ function slotTarget(slot: number, n: number, fanned: boolean, g: StackGeometry) 
      and flips fanShiftY's sign, which makes the motion an exact mirror of the
      upward one without touching any other dial. */
   const rank = g.growDown ? n - 1 - slot : slot;
-  const x = g.stepX * slot;
-  const y = g.stepY * rank;
-  if (!fanned) return { x, y, r: 0 };
+  /* At rest the deck is tucked off the right edge on its own steps. Because
+     the tucked x is larger than the open x, the hover reads as the deck
+     sliding in right-to-left; `stagger` deals them one after another. */
+  if (!fanned) {
+    return { x: g.tuckStepX * slot + g.tuckX, y: g.tuckStepY * rank, r: 0 };
+  }
   const f = fanAt(rank, n, g.growDown ? { ...g, fanShiftY: -g.fanShiftY } : g);
-  return { x: x + f.x, y: y + f.y, r: f.r };
+  return { x: g.stepX * slot + f.x, y: g.stepY * rank + f.y, r: f.r };
 }
 
 
@@ -560,7 +583,6 @@ function Frame({
          (highest z) swallows clicks on every sliver fanned out beneath it */
       className="absolute pointer-events-none"
       style={{ ...anchor(n, g), width: g.frameW, height: g.frameH, zIndex: slot + 1 }}
-      variants={{ hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0 } }}
     >
       <motion.div
         className="h-full w-full pointer-events-auto"
@@ -632,9 +654,16 @@ function Frame({
               [g.growDown ? "bottom" : "top"]: `${g.titleTop}%`,
               left: `${g.titleLeft}%`,
               right: `${g.titleRight}%`,
+              /* The name belongs to the opened deck only. Tucked, a frame is a
+                 blank strip, so a half-word sliding past the card's edge would
+                 read as a clipping bug rather than a label. It fades in on the
+                 same curve as the ground colour. The Link's aria-label still
+                 carries the name, so nothing is lost to assistive tech. */
+              opacity: fanned ? 1 : 0,
+              transition: `opacity ${reduced ? 0 : g.colorFade}ms ease-out`,
             }}
           >
-            <h4
+            <h2
               className="relative overflow-hidden"
               aria-live={wip ? "polite" : undefined}
               style={{
@@ -665,11 +694,64 @@ function Frame({
                   {soon ? SOON_LABEL : ""}
                 </motion.span>
               )}
-            </h4>
+            </h2>
           </div>
         </Link>
         </motion.div>
       </motion.div>
+    </motion.div>
+  );
+}
+
+/* ---- pointer ------------------------------------------------------------ */
+
+/**
+ * A round, fingertip-sized puck that stands in for the arrow while the pointer
+ * is over this card — the touch-target read the OFM screens use for their tap
+ * ripples, borrowed as a real cursor.
+ *
+ * It flies in from the card's top-left corner on entry: the spring is jumped to
+ * the corner the instant the pointer arrives, then handed the live position, so
+ * the puck sweeps in rather than blinking on under the cursor. Nothing here
+ * touches React state — the pointer writes to motion values directly, so moving
+ * the mouse never re-renders the four frames and their artwork.
+ */
+const CURSOR_SIZE = 22;
+const ENTRY = { x: -20, y: -20 };
+
+function RoundCursor({
+  live,
+  reduced,
+  x,
+  y,
+}: {
+  live: boolean;
+  reduced: boolean;
+  x: ReturnType<typeof useSpring>;
+  y: ReturnType<typeof useSpring>;
+}) {
+  return (
+    <motion.div
+      aria-hidden
+      className="pointer-events-none absolute left-0 top-0 z-40"
+      style={{ x, y }}
+      initial={false}
+      animate={{ opacity: live ? 1 : 0, scale: live ? 1 : 0.6 }}
+      transition={{ duration: reduced ? 0 : 0.18, ease: "easeOut" }}
+    >
+      <span
+        className="block rounded-full"
+        style={{
+          width: CURSOR_SIZE,
+          height: CURSOR_SIZE,
+          marginLeft: -CURSOR_SIZE / 2,
+          marginTop: -CURSOR_SIZE / 2,
+          background: "rgba(24,24,27,0.14)",
+          boxShadow:
+            "inset 0 0 0 1.5px rgba(24,24,27,0.45), 0 2px 10px rgba(24,24,27,0.18)",
+          backdropFilter: "blur(1px)",
+        }}
+      />
     </motion.div>
   );
 }
@@ -718,6 +800,62 @@ export default function ExperimentsCard({
   const reduced = useReducedMotion() ?? false;
   const coarse = useCoarsePointer();
   const [hot, setHot] = useState(false);
+  /* Custom pointer. `pointerIn` is the only state the cursor sets, and only on
+     enter/leave — the position rides motion values so a mousemove never
+     re-renders the deck. Touch devices have no pointer to replace, so they are
+     opted out entirely and keep their native behaviour. */
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [pointerIn, setPointerIn] = useState(false);
+  const rawX = useMotionValue(ENTRY.x);
+  const rawY = useMotionValue(ENTRY.y);
+  /* Soft enough that the entry sweep is legible and the puck trails the
+     pointer very slightly, which is what makes it feel like an object rather
+     than a repainted cursor. Stiffer than ~450 and the sweep is over before
+     the eye catches it. */
+  const springCfg = { stiffness: 340, damping: 30, mass: 0.6 };
+  const curX = useSpring(rawX, springCfg);
+  const curY = useSpring(rawY, springCfg);
+  const customCursor = !coarse;
+
+  const localPoint = (e: MouseEvent) => {
+    const el = cardRef.current;
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  };
+
+  const onCardEnter = (e: MouseEvent) => {
+    setHot(true);
+    if (!customCursor) return;
+    const p = localPoint(e) ?? ENTRY;
+    /* Park the puck at the top-left corner with no animation, then hand it the
+       real position so the spring sweeps it in from there. Under reduced
+       motion it is placed straight onto the pointer instead.
+       Both the source AND the spring are jumped: leaving the source at its old
+       value would make the following `set` a no-op — the value would not have
+       changed — and the puck would sit in the corner instead of sweeping. The
+       target is handed over a frame later for the same reason. */
+    const start = reduced ? p : ENTRY;
+    rawX.jump(start.x);
+    rawY.jump(start.y);
+    curX.jump(start.x);
+    curY.jump(start.y);
+    setPointerIn(true);
+    if (!reduced) {
+      requestAnimationFrame(() => {
+        rawX.set(p.x);
+        rawY.set(p.y);
+      });
+    }
+  };
+
+  const onCardMove = (e: MouseEvent) => {
+    if (!customCursor) return;
+    const p = localPoint(e);
+    if (!p) return;
+    rawX.set(p.x);
+    rawY.set(p.y);
+  };
   const { ref: stackRef, scale } = useStackScale();
   const g = withDefaults(geometry);
   const n = EXPERIMENTS.length;
@@ -733,29 +871,25 @@ export default function ExperimentsCard({
   return (
     <div className="row-span-2 max-md:row-span-1 max-md:h-[135cqw]">
       <motion.div
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, margin: "-40px" }}
-        variants={{
-          hidden: { opacity: 0, y: 12 },
-          show: {
-            opacity: 1,
-            y: 0,
-            transition: {
-              duration: 0.45,
-              ease: [0.22, 1, 0.36, 1],
-              when: "beforeChildren",
-              staggerChildren: 0.06,
-            },
-          },
+        ref={cardRef}
+        onMouseEnter={onCardEnter}
+        onMouseMove={onCardMove}
+        onMouseLeave={() => {
+          setHot(false);
+          setPointerIn(false);
         }}
-        onMouseEnter={() => setHot(true)}
-        onMouseLeave={() => setHot(false)}
         onFocusCapture={() => setHot(true)}
         onBlurCapture={(e) => {
           if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setHot(false);
         }}
-        className="group/card bg-white rounded-card border-2 border-surface-border overflow-hidden relative h-full"
+        /* The arrow is hidden on the card AND on every link inside it, or the
+           anchors' own `cursor: pointer` would show through. Gated on
+           `pointerIn` rather than applied up front so the server HTML never
+           hides the cursor: if the JS fails, the puck would never appear and
+           the card would be a dead zone with no pointer at all. */
+        className={`group/card bg-white rounded-card border-2 border-surface-border overflow-hidden relative h-full${
+          customCursor && pointerIn ? " cursor-none [&_*]:cursor-none" : ""
+        }`}
       >
         {/* the stack — absolutely placed, clipped by the card */}
         <div
@@ -782,6 +916,10 @@ export default function ExperimentsCard({
           ))}
           </DeckLive.Provider>
         </div>
+
+        {customCursor && (
+          <RoundCursor live={pointerIn} reduced={reduced} x={curX} y={curY} />
+        )}
 
         {/* softens the bottom of the stack so the arrow stays legible over it */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-24 bg-gradient-to-t from-white via-white/85 to-transparent" />
