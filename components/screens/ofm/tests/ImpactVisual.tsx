@@ -374,7 +374,7 @@ export default function ImpactVisual() {
         className="h-full w-full"
         preserveAspectRatio="xMidYMid meet"
         role="img"
-        aria-label="The résumé queue from the opening waits at an OFM gate; at the gate each sheet is stamped with a green check, and past it candidates carry proof badges toward the employer — the same one who squinted at claims earlier, now smiling under a check-mark bubble: the filter moved to the front."
+        aria-label="The résumé queue from the opening waits at an OFM gate; at the gate each sheet is stamped with a green check, and past it candidates carry proof badges toward the employer, the same one who squinted at claims earlier, now smiling under a check-mark bubble. The filter moved to the front."
       >
         <defs>
           <RoughFilter id="ofm-impact-rough" baseFrequency={0.013} scale={5} seed={7} />

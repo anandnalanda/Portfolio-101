@@ -213,6 +213,20 @@ function AttributesView() {
           <circle cx={95} cy={360} r={4} />
         </g>
 
+        {/* the three attributes the narration names, set crisp (outside the
+            rough filter) so the scene and the copy say the same three words */}
+        <g
+          fill={INK}
+          fontSize={17}
+          fontWeight={600}
+          textAnchor="middle"
+          style={{ fontFamily: "inherit", letterSpacing: "0.01em" }}
+        >
+          <text x={310} y={118}>Credible</text>
+          <text x={120} y={118} opacity={0.75}>Calm</text>
+          <text x={310} y={548}>Approachable</text>
+        </g>
+
         {/* hand-drawn scene - roughened parent, animated children (loop) */}
         <g filter="url(#vd-rough)">
           {/* soft ground */}

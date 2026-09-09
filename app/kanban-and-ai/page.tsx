@@ -56,7 +56,7 @@ const sections: Section[] = [
     id: "open",
     type: "intro",
     title: "Kanban and AI Scoring",
-    content: `OFM Jobs was good at introductions and bad at everything after. An employer could open an applicant, message them, and then the product ran out of road: no pipeline, nothing to come back to. So hiring finished where it always had, in someone's inbox, off our platform. Kanban and AI rebuilt the missing middle: a pipeline employers want to live in, with AI ranking who to open first.`,
+    content: `OFM Jobs was good at introductions and bad at everything after. An employer could open an applicant, message them, and then the product ran out of road: no pipeline, nothing to come back to. So hiring finished where it always had, in someone's inbox, off our platform. Kanban and AI rebuilt that missing middle, a pipeline employers want to live in, with AI ranking who to open first.`,
   },
 
   /* ── The Story ─────────────────────────────────────────────── */
@@ -68,7 +68,7 @@ const sections: Section[] = [
     bullets: [
       `After the first message, there was nowhere to put the candidate.`,
       `So the moment real hiring started, it left the platform.`,
-      `A job platform doesn't win on introductions. It wins when someone gets hired on it.`,
+      `A job platform only really wins when someone gets hired on it.`,
     ],
   },
   {
@@ -80,7 +80,7 @@ const sections: Section[] = [
       `No structure to hold a candidate after first contact.`,
       `Hundreds of applicants per role, and no way to tell who to open first.`,
       `Kanban answers the first. AI answers the second.`,
-      `Built for someone who hires twice a year, not a full-time recruiter.`,
+      `Built for someone who hires twice a year, with no recruiter on staff.`,
     ],
   },
 
@@ -89,7 +89,7 @@ const sections: Section[] = [
     id: "d1",
     type: "decision",
     title: `Kanban, because the stages already existed.`,
-    content: `Every employer already pictures hiring as stages, so I drew the board already in their head, not a new concept to learn:`,
+    content: `Every employer already pictures hiring as stages, so I drew the board they already had in their head:`,
     bullets: [
       `People to review`,
       `People I'm talking to`,
@@ -105,7 +105,6 @@ const sections: Section[] = [
     bullets: [
       `Stages are theirs to add, rename, and reorder.`,
       `A tool shaped to your work is a tool you stay in.`,
-      `Customization is the retention mechanism.`,
     ],
   },
   {
@@ -116,18 +115,18 @@ const sections: Section[] = [
     bullets: [
       `The whole thread lives on the card, beside the candidate it's about.`,
       `Reach out and follow up without exporting anything.`,
-      `The pipeline holds the talking, not just the tracking.`,
+      `The pipeline holds the conversation as well as the tracking.`,
     ],
   },
   {
     id: "d4",
     type: "decision",
     title: `Rank, and show your work.`,
-    content: `A list treats the 200th applicant like the 1st. The real question is "who do I open first?"`,
+    content: `A list treats the 200th applicant like the 1st. The question an employer has is who to open first.`,
     bullets: [
       `Every candidate carries an AI match score, in the loudest spot on the card.`,
-      `The board doesn't just hold candidates, it ranks them.`,
-      `A score nobody understands is a score nobody trusts, so every score opens into its reasons.`,
+      `The board ranks candidates as well as holding them.`,
+      `Nobody trusts a score they cannot understand, so every score opens into its reasons.`,
       `Nod and move on, or overrule it, but always knowing why.`,
     ],
   },
@@ -135,7 +134,7 @@ const sections: Section[] = [
     id: "d6",
     type: "decision",
     title: `The human holds the pen.`,
-    content: `AI orders the column, but a drag always wins. The score is a fast first pass, never the gatekeeper. The person hiring makes the call; a machine shouldn't quietly decide who gets seen. Suggest hard, decide never.`,
+    content: `AI orders the column, but a drag always wins. The score is a fast first pass, never the gatekeeper. The person hiring makes the call, and a machine should not quietly decide who gets seen.`,
   },
 
   /* ── The Full Flow ─────────────────────────────────────────── */
@@ -159,7 +158,7 @@ const sections: Section[] = [
     content: `Open a role and see the posting itself, the same page applicants apply from, and the one you hire from.`,
     bullets: [
       `A preview banner says it plainly: this is what applicants see.`,
-      `Location, type, and pay as labeled facts, not buried in prose.`,
+      `Location, type and pay as labelled facts, out of the prose.`,
       `The rail keeps your side of it: live stats and the way back to the pipeline.`,
     ],
   },
@@ -183,8 +182,8 @@ const sections: Section[] = [
     content: `A contact list became a pipeline.`,
     bullets: [
       `Employers build their own stages; the best fit rises on its own.`,
-      `Hundreds of applicants become a ranked shortlist, not a scroll.`,
-      `Hiring happens on OFM now, not in an inbox, so we earn a seat at every hire.`,
+      `Hundreds of applicants become a ranked shortlist instead of a scroll.`,
+      `Hiring happens on OFM now instead of in an inbox, so we are part of every hire.`,
     ],
   },
 ];
@@ -218,6 +217,12 @@ function NarrativeSection({
   active?: boolean;
   onNavigate?: () => void;
 }) {
+  /* Heading level, not size. The intro beat is the page's only h1; the group
+     rails ("The Story") sit a level below it, and every other beat sits under
+     a rail. Styling stays on titleClass, so the document outline changes and
+     the look does not. */
+  const Heading = titleSize === "lg" ? "h1" : "h3";
+
   const titleClass =
     titleSize === "lg"
       ? "text-[28px] tracking-[-0.02em] leading-tight"
@@ -242,13 +247,13 @@ function NarrativeSection({
               }`
         }`}
       >
-        <h2
+        <Heading
           className={`mb-2 text-txt-heading ${titleClass} ${
             serif ? `${spectral.className} font-normal` : "font-semibold"
           }`}
         >
           {title}
-        </h2>
+        </Heading>
         <div className="text-[15px] leading-[1.7] text-txt-primary">
           <p>{content}</p>
           {bullets && bullets.length > 0 && (
@@ -530,11 +535,11 @@ export default function KanbanAndAIPage() {
         >
           {showGroupHeading && groupLabel && (
             <div className="mt-12 mb-4 pl-4">
-              <h3
+              <h2
                 className={`${spectral.className} text-[24px] text-txt-heading pb-[2px] tracking-[-1px]`}
               >
                 {groupLabel}
-              </h3>
+              </h2>
               <div className="border-b border-surface-border" />
             </div>
           )}
@@ -554,6 +559,11 @@ export default function KanbanAndAIPage() {
 
   const RightCanvas = () => (
     <div
+      /* The mock is a demo, not a control: pointer events are already off
+         inside it, but its 60-odd links and buttons were still Tab stops, so a
+         keyboard user walked through every one of them at 9px tall. `inert`
+         takes the whole canvas out of the focus order and the a11y tree. */
+      inert
       className="relative rounded-2xl shadow-lg overflow-hidden max-lg:!w-[min(100%,calc(44svh_*_1.6))]"
       style={{
         aspectRatio: "1440 / 900",
@@ -653,16 +663,18 @@ export default function KanbanAndAIPage() {
       <div className="flex max-lg:flex-col">
         {/* Left: scrolling narrative */}
         <div className="w-full lg:w-[480px] lg:flex-shrink-0 bg-surface relative">
-          <div className="px-6 py-16 md:px-10 max-lg:pt-8">
+          {/* max-lg cap: stacked, the narrative would otherwise run ~100
+              characters a line at iPad-portrait width against 52 on desktop. */}
+          <div className="px-6 py-16 md:px-10 max-lg:pt-8 max-lg:max-w-[520px]">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, ease }}
-              className="mb-2 pl-4"
+              className="mb-3 pl-4"
             >
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 text-[14px] text-txt-secondary hover:text-txt-heading transition-colors"
+                className="inline-flex items-center gap-2 py-3 -my-3 text-[14px] text-txt-secondary hover:text-txt-heading transition-colors"
               >
                 <span>←</span>
                 Home

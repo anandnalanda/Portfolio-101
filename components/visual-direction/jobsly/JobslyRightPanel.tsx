@@ -532,21 +532,21 @@ function FoundationsView() {
    is Rob's thread, where a plain-English reply steers the whole conversation.
    The primary UI is a conversation, not a dashboard. */
 const AGENT_ROLES: { role: string; status: string; days: string; count: number; dot: string }[] = [
-  { role: "Senior Backend Engineer", status: "Offer pending — Elena. Competing deadline Friday.", days: "42d", count: 1, dot: "#e5484d" },
+  { role: "Senior Backend Engineer", status: "Offer pending for Elena. Competing deadline Friday.", days: "42d", count: 1, dot: "#e5484d" },
   { role: "Customer Support Lead", status: "247 new overnight. 8 strong, screening complete.", days: "12d", count: 23, dot: "#f5a623" },
-  { role: "Product Designer", status: "Interview today 11:00am — Liam Torres.", days: "28d", count: 4, dot: JB.success },
-  { role: "Data Analyst", status: "Interview today 14:00 — Fatima Al-Rashid.", days: "18d", count: 6, dot: JB.success },
+  { role: "Product Designer", status: "Interview today, 11:00am, Liam Torres.", days: "28d", count: 4, dot: JB.success },
+  { role: "Data Analyst", status: "Interview today, 14:00, Fatima Al-Rashid.", days: "18d", count: 6, dot: JB.success },
   { role: "SDR ×2", status: "Healthy pipeline. 12 new overnight, nothing urgent.", days: "10d", count: 15, dot: JB.success },
   { role: "Finance Manager", status: "3 assessments completed. Results pending.", days: "21d", count: 8, dot: JB.success },
 ];
 
 /* Rob's thread, played out as a live conversation on mount */
 const THREAD: { kind: "rob" | "you" | "time"; text: string; accent?: string }[] = [
-  { kind: "rob", text: "Morning, Sophie. Busy night — here's what needs you." },
+  { kind: "rob", text: "Morning, Sophie. Busy night. Here's what needs you." },
   { kind: "time", text: "8:47 AM" },
   { kind: "rob", accent: "#e5484d", text: "Elena's offer for Senior Backend has a competing deadline this Friday. You need to send today or we'll lose her." },
-  { kind: "rob", accent: "#f5a623", text: "Customer Support got 247 overnight. I've screened them all — 8 are strong. Ready to send assessments when you are." },
-  { kind: "rob", text: "You've got Liam Torres at 11am and Fatima Al-Rashid at 2pm — I'll prep both packs before then." },
+  { kind: "rob", accent: "#f5a623", text: "Customer Support got 247 overnight. I've screened them all, and 8 are strong. Ready to send assessments when you are." },
+  { kind: "rob", text: "You've got Liam Torres at 11am and Fatima Al-Rashid at 2pm. I'll prep both packs before then." },
   { kind: "you", text: "Let's start with Elena's offer." },
   { kind: "rob", text: "On it. Pulling up her profile now." },
 ];

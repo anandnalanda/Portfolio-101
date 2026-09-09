@@ -22,17 +22,18 @@ import ImpactVisual from "@/components/screens/ofm/tests/ImpactVisual";
 /* Deep emerald landing, drawn from the OFM `.kibo` brand hue. */
 const BRAND = "#064E3B";
 
-/* The d1 beat: the full "Post a job" wizard, autoplaying a cursor that clicks
-   Continue from Details through Requirements to the Tests step. */
+/* d1 "Test the job, not trivia" names the five tests, so it lands straight on
+   the wizard's Tests step, where all five are on screen, and the cursor picks
+   the ones the role needs. */
 function JobPostTestsBeat() {
-  return <JobPostWizard autoplay />;
+  return <JobPostWizard autoplay initialStep={1} />;
 }
 
-/* f1 "Set the bar when you post": lands straight on the wizard's Tests step —
-   what an employer sees after Save & Continue — and the cursor selects the
-   tests the role requires, setting each one's pass mark. */
+/* f1 "Set the bar when you post" is about the step living inside the posting
+   flow, so this one plays the whole wizard: a cursor clicks Continue from
+   Details through Requirements and arrives at the Tests step. */
 function SetBarBeat() {
-  return <JobPostWizard autoplay initialStep={1} />;
+  return <JobPostWizard autoplay />;
 }
 
 /* d3–d5 are one continuous scene: the Discover marketplace + candidate overlay,
@@ -106,7 +107,7 @@ const sections: Section[] = [
   {
     id: "promise",
     type: "story",
-    title: `A résumé is a promise, not proof.`,
+    title: `A résumé is a promise.`,
     content: `The job is the skill itself, and none of it survives a CV.`,
     bullets: [
       `Hold a real conversation in English, or just tick "B2"?`,
@@ -123,7 +124,7 @@ const sections: Section[] = [
     bullets: [
       `Thirty minutes in: they type 22 WPM.`,
       `The call drops every two minutes, live.`,
-      `Right filter, wrong end of the pipe.`,
+      `The right filter, at the wrong end of the pipe.`,
     ],
   },
 
@@ -131,26 +132,26 @@ const sections: Section[] = [
   {
     id: "d1",
     type: "decision",
-    title: `Test the job, not trivia.`,
-    content: `Five native tests, each mapped to a skill the work actually needs.`,
+    title: `Test the job itself.`,
+    content: `Five native tests, each mapped to a skill the work needs.`,
     bullets: [
       `English: reading and grammar, in real chat snippets.`,
       `Verbal: a spoken answer, recorded.`,
-      `Listening: catch what the customer actually said.`,
+      `Listening: catch what the customer said.`,
       `Internet speed: the silent dealbreaker.`,
       `Typing: WPM and accuracy on a clock.`,
-      `Built native, so scores land on the board, not a vendor site.`,
+      `Built in, so scores land on the board rather than on a vendor's site.`,
     ],
   },
   {
     id: "d2",
     type: "decision",
-    title: `Proof to apply, not proof to shortlist.`,
-    content: `The test is the door: nothing is submitted below the bar.`,
+    title: `Proof before you can apply.`,
+    content: `The test is the door. Nothing is submitted below the bar.`,
     bullets: [
       `Required skills are set when the job is posted.`,
       `Proven roles are one-tap Apply; the rest stay locked.`,
-      `The pile arrives pre-filtered by the bar, not by a person.`,
+      `The pile arrives already filtered by the bar.`,
       `Clearing the bar opens the door; the employer still chooses.`,
     ],
   },
@@ -158,9 +159,9 @@ const sections: Section[] = [
     id: "d3",
     type: "decision",
     title: `Grade it the moment it's done.`,
-    content: `The machine grades what it can, the instant it can. No human queue.`,
+    content: `The machine grades what it can, the instant it can, with no human queue.`,
     bullets: [
-      `Typing and speed are measured. Numbers, not opinions.`,
+      `Typing and speed are measured, so they come back as numbers.`,
       `English and listening auto-score against a key.`,
       `Verbal is AI-scored, with the reasoning shown.`,
     ],
@@ -169,9 +170,9 @@ const sections: Section[] = [
     id: "d4",
     type: "decision",
     title: `A score you can trust.`,
-    content: `Every number on the profile was earned on a test, not typed into a bio.`,
+    content: `Every number on the profile was earned on a test.`,
     bullets: [
-      `Not "good typist" but "68 WPM," measured live.`,
+      `"68 WPM," measured live, instead of "good typist."`,
       `Nothing here is self-reported.`,
       `"Fully verified" only once every skill cleared its test.`,
       `Scores sit beside real roles and real tenure.`,
@@ -181,7 +182,7 @@ const sections: Section[] = [
     id: "dexp",
     type: "decision",
     title: `A number is only half the story.`,
-    content: `A score says they can; a track record says they have.`,
+    content: `A score shows what someone can do. A track record shows what they have done.`,
     bullets: [
       `Same overlay, one tab over: roles, tenure, languages.`,
       `Verified scores beside a real history.`,
@@ -192,7 +193,7 @@ const sections: Section[] = [
     id: "d5",
     type: "decision",
     title: `Prove it once, carry it everywhere.`,
-    content: `Proof lives on the candidate, not the application.`,
+    content: `Proof stays with the candidate rather than the application.`,
     bullets: [
       `Take any test proactively, on your own time.`,
       `Verified scores travel from job to job.`,
@@ -210,7 +211,7 @@ const sections: Section[] = [
     bullets: [
       `A required-skills step inside the job post.`,
       `Toggle each test on and set its pass mark.`,
-      `The job goes live gated: no proof, no application.`,
+      `The job goes live gated, so without proof there is no application.`,
     ],
   },
   {
@@ -257,7 +258,7 @@ const sections: Section[] = [
     content: `Play the customer's voice note, answer what it asked.`,
     bullets: [
       `Two plays at most, options in view while you listen.`,
-      `Comprehension, not transcription.`,
+      `It tests comprehension rather than transcription.`,
       `Auto-scored against the key.`,
     ],
   },
@@ -270,7 +271,7 @@ const sections: Section[] = [
     bullets: [
       `The dial sweeps to a reading, past the pass mark.`,
       `Upload, ping, and jitter alongside.`,
-      `A weak reading is flagged for a retry, not failed.`,
+      `A weak reading is flagged for a retry rather than failed.`,
     ],
   },
   {
@@ -341,6 +342,12 @@ function NarrativeSection({
   active?: boolean;
   onNavigate?: () => void;
 }) {
+  /* Heading level, not size. The intro beat is the page's only h1; the group
+     rails ("The Story") sit a level below it, and every other beat sits under
+     a rail. Styling stays on titleClass, so the document outline changes and
+     the look does not. */
+  const Heading = titleSize === "lg" ? "h1" : "h3";
+
   const titleClass =
     titleSize === "lg"
       ? "text-[28px] tracking-[-0.02em] leading-tight"
@@ -365,13 +372,13 @@ function NarrativeSection({
               }`
         }`}
       >
-        <h2
+        <Heading
           className={`mb-2 text-txt-heading ${titleClass} ${
             serif ? `${spectral.className} font-normal` : "font-semibold"
           }`}
         >
           {title}
-        </h2>
+        </Heading>
         <p className="text-[15px] leading-[1.7] text-txt-primary">{content}</p>
         {bullets && bullets.length > 0 && (
           <ul className="mt-3 list-disc space-y-1.5 pl-[18px] text-[15px] leading-[1.6] text-txt-primary marker:text-txt-secondary">
@@ -438,38 +445,13 @@ export default function OFMJobsTestsPage() {
   };
 
 
-  // Gentle scroll-snap so each beat settles with its heading at the screen's
-  // top line (proximity = only snaps when you stop near a beat; never fights
-  // the scroll). Scoped to this page via mount/unmount.
-  useEffect(() => {
-    const html = document.documentElement;
-    const prev = html.style.scrollSnapType;
-    const prevPad = html.style.scrollPaddingTop;
-    html.style.scrollSnapType = "y proximity";
-    // below lg the pinned stage covers the top of the viewport, so pad the
-    // snap so a beat's heading lands just under it
-    const pad = () => {
-      html.style.scrollPaddingTop =
-        window.innerWidth >= 1024
-          ? prevPad
-          : `${(panelRef.current?.offsetHeight ?? 0) + 24}px`;
-    };
-    pad();
-    window.addEventListener("resize", pad);
-    return () => {
-      window.removeEventListener("resize", pad);
-      html.style.scrollSnapType = prev;
-      html.style.scrollPaddingTop = prevPad;
-    };
-  }, []);
-
   const scrollToSection = (id: string) => {
     const el = sectionRefs.current[id];
     if (!el) return;
     const top =
       el.getBoundingClientRect().top +
       window.scrollY -
-      (window.innerWidth >= 1024 ? 48 : spyLine() - 24);
+      (spyLine() - 20);
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -536,15 +518,14 @@ export default function OFMJobsTestsPage() {
           ref={(el) => {
             sectionRefs.current[section.id] = el;
           }}
-          className="snap-start scroll-mt-12"
         >
           {showGroupHeading && groupLabel && (
             <div className="mt-12 mb-4 pl-4">
-              <h3
+              <h2
                 className={`${spectral.className} text-[24px] text-txt-heading pb-[2px] tracking-[-1px]`}
               >
                 {groupLabel}
-              </h3>
+              </h2>
               <div className="border-b border-surface-border" />
             </div>
           )}
@@ -564,7 +545,9 @@ export default function OFMJobsTestsPage() {
 
   const RightCanvas = () => (
     <div
-      className="relative rounded-2xl shadow-lg overflow-hidden max-lg:!w-[min(100%,calc(44svh_*_1.6))]"
+      /* demo, not a control: keep its buttons out of the Tab order */
+                inert
+                className="relative rounded-2xl shadow-lg overflow-hidden max-lg:!w-[min(100%,calc(44svh_*_1.6))]"
       style={{
         aspectRatio: "1440 / 900",
         width: "min(100%, calc(100cqh * (1440 / 900)))",
@@ -620,16 +603,18 @@ export default function OFMJobsTestsPage() {
       <div className="flex max-lg:flex-col">
         {/* Left: scrolling narrative */}
         <div className="w-full lg:w-[480px] lg:flex-shrink-0 bg-surface relative">
-          <div className="px-6 py-16 md:px-10 max-lg:pt-8">
+          {/* max-lg cap: stacked, the narrative would otherwise run ~100
+              characters a line at iPad-portrait width against 52 on desktop. */}
+          <div className="px-6 py-16 md:px-10 max-lg:pt-8 max-lg:max-w-[520px]">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, ease }}
-              className="mb-2 pl-4"
+              className="mb-3 pl-4"
             >
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 text-[14px] text-txt-secondary hover:text-txt-heading transition-colors"
+                className="inline-flex items-center gap-2 py-3 -my-3 text-[14px] text-txt-secondary hover:text-txt-heading transition-colors"
               >
                 <span>←</span>
                 Home

@@ -65,7 +65,7 @@ const sections: Section[] = [
     id: "scale",
     type: "story",
     title: "Ten thousand documents a month.",
-    content: `This was not a demo. Staple Tables sat inside real operational volume, and every one of those documents ended at a human review screen.`,
+    content: `This was production. Staple Tables sat inside real operational volume, and every one of those documents ended at a human review screen.`,
     bullets: [
       `150+ daily users processing 10,000+ documents a month.`,
       `Invoices, receipts, and operational reports, all funnelling into the same review step.`,
@@ -79,9 +79,9 @@ const sections: Section[] = [
     title: "The fields were a flat wall.",
     content: `The extracted fields came back as one long list where nothing stood out. Finding the number that mattered meant reading every row.`,
     bullets: [
-      `Poor visual hierarchy: every field carried the same weight.`,
-      `No validation cues: you could not see which fields had been mapped.`,
-      `Limited context: no sense of what to do next, approve, edit, or move on.`,
+      `Poor visual hierarchy, so every field carried the same weight.`,
+      `No validation cues, so you could not see which fields had been mapped.`,
+      `No sense of what to do next, whether to approve, edit or move on.`,
     ],
     highlight: null,
   },
@@ -91,9 +91,9 @@ const sections: Section[] = [
     title: "The table fought the reader.",
     content: `The extracted line-item table was worse. It was dense and flat, and gave the eye nothing to hold on to.`,
     bullets: [
-      `No hierarchy: nothing separated important data from the rest.`,
-      `Cramped layout: minimal padding made it hard to scan across a row.`,
-      `No colour: everything read at the same importance.`,
+      `Nothing separated the important data from the rest.`,
+      `Minimal padding made it hard to scan across a row.`,
+      `With no colour, everything read at the same importance.`,
     ],
     highlight: null,
   },
@@ -104,7 +104,7 @@ const sections: Section[] = [
     content: `The top bar crammed the whole product into one row, and still left power users stuck.`,
     bullets: [
       `Complete, Reject, Label, zoom, and Export sat as equal-weight buttons, next to the search, notifications, and your profile.`,
-      `The one action that actually mattered, the review decision, was lost in the crowd.`,
+      `The one action that mattered, the review decision, was lost in the crowd.`,
       `And you could only see one document at a time. To reach the next, you went back and opened it again. No quick jump for power users.`,
     ],
     highlight: null,
@@ -114,7 +114,7 @@ const sections: Section[] = [
     id: "research-methods",
     type: "research",
     title: "Three ways into the problem.",
-    content: `I grounded the redesign in evidence rather than taste.`,
+    content: `I wanted the redesign grounded in evidence.`,
     bullets: [
       `Usage analytics across 150+ daily users and 10,000+ monthly documents.`,
       `Task observation sessions documenting the real extraction workflow and where it failed.`,
@@ -128,9 +128,9 @@ const sections: Section[] = [
     title: "Three rules for the redesign.",
     content: `Every change that follows, on both surfaces, obeys one of three rules.`,
     bullets: [
-      `Hierarchy first: the important number should find you, not the other way around.`,
-      `Colour with meaning: categories you can see, chosen to work for colour-blind users too.`,
-      `Room to breathe: white space as a scanning tool, not decoration.`,
+      `Hierarchy first, so the important number finds you.`,
+      `Colour with meaning, using a palette chosen to work for colour-blind users too.`,
+      `Room to breathe, with white space doing real work as a scanning aid.`,
     ],
     highlight: null,
   },
@@ -156,7 +156,7 @@ const sections: Section[] = [
     bullets: [
       `Click a field to locate and box its source text on the page.`,
       `Wrong or missing? Edit the value, or re-key it, right on the spot.`,
-      `Verify at a glance instead of hunting through the document.`,
+      `Check a value at a glance, without hunting through the document.`,
     ],
     highlight: null,
   },
@@ -177,7 +177,7 @@ const sections: Section[] = [
     id: "table-headers",
     type: "product",
     title: "Headers you can remap.",
-    content: `The columns read in plain language, but the real point is what happens when the extractor guesses one wrong.`,
+    content: `The columns read in plain language, and what matters most is what happens when the extractor guesses one wrong.`,
     bullets: [
       `Every header is a dropdown: if a column lands under the wrong field, remap it in one click, no re-running the model.`,
       `Plain words over raw keys, so a non-technical reviewer can verify an extraction at a glance, and fix it without help.`,
@@ -214,7 +214,7 @@ const sections: Section[] = [
     id: "results",
     type: "closing",
     title: "The results.",
-    content: `The review step went from a chore to a glance, and the win carried past the review screen into organisation-level numbers.`,
+    content: `The review step went from a chore to a glance, and the gains showed up in organisation-level numbers.`,
     bullets: [
       `50% less time spent correcting extraction errors.`,
       `30 to 40% higher extraction accuracy.`,
@@ -228,7 +228,7 @@ const sections: Section[] = [
     id: "testimonials",
     type: "closing",
     title: "In their words.",
-    content: `The teams felt it before the dashboards did.`,
+    content: `The teams noticed before the dashboards did.`,
     bullets: [
       `"I can see exactly where every value was read from now, so approving an extraction is a glance instead of a hunt through the page."`,
       `"The line items finally read like a spreadsheet, and when a column lands wrong I just remap the header. No re-running anything."`,
@@ -316,6 +316,12 @@ function NarrativeSection({
   onNavigate,
   meta,
 }: NarrativeSectionProps) {
+  /* Heading level, not size. The intro beat is the page's only h1; the group
+     rails ("The Story") sit a level below it, and every other beat sits under
+     a rail. Styling stays on titleClass, so the document outline changes and
+     the look does not. */
+  const Heading = titleSize === "lg" ? "h1" : "h3";
+
   const titleClass =
     titleSize === "lg"
       ? "text-[28px] tracking-[-0.02em] leading-tight"
@@ -342,7 +348,7 @@ function NarrativeSection({
               }`
         }`}
       >
-        <h2
+        <Heading
           className={`mb-2 text-txt-heading ${titleClass} ${
             serif ? `${spectral.className} font-normal` : "font-semibold"
           }`}
@@ -354,14 +360,14 @@ function NarrativeSection({
                 e.stopPropagation();
                 onNavigate();
               }}
-              className="text-left transition-colors hover:text-txt-primary focus-visible:outline-none focus-visible:underline"
+              className="py-2 -my-2 text-left transition-colors hover:text-txt-primary focus-visible:outline-none focus-visible:underline"
             >
               {title}
             </button>
           ) : (
             title
           )}
-        </h2>
+        </Heading>
         {meta && (
           <div className="mb-3 flex gap-8">
             {meta.map((m) => (
@@ -497,11 +503,11 @@ export default function StapleTablesPage() {
         >
           {showGroupHeading && groupLabel && (
             <div className="mt-12 mb-4 pl-4">
-              <h3
+              <h2
                 className={`${spectral.className} text-[24px] text-txt-heading pb-[2px] tracking-[-1px]`}
               >
                 {groupLabel}
-              </h3>
+              </h2>
               <div className="border-b border-surface-border" />
             </div>
           )}
@@ -522,7 +528,7 @@ export default function StapleTablesPage() {
     });
 
   const ContinueReading = () => (
-    <div className="mt-10">
+    <div className="mt-16">
       <h4 className="text-[12px] font-normal text-txt-secondary uppercase tracking-[0.08em] mb-2 pl-4">
         Continue Reading
       </h4>
@@ -564,17 +570,19 @@ export default function StapleTablesPage() {
       <div className="flex max-lg:flex-col">
         {/* Left: scrolling narrative */}
         <div className="w-full lg:w-[480px] lg:flex-shrink-0 bg-surface relative">
-          <div className="px-6 py-16 md:px-10 max-lg:pt-8">
+          {/* max-lg cap: stacked, the narrative would otherwise run ~100
+              characters a line at iPad-portrait width against 52 on desktop. */}
+          <div className="px-6 py-16 md:px-10 max-lg:pt-8 max-lg:max-w-[520px]">
             {/* Back link */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, ease }}
-              className="mb-2 pl-4"
+              className="mb-3 pl-4"
             >
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 text-[14px] text-txt-secondary hover:text-txt-heading transition-colors"
+                className="inline-flex items-center gap-2 py-3 -my-3 text-[14px] text-txt-secondary hover:text-txt-heading transition-colors"
               >
                 <span>←</span>
                 Home
@@ -598,7 +606,9 @@ export default function StapleTablesPage() {
                 className="relative flex-1 min-h-0 flex items-center justify-center [container-type:size] max-lg:[container-type:inline-size]"
               >
                 <div
-                  className="relative rounded-2xl bg-white shadow-lg overflow-hidden max-lg:!w-[min(100%,calc(44svh_*_1.6))]"
+                  /* demo, not a control: keep its buttons out of the Tab order */
+                inert
+                className="relative rounded-2xl bg-white shadow-lg overflow-hidden max-lg:!w-[min(100%,calc(44svh_*_1.6))]"
                   style={{
                     aspectRatio: "1440 / 900",
                     width: "min(100%, calc(100cqh * (1440 / 900)))",

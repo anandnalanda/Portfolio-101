@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import OfmRightPanel from "@/components/visual-direction/ofm-jobs/OfmRightPanel";
 import JobslyRightPanel from "@/components/visual-direction/jobsly/JobslyRightPanel";
+import ScaledCanvas from "@/components/screens/_ui/ScaledCanvas";
 
 /**
  * Visual Direction case study - same scrollytelling chrome as the other case
@@ -19,6 +20,12 @@ import JobslyRightPanel from "@/components/visual-direction/jobsly/JobslyRightPa
 
 const spectral = Spectral({ subsets: ["latin"], weight: ["400"] });
 const ease = [0.22, 1, 0.36, 1] as const;
+
+/* The right column measures ~920x690 at a 1440-wide desktop. Below lg the panel
+   is drawn at exactly this size and scaled to fit, so the composition a phone
+   sees is the composition a laptop sees. 4:3 matches the mobile aspect box. */
+const PANEL_DESIGN_W = 920;
+const PANEL_DESIGN_H = 690;
 
 type BrandId = "ofm" | "jobsly";
 
@@ -53,7 +60,7 @@ const CONTENT: Record<BrandId, BrandContent> = {
           { label: "Status", value: "In production" },
         ],
         body: "The hiring platform for OnlyFans agencies, designed and built end to end. A calm, confident product surface with a marketing layer that has some energy.",
-        link: { label: "Visit the live site", href: "https://ofmjobs.com/" },
+        link: { label: "View the live site", href: "https://ofmjobs.com/" },
       },
       {
         id: "ofm-attrs",
@@ -61,7 +68,7 @@ const CONTENT: Record<BrandId, BrandContent> = {
         title: "Guiding attributes",
         body: "Before any colour or type, I set the feeling the product should carry:",
         bullets: [
-          "Credible: a real hiring tool, not a sketchy gig board",
+          "Credible: a real hiring tool, nothing like a gig board",
           "Calm: hiring is stressful; the UI stays composed",
           "Approachable: people-first, gently rounded",
         ],
@@ -73,7 +80,7 @@ const CONTENT: Record<BrandId, BrandContent> = {
         body: "A role-based colour system around a deep forest green, defined as Tailwind theme tokens so every surface and state derives from it. It holds up on colour-theory too:",
         bullets: [
           "Monochromatic green reads calm and credible, right for hiring",
-          "Green-tinted neutrals unify the UI, no sterile grey",
+          "Green-tinted neutrals unify the UI, so nothing reads as sterile grey",
           "A reserved maroon keeps red exclusively for errors",
           "on-* pairings guarantee AA/AAA text contrast",
         ],
@@ -82,13 +89,13 @@ const CONTENT: Record<BrandId, BrandContent> = {
         id: "ofm-type",
         group: "Visual language",
         title: "Type, corners & elevation",
-        body: "One grotesk, Hanken Grotesk, carries display through body: friendly, legible, never startup-generic. Shapes stay pill-first and soft (radii 1–3rem), and depth reads through a Tailwind shadow scale (sm → 2xl), not colour.",
+        body: "One grotesk, Hanken Grotesk, carries display through body, friendly and legible without turning startup-generic. Shapes stay pill-first and soft (radii 1–3rem), and depth reads through a Tailwind shadow scale (sm → 2xl) rather than colour.",
       },
       {
         id: "ofm-hero-video",
         group: "Visual language",
         title: "The hero, generated with AI",
-        body: "The homepage hero is a cinematic video I generated with Google Flow: no shoot, no crew, no location. A custom production of this quality would run close to $60k; here it was prompts and iteration.",
+        body: "The homepage hero is a cinematic video I generated with Google Flow, with no shoot, no crew and no location. A custom production of this quality would run close to $60k; here it was prompts and iteration.",
       },
       {
         id: "ofm-pages-1",
@@ -116,16 +123,16 @@ const CONTENT: Record<BrandId, BrandContent> = {
           { label: "Status", value: "Live" },
         ],
         body: "An AI hiring platform that runs the whole pipeline through one conversational agent, so a team can hire without a hiring team. I owned the product surface: the interaction model, the design system, and the shipped screens.",
-        link: { label: "Visit the live site", href: "https://jobsly.com/" },
+        link: { label: "View the live site", href: "https://jobsly.com/" },
       },
       {
         id: "jobsly-attrs",
         group: "Visual language",
         title: "Guiding attributes",
-        body: "Automating hiring decisions is a trust problem before it is a UI problem. Three attributes anchored every screen:",
+        body: "Automating hiring decisions is a trust problem before it is a UI problem, so three attributes anchored every screen:",
         bullets: [
           "In control: you approve, the agent executes, and every action stays logged and reversible",
-          "Legible: each AI judgement cites the rubric it scored against, never a black box",
+          "Legible: each AI judgement cites the rubric it scored against, so there is no black box",
           "Quietly capable: a calm agent that surfaces the decision and gets out of the way",
         ],
       },
@@ -145,7 +152,7 @@ const CONTENT: Record<BrandId, BrandContent> = {
         id: "jobsly-agent",
         group: "Visual language",
         title: "Designing the agent",
-        body: "The primary UI is a conversation, not a dashboard. I designed the agent to move through six pipeline stages, from brief and sourcing to screening, interviews, references and hire, as one steerable thread, with structured data folding into the chat at each decision point.",
+        body: "The primary UI is a conversation. I designed the agent to move through six pipeline stages, from brief and sourcing to screening, interviews, references and hire, as one steerable thread, with structured data folding into the chat at each decision point.",
       },
       {
         id: "jobsly-pages-1",
@@ -176,17 +183,24 @@ function NarrativeSection({
   onNavigate: () => void;
   isOpen: boolean;
 }) {
+  /* Heading level, not size. The opening beat is the page's only h1; the group
+     rails sit a level below it, and every other beat sits under a rail. */
+  const Heading = isOpen ? "h1" : "h3";
+
   return (
     <div className="mb-6">
       <div
-        onClick={onNavigate}
+        onClick={() => {
+          if (window.getSelection()?.toString()) return;
+          onNavigate?.();
+        }}
         className={`group cursor-pointer border-l-[2.4px] px-4 py-4 transition-all duration-[450ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
           active
             ? "border-l-txt-secondary bg-surface-muted opacity-100"
             : "border-l-transparent opacity-[0.75] hover:bg-black/[0.02] hover:opacity-100"
         }`}
       >
-        <h2
+        <Heading
           className={`mb-2 text-txt-heading ${
             isOpen
               ? `${spectral.className} text-[28px] font-normal leading-tight tracking-[-0.02em]`
@@ -194,7 +208,7 @@ function NarrativeSection({
           }`}
         >
           {beat.title}
-        </h2>
+        </Heading>
 
         {beat.meta && (
           <div className="mb-3 flex gap-8">
@@ -261,91 +275,49 @@ function NarrativeSection({
 
 export default function VisualDirectionPage() {
   const [brand, setBrand] = useState<BrandId>("ofm");
+  /* The brand panels are laid out for a ~920px-wide desktop column and carry
+     40-odd fixed pixel type sizes, so they cannot simply reflow into a phone.
+     Below lg they are rendered at their design width and zoomed down instead —
+     the same "identical screen, only the zoom differs" trick the other case
+     studies use via ScaledCanvas. Starts false so the server and the first
+     client paint agree; the effect corrects it before anything is visible. */
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023.98px)");
+    const sync = () => setNarrow(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
   const content = CONTENT[brand];
   const beats = content.beats;
 
   const [activeId, setActiveId] = useState(beats[0].id);
   const refs = useRef<Record<string, HTMLDivElement | null>>({});
-  const footerRef = useRef<HTMLDivElement | null>(null);
-  const idxRef = useRef(0); // current stop index for the beat-by-beat scroll
+  const panelRef = useRef<HTMLDivElement | null>(null);
+
+  // Below lg the panel is pinned to the top of the viewport, so the scroll-spy
+  // line sits just under it rather than at the desktop's 220px. Same rule as
+  // every other case study.
+  const spyLine = () => {
+    if (window.innerWidth >= 1024) return 220;
+    return (panelRef.current?.getBoundingClientRect().height ?? 0) + 72;
+  };
 
   // reset when the brand toggles
   useEffect(() => {
     setActiveId(CONTENT[brand].beats[0].id);
-    idxRef.current = 0;
     window.scrollTo({ top: 0 });
   }, [brand]);
 
   // beat-by-beat scroll - one deliberate scroll (or arrow / page key) advances
   // exactly one beat, so the whole study reads one beat at a time. Desktop +
   // motion only; touch, reduced-motion and small screens keep native scrolling.
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (!window.matchMedia("(min-width: 1024px)").matches) return;
-
-    const OFFSET = 150;
-    let cooldown: ReturnType<typeof setTimeout> | null = null;
-
-    const stops = () => {
-      const list = beats
-        .map((b) => refs.current[b.id])
-        .filter((el): el is HTMLDivElement => !!el);
-      if (footerRef.current) list.push(footerRef.current);
-      return list;
-    };
-
-    // deterministic ±1 step from the tracked index, so momentum can never make
-    // it jump two beats and skip one
-    const step = (dir: 1 | -1) => {
-      const list = stops();
-      if (!list.length) return;
-      const next = Math.min(list.length - 1, Math.max(0, idxRef.current + dir));
-      if (next === idxRef.current) return;
-      idxRef.current = next;
-      const top = list[next].getBoundingClientRect().top + window.scrollY - OFFSET;
-      window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
-    };
-
-    // one step per gesture: the first event fires immediately; the cooldown then
-    // refreshes on every following event, so a trackpad flick's inertia tail is
-    // absorbed into a single step (the cause of the skipped beat).
-    const gate = () => {
-      const idle = cooldown === null;
-      if (cooldown) clearTimeout(cooldown);
-      cooldown = setTimeout(() => {
-        cooldown = null;
-      }, 160);
-      return idle;
-    };
-
-    const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) < 2) return;
-      e.preventDefault();
-      if (gate()) step(e.deltaY > 0 ? 1 : -1);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      const down = ["ArrowDown", "PageDown", " ", "Spacebar"].includes(e.key);
-      const up = ["ArrowUp", "PageUp"].includes(e.key);
-      if (!down && !up) return;
-      e.preventDefault();
-      if (gate()) step(down ? 1 : -1);
-    };
-
-    window.addEventListener("wheel", onWheel, { passive: false });
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("keydown", onKey);
-      if (cooldown) clearTimeout(cooldown);
-    };
-  }, [beats]);
-
+ 
   const scrollTo = (id: string) => {
     const el = refs.current[id];
     if (!el) return;
-    const i = beats.findIndex((b) => b.id === id);
-    if (i >= 0) idxRef.current = i;
-    const top = el.getBoundingClientRect().top + window.scrollY - 200;
+    const top = el.getBoundingClientRect().top + window.scrollY - (spyLine() - 20);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     window.scrollTo({ top, behavior: reduce ? "auto" : "smooth" });
   };
@@ -358,16 +330,14 @@ export default function VisualDirectionPage() {
       let current = beats[0].id;
       for (const b of beats) {
         const el = refs.current[b.id];
-        if (el && el.getBoundingClientRect().top <= 220) current = b.id;
+        if (el && el.getBoundingClientRect().top <= spyLine()) current = b.id;
       }
       if (
         window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 24
+        document.documentElement.scrollHeight - 120
       ) {
         current = beats[beats.length - 1].id;
       }
-      const i = beats.findIndex((b) => b.id === current);
-      if (i >= 0) idxRef.current = i; // keep the beat-stepper in sync with native scrolling
       setActiveId(current);
     };
     const onScroll = () => {
@@ -389,12 +359,14 @@ export default function VisualDirectionPage() {
     <div className="min-h-screen bg-white">
       <div className="flex max-lg:flex-col">
         {/* ── left: narration + brand toggle ── */}
-        <div className="relative w-full bg-surface md:w-[440px] md:flex-shrink-0 lg:w-[480px]">
-          <div className="px-6 py-16 md:px-10">
+        <div className="relative w-full bg-surface lg:w-[480px] lg:flex-shrink-0">
+          {/* max-lg cap: stacked, the narrative would otherwise run ~100
+              characters a line at iPad-portrait width against 52 on desktop. */}
+          <div className="px-6 py-16 md:px-10 max-lg:pt-8 max-lg:max-w-[520px]">
             <div className="mb-6 pl-4">
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 text-[14px] text-txt-secondary transition-colors hover:text-txt-heading"
+                className="inline-flex items-center gap-2 py-3 -my-3 text-[14px] text-txt-secondary transition-colors hover:text-txt-heading"
               >
                 <span>←</span> Home
               </Link>
@@ -417,7 +389,7 @@ export default function VisualDirectionPage() {
                       role="tab"
                       aria-selected={selected}
                       onClick={() => setBrand(id)}
-                      className="relative rounded-full px-4 py-1.5 text-[13px] font-semibold outline-none focus-visible:ring-2 focus-visible:ring-txt-heading/30"
+                      className="relative rounded-full px-4 py-2.5 text-[13px] font-semibold outline-none focus-visible:ring-2 focus-visible:ring-txt-heading/30"
                     >
                       {selected && (
                         <motion.span
@@ -451,11 +423,11 @@ export default function VisualDirectionPage() {
                 >
                   {showGroup && (
                     <div className="mb-4 mt-12 pl-4">
-                      <h3
+                      <h2
                         className={`${spectral.className} pb-[2px] text-[24px] tracking-[-1px] text-txt-heading`}
                       >
                         {beat.group}
-                      </h3>
+                      </h2>
                       <div className="border-b border-surface-border" />
                     </div>
                   )}
@@ -469,39 +441,12 @@ export default function VisualDirectionPage() {
               );
             })}
 
-            {/* live-site button - below the shipped-site beats, per brand */}
-            {beats[0].link && (
-              <div className="mt-8 pl-4">
-                <a
-                  href={beats[0].link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-[#1c1c1e] px-4 py-2 text-[13px] font-semibold text-white transition-colors duration-200 hover:bg-[#33343a]"
-                >
-                  Visit the live site
-                  <svg
-                    width="13"
-                    height="13"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="7" y1="17" x2="17" y2="7" />
-                    <polyline points="9 7 17 7 17 15" />
-                  </svg>
-                </a>
-              </div>
-            )}
-
             {/* Continue reading - fills the trailing scroll room the sticky
                 panel needs to reveal the last beats with useful nav instead of
                 empty space, like the other case studies */}
-            <div ref={footerRef} className="mt-14">
+            <div className="mt-16">
               <h4 className="mb-2 pl-4 text-[12px] uppercase tracking-[0.08em] text-txt-secondary">
-                Continue reading
+                Continue Reading
               </h4>
               {[
                 { title: "Staple Chat", descriptor: "Ask questions of your data in plain language.", href: "/staple-chat" },
@@ -523,13 +468,37 @@ export default function VisualDirectionPage() {
         </div>
 
         {/* ── right: sticky brand world ── */}
-        <div className="min-w-0 flex-1 max-lg:hidden">
-          <div className="sticky top-0 flex h-screen flex-col py-[28px] pl-2 pr-[28px]">
-            {brand === "ofm" ? (
-              <OfmRightPanel activeId={activeId} />
-            ) : (
-              <JobslyRightPanel activeId={activeId} />
-            )}
+        {/* Below lg this used to be `max-lg:hidden`, which meant phones and
+            tablets got the narration with none of the work it describes. It now
+            follows the same stacked treatment as every other case study: the
+            panel rides to the top of the column and pins there while the
+            narrative scrolls under it. */}
+        <div
+          ref={panelRef}
+          className="min-w-0 flex-1 max-lg:order-first max-lg:sticky max-lg:top-0 max-lg:z-30 max-lg:bg-white"
+        >
+          <div className="sticky top-0 flex h-screen flex-col py-[28px] pl-2 pr-[28px] max-lg:static max-lg:h-auto max-lg:px-3 max-lg:pt-3 max-lg:pb-2">
+            {/* Both brand panels size themselves with h-full, so once this
+                column stops being h-screen below lg they would collapse to zero
+                height. The aspect box gives them a real one — the same fix the
+                interactive-globe case study uses for its fluid panel. */}
+            <div className="relative flex min-h-0 flex-1 flex-col max-lg:aspect-[4/3] max-lg:flex-none">
+              {narrow ? (
+                <ScaledCanvas designWidth={PANEL_DESIGN_W}>
+                  <div style={{ height: PANEL_DESIGN_H }}>
+                    {brand === "ofm" ? (
+                      <OfmRightPanel activeId={activeId} />
+                    ) : (
+                      <JobslyRightPanel activeId={activeId} />
+                    )}
+                  </div>
+                </ScaledCanvas>
+              ) : brand === "ofm" ? (
+                <OfmRightPanel activeId={activeId} />
+              ) : (
+                <JobslyRightPanel activeId={activeId} />
+              )}
+            </div>
           </div>
         </div>
       </div>

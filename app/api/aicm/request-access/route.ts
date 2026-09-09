@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
   const gate = limiter.hit(clientKey(req));
   if (!gate.ok) {
-    return NextResponse.json({ ok: false, error: "Too many requests from here — try again later." }, { status: 429 });
+    return NextResponse.json({ ok: false, error: "Too many requests from here. Try again later." }, { status: 429 });
   }
 
   let email = "";

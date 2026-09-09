@@ -116,7 +116,7 @@ const sections: Section[] = [
     id: "bottleneck",
     type: "story",
     title: "The analyst bottleneck.",
-    content: `The bottleneck was never the data. It was translation.`,
+    content: `The data was fine. The bottleneck was translation.`,
     bullets: [
       `Non-technical people queued behind analysts for one-sentence answers.`,
       `Static reports couldn't answer the obvious follow-up, so every question restarted the tour.`,
@@ -149,7 +149,7 @@ const sections: Section[] = [
   {
     id: "d1",
     type: "product",
-    title: "Decision 1: Chat is the product, not a feature.",
+    title: "Decision 1: Chat is the whole product.",
     content: `The safe version was a chatbot bolted onto the dashboards, an assistant in the corner of the maze. We rejected it early.`,
     bullets: [
       `A bot that answers questions about a maze is still a maze.`,
@@ -161,9 +161,9 @@ const sections: Section[] = [
     id: "d2",
     type: "product",
     title: "Decision 2: Show the thinking.",
-    content: `"Excluding returns and taxes" carries real business logic. The system should translate intent, not make users do it. But a translation you can't see is just a black box, and finance won't sign off on numbers they can't audit.`,
+    content: `"Excluding returns and taxes" carries real business logic. The system should do that translation, so users do not have to. But a translation you can't see is just a black box, and finance won't sign off on numbers they can't audit.`,
     bullets: [
-      `Every answer shows its work: what it read, what it filtered, how it totaled.`,
+      `Every answer shows its work, meaning what it read, what it filtered and how it totalled.`,
       `Visible reasoning turns "a number" into "a number I'll put in front of my CFO."`,
     ],
     highlight: null,
@@ -172,7 +172,7 @@ const sections: Section[] = [
     id: "d3",
     type: "product",
     title: "Decision 3: Charts live inside the conversation.",
-    content: `Every tool we studied put visualization somewhere else: a tab, a builder, an export. But the point is the follow-up. "Now break that down by outlet" only feels natural if you never left the thread.`,
+    content: `Every tool we studied put visualization somewhere else: a tab, a builder, an export. But the follow-up is where the value is. "Now break that down by outlet" only feels natural if you never left the thread.`,
     bullets: [
       `Charts render inline, and the conversation keeps going.`,
       `A separate charts tab would have been the maze sneaking back in.`,
@@ -183,7 +183,7 @@ const sections: Section[] = [
     id: "d4",
     type: "product",
     title: "Decision 4: Power without a setup wizard.",
-    content: `Power users needed their own data on the table: invoices, POS exports, P&L, outlet masters, ready to be questioned. The lazy version is a setup wizard; the clever-looking version sprays settings through the chat. We did neither.`,
+    content: `Power users needed their own data on the table: invoices, POS exports, P&L, outlet masters, ready to be questioned. The lazy version is a setup wizard. The clever-looking version sprays settings through the chat. We went a third way.`,
     bullets: [
       `A side panel holds everything you've connected, summoned when needed, invisible otherwise.`,
       `Clean for the person who just wants an answer; depth one click away for the person who doesn't.`,
@@ -194,10 +194,10 @@ const sections: Section[] = [
     id: "d5",
     type: "product",
     title: "Decision 5: The blank canvas problem.",
-    content: `A chat interface has a dirty secret: an empty input box is scarier than a bad dashboard. New users don't know what to ask, so they ask nothing and leave.`,
+    content: `A chat interface has a dirty secret. An empty input box is scarier than a bad dashboard. New users don't know what to ask, so they ask nothing and leave.`,
     bullets: [
       `Suggestion chips propose the next question from what's connected and what was just asked.`,
-      `Not a convenience feature; it's how the product teaches its own ceiling.`,
+      `That is more than a convenience. It is how the product teaches you what it can do.`,
       `The rejected alternative was onboarding tours and docs, for a product whose whole promise was no learning curve.`,
     ],
     highlight: null,
@@ -248,7 +248,7 @@ const sections: Section[] = [
     id: "impact",
     type: "closing",
     title: "Impact.",
-    content: `Time-to-insight went from 15 minutes to 2, not because people got faster, but because the tour of five dashboards stopped existing.`,
+    content: `Time-to-insight went from 15 minutes to 2. People did not get faster. The tour of five dashboards stopped existing.`,
     bullets: [
       `Within a quarter, 67% of queries came from non-technical people.`,
       `The analyst queue dissolved, and the founding promise reached the people it was made for.`,
@@ -262,7 +262,7 @@ const sections: Section[] = [
     content: `Chat removes the dashboard, but you're still typing. The next step I designed was voice.`,
     bullets: [
       `Ask out loud, and drill in by just asking.`,
-      `Text was the right v1: precise, auditable, shareable. Voice is the v2 that matches how people already think out loud.`,
+      `Text was the right first version because it is precise, auditable and easy to share. Voice is the second, and it matches how people already think out loud.`,
     ],
     highlight: null,
   },
@@ -307,6 +307,12 @@ function NarrativeSection({
   active = false,
   onNavigate,
 }: NarrativeSectionProps) {
+  /* Heading level, not size. The intro beat is the page's only h1; the group
+     rails ("The Story") sit a level below it, and every other beat sits under
+     a rail. Styling stays on titleClass, so the document outline changes and
+     the look does not. */
+  const Heading = titleSize === "lg" ? "h1" : "h3";
+
   const titleClass =
     titleSize === "lg"
       ? "text-[28px] tracking-[-0.02em] leading-tight"
@@ -335,7 +341,7 @@ function NarrativeSection({
               }`
         }`}
       >
-        <h2
+        <Heading
           className={`mb-2 text-txt-heading ${titleClass} ${
             serif ? `${spectral.className} font-normal` : "font-semibold"
           }`}
@@ -347,14 +353,14 @@ function NarrativeSection({
                 e.stopPropagation();
                 onNavigate();
               }}
-              className="text-left transition-colors hover:text-txt-primary focus-visible:outline-none focus-visible:underline"
+              className="py-2 -my-2 text-left transition-colors hover:text-txt-primary focus-visible:outline-none focus-visible:underline"
             >
               {title}
             </button>
           ) : (
             title
           )}
-        </h2>
+        </Heading>
         <div className="text-[15px] leading-[1.7] text-txt-primary">
           {children && <p>{children}</p>}
           {bullets && bullets.length > 0 && (
@@ -607,11 +613,11 @@ export default function StapleChatPage() {
         >
           {showGroupHeading && groupLabel && (
             <div className="mt-12 mb-4 pl-4">
-              <h3
+              <h2
                 className={`${spectral.className} text-[24px] text-txt-heading pb-[2px] tracking-[-1px]`}
               >
                 {groupLabel}
-              </h3>
+              </h2>
               <div className="border-b border-surface-border" />
             </div>
           )}
@@ -631,7 +637,7 @@ export default function StapleChatPage() {
     });
 
   const ContinueReading = () => (
-    <div className="mt-10">
+    <div className="mt-16">
       <h4 className="text-[12px] font-normal text-txt-secondary uppercase tracking-[0.08em] mb-2 pl-4">
         Continue Reading
       </h4>
@@ -675,17 +681,19 @@ export default function StapleChatPage() {
         {/* Left: scrolling narrative */}
         <div className="w-full lg:w-[480px] lg:flex-shrink-0 bg-surface relative">
 
-          <div className="px-6 py-16 md:px-10 max-lg:pt-8">
+          {/* max-lg cap: stacked, the narrative would otherwise run ~100
+              characters a line at iPad-portrait width against 52 on desktop. */}
+          <div className="px-6 py-16 md:px-10 max-lg:pt-8 max-lg:max-w-[520px]">
             {/* Back link */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, ease }}
-              className="mb-2 pl-4"
+              className="mb-3 pl-4"
             >
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 text-[14px] text-txt-secondary hover:text-txt-heading transition-colors"
+                className="inline-flex items-center gap-2 py-3 -my-3 text-[14px] text-txt-secondary hover:text-txt-heading transition-colors"
               >
                 <span>←</span>
                 Home
@@ -716,6 +724,8 @@ export default function StapleChatPage() {
                 className="relative flex-1 min-h-0 flex items-center justify-center [container-type:size] max-lg:[container-type:inline-size]"
               >
               <div
+                /* demo, not a control: keep its buttons out of the Tab order */
+                inert
                 className="relative rounded-2xl shadow-lg overflow-hidden max-lg:!w-[min(100%,calc(44svh_*_1.6))]"
                 style={{
                   aspectRatio: "1440 / 900",

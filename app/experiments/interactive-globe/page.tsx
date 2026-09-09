@@ -26,7 +26,7 @@ const sections: Section[] = [
     id: "open",
     type: "intro",
     title: "Interactive Globe",
-    content: `A section on the OFM Jobs homepage. Dots for land, arcs between hiring cities, a sphere you can pick up and spin. Live since launch, and that is it running on the right.`,
+    content: `A section on the OFM Jobs homepage. Dots for land, arcs between hiring cities, a sphere you can pick up and spin. It has been live since launch, and the one on the right is the real thing.`,
   },
 
   /* ── The Story ─────────────────────────────────────────────── */
@@ -34,22 +34,22 @@ const sections: Section[] = [
     id: "presence",
     type: "story",
     title: "It had to stop the scroll",
-    content: `Not the hero. It is the fifth section down, after the fold, right before the job listings. Nothing that far into a page gets attention for free.`,
+    content: `It is the fifth section down, well past the fold and right before the job listings. Nothing that far into a page gets attention for free.`,
     bullets: [
-      `A photo says "global" once. An object you can spin says it every time.`,
+      `A photo can say global once. Something you can spin keeps saying it.`,
       `The claim was about reach, so the section had to be the map.`,
-      `It lands just before the listings, so it has to set them up.`,
+      `It sits just before the listings, so it has to set them up.`,
     ],
   },
   {
     id: "lineage",
     type: "story",
     title: "Where it came from",
-    content: `Stripe's globe, and Anthropic's. I took the idiom openly: a sphere of points, land picked out by density, arcs between places.`,
+    content: `Stripe's globe, and Anthropic's. I borrowed the idiom openly, a sphere of points with land picked out by density and arcs between places.`,
     bullets: [
-      `Stripe's is WebGL with real map data. Mine is canvas, no dependencies.`,
-      `Theirs is ambient. Mine carries content: named cities, regions, arcs.`,
-      `Better to say where it began than pretend it began with me.`,
+      `Stripe's is WebGL with real map data. Mine is a 2D canvas with no dependencies.`,
+      `Theirs sits in the background. Mine carries named cities, regions and arcs.`,
+      `I would rather say where the idea came from than pretend it was mine.`,
     ],
   },
 
@@ -57,14 +57,14 @@ const sections: Section[] = [
   {
     id: "d1",
     type: "decision",
-    title: "No dependencies. None.",
-    content: `850 lines of TypeScript and a 2D canvas. No three.js, no WebGL, no d3, no globe library. Nothing five sections down a marketing page justifies hundreds of kilobytes.`,
+    title: "No dependencies",
+    content: `850 lines of TypeScript and a 2D canvas. There is no three.js, no WebGL, no d3 and no globe library, because nothing five sections down a marketing page justifies hundreds of kilobytes.`,
   },
   {
     id: "d2",
     type: "decision",
     title: "The continents are arithmetic",
-    content: `Forty rotated ellipses, not map data. Overlap returns a soft value, so coastlines fade instead of stepping.`,
+    content: `Forty rotated ellipses stand in for map data. Where they overlap the value is soft, so coastlines fade rather than step.`,
     bullets: [
       `The whole world is a few hundred bytes of parameters.`,
       `At this dot pitch, real coastlines would read as noise.`,
@@ -74,7 +74,7 @@ const sections: Section[] = [
     id: "d3",
     type: "decision",
     title: "Golden-angle distribution",
-    content: `Points placed by the Fibonacci sphere method. A latitude and longitude grid crowds the poles and thins the equator. This one does not.`,
+    content: `Points are placed by the Fibonacci sphere method, which spreads them evenly. A latitude and longitude grid would crowd the poles and thin the equator.`,
   },
   {
     id: "d4",
@@ -85,7 +85,7 @@ const sections: Section[] = [
   {
     id: "d5",
     type: "decision",
-    title: "Momentum, measured not eased",
+    title: "Momentum, measured",
     content: `Pointer velocity is sampled every frame and handed straight to the rotation on release. A flick and a nudge feel different, which is what makes it read as an object.`,
   },
   {
@@ -94,7 +94,7 @@ const sections: Section[] = [
     title: "It stops when you cannot see it",
     content: `The animation loop cancels off-screen, and pixel ratio is capped at 2. Sitting fifth, it is out of view for most of a visit.`,
     bullets: [
-      `A section that quietly drains a battery is a bug, not a flourish.`,
+      `A section that quietly drains a battery is a bug, however good it looks.`,
       `Porting it here, I added the reduced-motion path it never had.`,
     ],
   },
@@ -104,7 +104,7 @@ const sections: Section[] = [
     id: "live",
     type: "closing",
     title: "It shipped, and it stayed",
-    content: `Not a prototype or a study. Live on the OFM Jobs homepage since launch.`,
+    content: `This is the production version, live on the OFM Jobs homepage since launch.`,
   },
 ];
 
@@ -135,6 +135,12 @@ function NarrativeSection({
   active?: boolean;
   onNavigate?: () => void;
 }) {
+  /* Heading level, not size. The intro beat is the page's only h1; the group
+     rails ("The Story") sit a level below it, and every other beat sits under
+     a rail. Styling stays on titleClass, so the document outline changes and
+     the look does not. */
+  const Heading = titleSize === "lg" ? "h1" : "h3";
+
   const titleClass =
     titleSize === "lg" ? "text-[28px] tracking-[-0.02em] leading-tight" : "text-[18px]";
 
@@ -155,13 +161,13 @@ function NarrativeSection({
               }`
         }`}
       >
-        <h2
+        <Heading
           className={`mb-2 text-txt-heading ${titleClass} ${
             serif ? `${spectral.className} font-normal` : "font-semibold"
           }`}
         >
           {title}
-        </h2>
+        </Heading>
         <div className="text-[15px] leading-[1.7] text-txt-primary">
           <p>{content}</p>
           {bullets && bullets.length > 0 && (
@@ -235,16 +241,18 @@ export default function InteractiveGlobePage() {
       <div className="flex max-lg:flex-col">
         {/* Left: scrolling narrative */}
         <div className="w-full lg:w-[480px] lg:flex-shrink-0 bg-surface relative">
-          <div className="px-6 py-16 md:px-10 max-lg:pt-8">
+          {/* max-lg cap: stacked, the narrative would otherwise run ~100
+              characters a line at iPad-portrait width against 52 on desktop. */}
+          <div className="px-6 py-16 md:px-10 max-lg:pt-8 max-lg:max-w-[520px]">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, ease }}
-              className="mb-2 pl-4"
+              className="mb-3 pl-4"
             >
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 text-[14px] text-txt-secondary hover:text-txt-heading transition-colors"
+                className="inline-flex items-center gap-2 py-3 -my-3 text-[14px] text-txt-secondary hover:text-txt-heading transition-colors"
               >
                 <span>←</span>
                 Home
@@ -264,11 +272,11 @@ export default function InteractiveGlobePage() {
                 >
                   {showGroupHeading && (
                     <div className="mt-12 mb-4 pl-4">
-                      <h3
+                      <h2
                         className={`${spectral.className} text-[24px] text-txt-heading pb-[2px] tracking-[-1px]`}
                       >
                         {GROUP_LABEL[section.type]}
-                      </h3>
+                      </h2>
                       <div className="border-b border-surface-border" />
                     </div>
                   )}

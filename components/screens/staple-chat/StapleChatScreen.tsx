@@ -734,9 +734,9 @@ export default function StapleChatScreen({
             {/* Chat header - title + primary actions (no divider; the top bar
                 already separates chrome from content) */}
             <div className="flex items-center gap-3 px-8 pt-6 pb-4">
-              <h1 className="text-display-xs font-semibold text-primary">
+              <div className="text-display-xs font-semibold text-primary">
                 Four Fingers Invoices
-              </h1>
+              </div>
               <div className="ml-auto flex items-center gap-2">
                 <Button color="secondary" size="sm" iconLeading={Plus}>
                   New Chat

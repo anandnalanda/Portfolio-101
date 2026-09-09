@@ -64,12 +64,14 @@ export default function AiContentMachineGate() {
     "h-11 shrink-0 rounded-xl bg-txt-heading px-5 text-[14px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40";
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="mx-auto max-w-[440px] px-6 py-16 md:py-24">
+    <div className="flex min-h-screen bg-white">
+      {/* m-auto, not justify-center: it centres the column on a big screen and
+          still lets a short viewport scroll instead of clipping its top. */}
+      <div className="m-auto w-full max-w-[440px] px-6 py-16 md:py-24">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, ease }}>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-[14px] text-txt-secondary transition-colors hover:text-txt-heading"
+            className="inline-flex items-center gap-2 py-3 -my-3 text-[14px] text-txt-secondary transition-colors hover:text-txt-heading"
           >
             <span>←</span>
             Home
@@ -140,7 +142,7 @@ export default function AiContentMachineGate() {
             </p>
             {request.phase === "done" ? (
               <div className="rounded-xl border border-black/10 bg-surface px-4 py-3 text-[14px] text-txt-heading">
-                Got it — I&apos;ll send the password to <span className="font-medium">{email.trim()}</span>.
+                Got it. I&apos;ll send the password to <span className="font-medium">{email.trim()}</span>.
               </div>
             ) : (
               <>
