@@ -1,19 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function StickerCard() {
   const [hovered, setHovered] = useState(false);
+  /* Phones have no hover, and this card only revealed its two buttons on
+     hover, so on a phone the résumé could never be reached. On a coarse
+     pointer the buttons are simply always there. Same rule the experiments
+     deck uses to stay open on touch. */
+  const [coarse, setCoarse] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: none)");
+    const sync = () => setCoarse(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  const show = hovered || coarse;
 
   const spring = { type: "spring" as const, stiffness: 200, damping: 25, mass: 1 };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       className="group rounded-card border-2 overflow-hidden relative flex flex-col items-center justify-center cursor-pointer bg-white hover:bg-[#f0d0c4] transition-colors duration-300 max-md:h-[75cqw]"
       style={{ borderColor: "rgba(0,0,0,0.04)" }}
       onMouseEnter={() => setHovered(true)}
@@ -23,7 +32,7 @@ export default function StickerCard() {
         viewBox="44 44 168 168"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="w-[160px] h-[160px] transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] scale-[1.1] group-hover:scale-[1.1] group-hover:-translate-y-6 motion-reduce:!transform-none"
+        className={`w-[160px] h-[160px] transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] scale-[1.1] group-hover:scale-[1.1] group-hover:-translate-y-6 motion-reduce:!transform-none${coarse ? " -translate-y-6" : ""}`}
         style={{ transformBox: "fill-box", transformOrigin: "center" }}
       >
         <defs>
@@ -82,11 +91,12 @@ export default function StickerCard() {
 
       <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-3 pb-3 pointer-events-none">
         <AnimatePresence>
-          {hovered && (
+          {show && (
             <>
               <motion.a
-                href="/resume.pdf"
-                download
+                href="/Anand_M_Resume.pdf"
+                download="Anand_M_Resume.pdf"
+                aria-label="Download résumé (PDF)"
                 className="group/dl w-9 h-9 rounded-full flex items-center justify-center pointer-events-auto"
                 initial={{ opacity: 0, x: 60, y: -50 }}
                 animate={{ opacity: 1, x: 0, y: 0 }}
@@ -115,9 +125,10 @@ export default function StickerCard() {
               </motion.a>
 
               <motion.a
-                href="https://read.cv/anand"
+                href="/Anand_M_Resume.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Read résumé (opens PDF in a new tab)"
                 className="group/btn h-10 rounded-full flex items-center gap-1 px-4 text-[14px] font-medium border-[1.5px] pointer-events-auto"
                 initial={{ opacity: 0, x: -40, y: -50 }}
                 animate={{ opacity: 1, x: 0, y: 0 }}
@@ -143,7 +154,7 @@ export default function StickerCard() {
                 }}
                 onClick={(e) => e.stopPropagation()}
               >
-                <span>Read.cv</span>
+                <span>Read CV</span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-200 ease-out group-hover/btn:translate-x-[2px]">
                   <line x1="5" y1="19" x2="19" y2="5" />
                   <polyline points="9 5 19 5 19 15" />
