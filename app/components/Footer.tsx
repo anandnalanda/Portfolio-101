@@ -18,7 +18,7 @@ export default function Footer() {
         Let&apos;s chat &rarr;{" "}
         <a
           href="mailto:anand97nalanda@gmail.com"
-          className="font-bold text-txt-heading hover:text-accent transition-colors"
+          className="inline-block py-3 -my-3 font-bold text-txt-heading hover:text-accent transition-colors"
         >
           anand97nalanda@gmail.com
         </a>

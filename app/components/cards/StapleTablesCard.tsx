@@ -39,9 +39,6 @@ export default function StapleTablesCard() {
   return (
     <Link href="/staple-tables" className="col-span-2 max-md:col-span-1 max-md:h-[75cqw]">
     <motion.div
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       initial="rest"
       whileHover="hover"
       className="relative h-full"

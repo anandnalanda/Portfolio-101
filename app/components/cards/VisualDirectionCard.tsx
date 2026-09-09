@@ -10,9 +10,6 @@ export default function VisualDirectionCard() {
   return (
     <Link href="/visual-direction" className="relative hover:z-[500] max-md:h-[75cqw]">
       <motion.div
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-40px" }}
-        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
         initial="rest"
         whileHover="hover"
         onHoverStart={() => setHovered(true)}

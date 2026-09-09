@@ -7,7 +7,7 @@ export default function CardDemoPage() {
         <KanbanCaseCard
           href="/kanban-and-ai"
           title="Introducing Kanban in OFM Jobs"
-          caption="Kanban in OFM Jobs: from a flat list to a board people actually work in."
+          caption="Kanban in OFM Jobs: from a flat list to a board people work in every day."
         />
       </div>
     </main>

@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import BioCard from "./cards/BioCard";
 import SwooshCard from "./cards/SwooshCard";
 import SettingsCard from "./cards/SettingsCard";
@@ -18,7 +19,18 @@ export default function BentoGrid() {
       {/* lg+: four fluid columns, rows kept square via the container width (258px at
           the 1200px max) but allowed to grow if a card needs it. Tablet: two columns on fixed 258px rows. Phone: one column,
           rows sized by each card (4:3 by default, see max-md:h-[75cqw] on the cards). */}
-      <div className="grid grid-cols-[repeat(4,minmax(0,1fr))] auto-rows-[minmax(calc((100cqw_-_72px)/4),auto)] gap-6 justify-center max-lg:grid-cols-[repeat(2,1fr)] max-lg:auto-rows-[258px] max-md:grid-cols-[1fr] max-md:auto-rows-auto">
+      {/* One entrance for every card, on the grid, so they all arrive on the
+          same frame. It is transform-only on purpose: an opacity fade here
+          would hide the bio paragraph (the page's largest paint) until
+          hydration, which is the 2.5s mobile penalty removed last week. The
+          cards used to each own a fade tied to their own viewport observer,
+          which is why they used to pop in one after another. */}
+      <motion.div
+        initial={{ y: 12 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        className="grid grid-cols-[repeat(4,minmax(0,1fr))] auto-rows-[minmax(calc((100cqw_-_72px)/4),auto)] gap-6 justify-center max-lg:grid-cols-[repeat(2,1fr)] max-lg:auto-rows-[258px] max-md:grid-cols-[1fr] max-md:auto-rows-auto"
+      >
         <BioCard />
 
         <SwooshCard />
@@ -33,8 +45,8 @@ export default function BentoGrid() {
           fill
           href="/kanban-and-ai"
           title="Kanban and AI"
-          caption="Kanban in OFM Jobs: from a flat list to a board people actually work in."
-          pillCaption="A board people actually work in."
+          caption="Kanban in OFM Jobs: from a flat list to a board people work in every day."
+          pillCaption="A board people work in every day."
           className="col-span-2 max-md:col-span-1 max-md:h-[75cqw]"
         />
 
@@ -51,7 +63,7 @@ export default function BentoGrid() {
         <LaptopCard />
 
         <StapleTablesCard />
-      </div>
+      </motion.div>
     </main>
   );
 }

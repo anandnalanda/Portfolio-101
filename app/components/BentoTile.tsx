@@ -135,9 +135,9 @@ export default function BentoTile({
         {artifactLabel}
       </span>
       <div className="absolute bottom-0 left-0 right-0 px-5 pb-4 pt-10 bg-gradient-to-t from-white/90 to-transparent">
-        <h3 className="text-[14px] font-semibold text-txt-heading leading-tight">
+        <h2 className="text-[14px] font-semibold text-txt-heading leading-tight">
           {title}
-        </h3>
+        </h2>
         <p className="text-[12px] text-txt-secondary mt-0.5 leading-snug">
           {descriptor}
         </p>
